@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Product, RFQ, Quote } from '../../types';
-import { PRODUCTS, RFQS, QUOTES, ORDERS, USERS } from '../../mockData';
+import { Product, RFQ, Quote } from '../../types/types';
+import { PRODUCTS, RFQS, QUOTES, ORDERS, USERS } from '../../services/mockData';
 
 interface ClientPortalProps {
   activeTab: string;

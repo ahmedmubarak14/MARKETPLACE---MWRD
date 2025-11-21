@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserRole } from '../types';
+import { UserRole } from '../types/types';
 
 interface SidebarProps {
   role: UserRole;

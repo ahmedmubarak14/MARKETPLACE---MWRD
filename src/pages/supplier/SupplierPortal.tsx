@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { PRODUCTS, RFQS, QUOTES } from '../../mockData';
-import { Product } from '../../types';
+import { PRODUCTS, RFQS, QUOTES } from '../../services/mockData';
+import { Product } from '../../types/types';
 
 interface SupplierPortalProps {
   activeTab: string;
