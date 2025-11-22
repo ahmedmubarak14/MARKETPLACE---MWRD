@@ -2,6 +2,23 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User, UserRole, Product, RFQ, Quote } from '../types/types';
 import { USERS, PRODUCTS, RFQS, QUOTES, ORDERS, Order } from '../services/mockData';
+import {
+  createSession,
+  clearSession,
+  isSessionValid,
+  recordLoginAttempt,
+  isAccountLocked,
+  getRemainingAttempts,
+} from '../lib/auth';
+
+// Login result type for detailed feedback
+export interface LoginResult {
+  success: boolean;
+  user?: User;
+  error?: string;
+  remainingAttempts?: number;
+  lockoutRemainingMs?: number;
+}
 
 interface StoreState {
   // Auth
@@ -16,8 +33,9 @@ interface StoreState {
   orders: Order[];
 
   // Actions
-  login: (email: string, password: string) => User | null;
+  login: (email: string, password: string) => LoginResult;
   logout: () => void;
+  checkSession: () => boolean;
 
   // Product actions
   addProduct: (product: Product) => void;
@@ -60,17 +78,56 @@ export const useStore = create<StoreState>()(
       orders: ORDERS,
 
       // Auth actions
-      login: (email: string, password: string) => {
-        const user = get().users.find(u => u.email === email);
-        if (user) {
-          set({ currentUser: user, isAuthenticated: true });
-          return user;
+      login: (email: string, password: string): LoginResult => {
+        // Check if account is locked
+        const lockStatus = isAccountLocked(email);
+        if (lockStatus.locked) {
+          return {
+            success: false,
+            error: 'Account temporarily locked due to too many failed attempts.',
+            lockoutRemainingMs: lockStatus.remainingMs,
+          };
         }
-        return null;
+
+        // Find user by email
+        const user = get().users.find(u => u.email === email);
+
+        // For demo: accept any password with 6+ chars
+        const isValidPassword = password.length >= 6;
+
+        if (user && isValidPassword) {
+          // Successful login
+          recordLoginAttempt(email, true);
+          createSession(user);
+          set({ currentUser: user, isAuthenticated: true });
+          return { success: true, user };
+        }
+
+        // Failed login
+        recordLoginAttempt(email, false);
+        const remaining = getRemainingAttempts(email);
+
+        return {
+          success: false,
+          error: remaining > 0
+            ? 'Invalid email or password.'
+            : 'Account locked due to too many failed attempts.',
+          remainingAttempts: remaining,
+        };
       },
 
       logout: () => {
+        clearSession();
         set({ currentUser: null, isAuthenticated: false });
+      },
+
+      checkSession: () => {
+        if (!isSessionValid()) {
+          clearSession();
+          set({ currentUser: null, isAuthenticated: false });
+          return false;
+        }
+        return true;
       },
 
       // Product actions
