@@ -669,10 +669,10 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                                                     </span>
             </td>
             <td className="px-6 py-4 text-right">
-            <a className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline" href="#">
+            <button onClick={() => alert('Order #PO-86753 details - Feature coming soon!')} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
             <span>View Details</span>
             <span className="material-symbols-outlined" style={{fontSize: '16px'}}>arrow_forward</span>
-            </a>
+            </button>
             </td>
             </tr>
             <tr className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
@@ -687,10 +687,10 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                                                     </span>
             </td>
             <td className="px-6 py-4 text-right">
-            <a className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline" href="#">
+            <button onClick={() => alert('Order #PO-86751 details - Feature coming soon!')} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
             <span>View Details</span>
             <span className="material-symbols-outlined" style={{fontSize: '16px'}}>arrow_forward</span>
-            </a>
+            </button>
             </td>
             </tr>
             <tr className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
@@ -705,10 +705,10 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                                                     </span>
             </td>
             <td className="px-6 py-4 text-right">
-            <a className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline" href="#">
+            <button onClick={() => alert('Order #PO-86749 details - Feature coming soon!')} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
             <span>View Details</span>
             <span className="material-symbols-outlined" style={{fontSize: '16px'}}>arrow_forward</span>
-            </a>
+            </button>
             </td>
             </tr>
             </tbody>

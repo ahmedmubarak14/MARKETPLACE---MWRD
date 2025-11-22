@@ -485,7 +485,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                         <p className="text-xs text-neutral-600 dark:text-neutral-200">{action.type}</p>
                         <p className="text-sm font-medium text-neutral-800 dark:text-white">{action.desc}</p>
                       </div>
-                      <a className="text-primary text-sm font-bold hover:underline" href="#">View</a>
+                      <button onClick={() => alert(`Viewing: ${action.desc}`)} className="text-primary text-sm font-bold hover:underline">View</button>
                     </div>
                   ))}
                 </div>

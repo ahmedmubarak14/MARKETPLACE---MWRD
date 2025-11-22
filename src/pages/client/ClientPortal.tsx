@@ -28,6 +28,8 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
   const [rfqError, setRfqError] = useState<string | null>(null);
   const [createRfqSearch, setCreateRfqSearch] = useState('');
   const [rfqStatusFilter, setRfqStatusFilter] = useState<string>('all');
+  const [browseCategoryFilter, setBrowseCategoryFilter] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState(1);
 
   const toggleRfqItem = (productId: string) => {
     // Logic for simple list
@@ -662,7 +664,11 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
 
   // --- BROWSE VIEW ---
   if (activeTab === 'browse') {
-    const filteredProducts = products.filter(p => p.status === 'APPROVED' && p.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    const filteredProducts = products.filter(p =>
+      p.status === 'APPROVED' &&
+      p.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (browseCategoryFilter === 'all' || p.category === browseCategoryFilter)
+    );
 
     return (
       <div className="w-full max-w-screen-2xl mx-auto px-6 md:px-10 lg:px-20 py-8 font-display text-[#0d141b]">
@@ -701,16 +707,16 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
             <div className="sticky top-28 flex flex-col gap-6">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold">Filters</h3>
-                <button className="text-sm font-medium text-[#137fec] hover:underline">Clear all</button>
+                <button onClick={() => { setBrowseCategoryFilter('all'); setSearchTerm(''); }} className="text-sm font-medium text-[#137fec] hover:underline">Clear all</button>
               </div>
               {/* Category Filter */}
               <div className="flex flex-col gap-3">
                 <h4 className="text-sm font-bold uppercase tracking-wider text-[#4c739a]">Category</h4>
                 <ul className="space-y-2">
-                  <li><a className="font-bold text-[#137fec]" href="#">All Categories</a></li>
-                  <li><a className="text-[#0d141b] hover:text-[#137fec] transition-colors" href="#">Footwear</a></li>
-                  <li><a className="text-[#0d141b] hover:text-[#137fec] transition-colors" href="#">Electronics</a></li>
-                  <li><a className="text-[#0d141b] hover:text-[#137fec] transition-colors" href="#">Machinery</a></li>
+                  <li><button onClick={() => setBrowseCategoryFilter('all')} className={`text-left w-full ${browseCategoryFilter === 'all' ? 'font-bold text-[#137fec]' : 'text-[#0d141b] hover:text-[#137fec]'} transition-colors`}>All Categories</button></li>
+                  <li><button onClick={() => setBrowseCategoryFilter('Footwear')} className={`text-left w-full ${browseCategoryFilter === 'Footwear' ? 'font-bold text-[#137fec]' : 'text-[#0d141b] hover:text-[#137fec]'} transition-colors`}>Footwear</button></li>
+                  <li><button onClick={() => setBrowseCategoryFilter('Electronics')} className={`text-left w-full ${browseCategoryFilter === 'Electronics' ? 'font-bold text-[#137fec]' : 'text-[#0d141b] hover:text-[#137fec]'} transition-colors`}>Electronics</button></li>
+                  <li><button onClick={() => setBrowseCategoryFilter('Furniture')} className={`text-left w-full ${browseCategoryFilter === 'Furniture' ? 'font-bold text-[#137fec]' : 'text-[#0d141b] hover:text-[#137fec]'} transition-colors`}>Furniture</button></li>
                 </ul>
               </div>
               {/* Brand Filter */}
@@ -819,17 +825,16 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
 
             {/* Pagination */}
             <div className="flex items-center justify-between border-t border-[#e7edf3] pt-6 mt-2">
-              <button className="flex items-center gap-2 rounded-lg h-10 px-3 text-sm font-bold border border-[#e7edf3] bg-white hover:bg-[#f6f7f8] transition-colors text-[#0d141b]">
+              <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="flex items-center gap-2 rounded-lg h-10 px-3 text-sm font-bold border border-[#e7edf3] bg-white hover:bg-[#f6f7f8] transition-colors text-[#0d141b] disabled:opacity-50 disabled:cursor-not-allowed">
                 <span className="material-symbols-outlined text-lg">arrow_back</span>
                 Previous
               </button>
               <nav className="hidden md:flex items-center gap-2">
-                <a className="flex items-center justify-center h-10 w-10 rounded-lg text-sm font-bold hover:bg-[#f6f7f8] transition-colors text-[#0d141b]" href="#">1</a>
-                <a className="flex items-center justify-center h-10 w-10 rounded-lg text-sm font-bold bg-[#137fec]/20 text-[#137fec]" href="#">2</a>
-                <a className="flex items-center justify-center h-10 w-10 rounded-lg text-sm font-bold hover:bg-[#f6f7f8] transition-colors text-[#0d141b]" href="#">3</a>
-                <span className="text-sm font-bold text-[#0d141b]">...</span>
+                {[1, 2, 3].map(page => (
+                  <button key={page} onClick={() => setCurrentPage(page)} className={`flex items-center justify-center h-10 w-10 rounded-lg text-sm font-bold transition-colors ${currentPage === page ? 'bg-[#137fec]/20 text-[#137fec]' : 'hover:bg-[#f6f7f8] text-[#0d141b]'}`}>{page}</button>
+                ))}
               </nav>
-              <button className="flex items-center gap-2 rounded-lg h-10 px-3 text-sm font-bold border border-[#e7edf3] bg-white hover:bg-[#f6f7f8] transition-colors text-[#0d141b]">
+              <button onClick={() => setCurrentPage(p => p + 1)} className="flex items-center gap-2 rounded-lg h-10 px-3 text-sm font-bold border border-[#e7edf3] bg-white hover:bg-[#f6f7f8] transition-colors text-[#0d141b]">
                 Next
                 <span className="material-symbols-outlined text-lg">arrow_forward</span>
               </button>
