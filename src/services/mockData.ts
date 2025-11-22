@@ -1,4 +1,4 @@
-import { Product, RFQ, Quote, User, UserRole } from './types';
+import { Product, RFQ, Quote, User, UserRole } from '../types/types';
 
 export const USERS: User[] = [
   { id: 'u1', name: 'John Client', email: 'client@mwrd.com', role: UserRole.CLIENT, companyName: 'Tech Solutions Ltd', verified: true, publicId: 'Client-8492', status: 'ACTIVE', dateJoined: '2023-01-10' },

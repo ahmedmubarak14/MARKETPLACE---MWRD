@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { UserRole } from '../types';
+import { UserRole } from '../types/types';
 
 interface LoginProps {
-  onLogin: (role: UserRole) => void;
+  onLogin: (email: string, password: string) => UserRole | null;
   onBack: () => void;
 }
 
@@ -14,19 +14,11 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     // Simulate network delay
     setTimeout(() => {
       setIsLoading(false);
-      // Demo logic for role selection based on email
-      if (email.toLowerCase().includes('admin')) {
-        onLogin(UserRole.ADMIN);
-      } else if (email.toLowerCase().includes('supplier')) {
-        onLogin(UserRole.SUPPLIER);
-      } else {
-        // Default to client for any other email
-        onLogin(UserRole.CLIENT);
-      }
+      onLogin(email, password);
     }, 800);
   };
 

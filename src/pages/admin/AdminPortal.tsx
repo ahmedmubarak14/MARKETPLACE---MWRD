@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { PRODUCTS, QUOTES, USERS, RFQS } from '../../mockData';
-import { Quote, UserRole } from '../../types';
+import { PRODUCTS, QUOTES, USERS, RFQS } from '../../services/mockData';
+import { Quote, UserRole } from '../../types/types';
 
 interface AdminPortalProps {
   activeTab: string;
