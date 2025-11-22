@@ -1176,6 +1176,176 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
     );
   }
 
+  // --- LOGISTICS VIEW ---
+  if (activeTab === 'logistics') {
+    const [logisticsTab, setLogisticsTab] = useState<'shipments' | 'providers'>('shipments');
+    const [shipmentSearch, setShipmentSearch] = useState('');
+    const [shipmentStatusFilter, setShipmentStatusFilter] = useState<string>('all');
+
+    // Mock shipment data derived from orders
+    const shipments = [
+      { id: 'SHP-001', orderId: 'ORD-001', carrier: 'DHL Express', status: 'In Transit', origin: 'Los Angeles, CA', destination: 'New York, NY', eta: '2024-01-20', tracking: 'DHL123456789' },
+      { id: 'SHP-002', orderId: 'ORD-002', carrier: 'FedEx', status: 'Delivered', origin: 'Chicago, IL', destination: 'Miami, FL', eta: '2024-01-15', tracking: 'FX987654321' },
+      { id: 'SHP-003', orderId: 'ORD-003', carrier: 'UPS', status: 'Processing', origin: 'Seattle, WA', destination: 'Denver, CO', eta: '2024-01-22', tracking: 'UPS456789123' },
+      { id: 'SHP-004', orderId: 'ORD-004', carrier: 'DHL Express', status: 'In Transit', origin: 'Boston, MA', destination: 'Austin, TX', eta: '2024-01-21', tracking: 'DHL789123456' },
+    ];
+
+    const logisticsProviders = [
+      { id: 'LP-001', name: 'DHL Express', type: 'International', rating: 4.8, deliveries: 1250, avgTime: '3-5 days', status: 'Active' },
+      { id: 'LP-002', name: 'FedEx', type: 'Domestic & International', rating: 4.6, deliveries: 980, avgTime: '2-4 days', status: 'Active' },
+      { id: 'LP-003', name: 'UPS', type: 'Domestic', rating: 4.5, deliveries: 1100, avgTime: '2-3 days', status: 'Active' },
+      { id: 'LP-004', name: 'USPS', type: 'Domestic', rating: 4.2, deliveries: 750, avgTime: '4-7 days', status: 'Inactive' },
+    ];
+
+    const filteredShipments = shipments.filter(s => {
+      const matchesStatus = shipmentStatusFilter === 'all' || s.status === shipmentStatusFilter;
+      const matchesSearch = shipmentSearch === '' || s.id.toLowerCase().includes(shipmentSearch.toLowerCase()) || s.orderId.toLowerCase().includes(shipmentSearch.toLowerCase());
+      return matchesStatus && matchesSearch;
+    });
+
+    return (
+      <div className="p-8 md:p-12 space-y-8">
+        {/* Header */}
+        <div className="flex items-center justify-between bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+          <div>
+            <h2 className="text-2xl font-bold text-slate-900">Logistics Management</h2>
+            <p className="text-slate-500 mt-1">Track shipments and manage logistics providers.</p>
+          </div>
+          <div className="flex gap-3">
+            <button className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-50 rounded-lg hover:bg-slate-100 flex items-center gap-2">
+              <span className="material-symbols-outlined text-lg">download</span>Export
+            </button>
+            <button className="px-4 py-2 text-sm font-medium text-white bg-slate-900 rounded-lg hover:bg-slate-800 flex items-center gap-2">
+              <span className="material-symbols-outlined text-lg">add</span>Add Provider
+            </button>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-4">
+          <div className="flex flex-col gap-2 rounded-xl p-6 border border-slate-200 bg-white shadow-sm">
+            <p className="text-slate-500 text-sm font-medium">Total Shipments</p>
+            <p className="text-slate-900 tracking-tight text-3xl font-bold">{shipments.length}</p>
+          </div>
+          <div className="flex flex-col gap-2 rounded-xl p-6 border border-slate-200 bg-white shadow-sm">
+            <p className="text-slate-500 text-sm font-medium">In Transit</p>
+            <p className="text-blue-600 tracking-tight text-3xl font-bold">{shipments.filter(s => s.status === 'In Transit').length}</p>
+          </div>
+          <div className="flex flex-col gap-2 rounded-xl p-6 border border-slate-200 bg-white shadow-sm">
+            <p className="text-slate-500 text-sm font-medium">Delivered</p>
+            <p className="text-emerald-600 tracking-tight text-3xl font-bold">{shipments.filter(s => s.status === 'Delivered').length}</p>
+          </div>
+          <div className="flex flex-col gap-2 rounded-xl p-6 border border-slate-200 bg-white shadow-sm">
+            <p className="text-slate-500 text-sm font-medium">Active Providers</p>
+            <p className="text-amber-600 tracking-tight text-3xl font-bold">{logisticsProviders.filter(p => p.status === 'Active').length}</p>
+          </div>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="flex gap-1 bg-slate-100 rounded-lg p-1 w-fit">
+          {[{ id: 'shipments', label: 'Shipments', icon: 'local_shipping' }, { id: 'providers', label: 'Logistics Providers', icon: 'business' }].map(tab => (
+            <button key={tab.id} onClick={() => setLogisticsTab(tab.id as any)}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-colors flex items-center gap-2 ${logisticsTab === tab.id ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}>
+              <span className="material-symbols-outlined text-lg">{tab.icon}</span>{tab.label}
+            </button>
+          ))}
+        </div>
+
+        {logisticsTab === 'shipments' && (
+          <>
+            {/* Search and Filters */}
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-grow">
+                <div className="flex w-full items-stretch rounded-lg h-12 bg-white border border-slate-200 focus-within:ring-2 focus-within:ring-blue-500/50">
+                  <div className="text-slate-400 flex items-center justify-center pl-4"><span className="material-symbols-outlined">search</span></div>
+                  <input className="flex w-full min-w-0 flex-1 text-slate-900 focus:outline-none border-none bg-transparent h-full placeholder:text-slate-400 px-2" placeholder="Search by shipment or order ID..." value={shipmentSearch} onChange={(e) => setShipmentSearch(e.target.value)} />
+                </div>
+              </div>
+            </div>
+
+            {/* Status Filter Tabs */}
+            <div className="flex gap-2 flex-wrap">
+              {[{ value: 'all', label: 'All' }, { value: 'Processing', label: 'Processing' }, { value: 'In Transit', label: 'In Transit' }, { value: 'Delivered', label: 'Delivered' }].map(tab => (
+                <button key={tab.value} onClick={() => setShipmentStatusFilter(tab.value)}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${shipmentStatusFilter === tab.value ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}`}>
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Shipments Table */}
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead className="bg-slate-50 border-b border-slate-200">
+                    <tr>
+                      <th className="px-6 py-4 font-semibold text-slate-600 uppercase text-xs tracking-wider">Shipment</th>
+                      <th className="px-6 py-4 font-semibold text-slate-600 uppercase text-xs tracking-wider">Carrier</th>
+                      <th className="px-6 py-4 font-semibold text-slate-600 uppercase text-xs tracking-wider">Route</th>
+                      <th className="px-6 py-4 font-semibold text-slate-600 uppercase text-xs tracking-wider">Status</th>
+                      <th className="px-6 py-4 font-semibold text-slate-600 uppercase text-xs tracking-wider">ETA</th>
+                      <th className="px-6 py-4 font-semibold text-slate-600 uppercase text-xs tracking-wider text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {filteredShipments.map(shipment => (
+                      <tr key={shipment.id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div><span className="font-bold text-slate-900 text-sm">{shipment.id}</span></div>
+                          <div className="text-xs text-slate-400">{shipment.orderId}</div>
+                        </td>
+                        <td className="px-6 py-4 text-slate-700 text-sm font-medium">{shipment.carrier}</td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm text-slate-700">{shipment.origin}</div>
+                          <div className="text-xs text-slate-400 flex items-center gap-1"><span className="material-symbols-outlined text-sm">arrow_forward</span>{shipment.destination}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${
+                            shipment.status === 'Delivered' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                            shipment.status === 'In Transit' ? 'bg-blue-50 text-blue-700 border-blue-100' : 'bg-amber-50 text-amber-700 border-amber-100'
+                          }`}>{shipment.status}</span>
+                        </td>
+                        <td className="px-6 py-4 text-slate-600 text-sm">{shipment.eta}</td>
+                        <td className="px-6 py-4 text-right">
+                          <button className="text-blue-600 text-sm font-bold hover:underline">Track</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
+        )}
+
+        {logisticsTab === 'providers' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {logisticsProviders.map(provider => (
+              <div key={provider.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-900">{provider.name}</h3>
+                    <p className="text-sm text-slate-500">{provider.type}</p>
+                  </div>
+                  <span className={`px-3 py-1 text-xs font-bold rounded-full ${provider.status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>{provider.status}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-4 mb-4">
+                  <div><p className="text-xs text-slate-400">Rating</p><p className="text-lg font-bold text-slate-900 flex items-center gap-1"><span className="material-symbols-outlined text-amber-500 text-lg" style={{fontVariationSettings: "'FILL' 1"}}>star</span>{provider.rating}</p></div>
+                  <div><p className="text-xs text-slate-400">Deliveries</p><p className="text-lg font-bold text-slate-900">{provider.deliveries.toLocaleString()}</p></div>
+                  <div><p className="text-xs text-slate-400">Avg. Time</p><p className="text-lg font-bold text-slate-900">{provider.avgTime}</p></div>
+                </div>
+                <div className="flex gap-2">
+                  <button className="flex-1 px-4 py-2 text-sm font-medium text-slate-600 bg-slate-50 rounded-lg hover:bg-slate-100">View Details</button>
+                  <button className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">Manage</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="p-8 md:p-12 flex items-center justify-center h-96 flex-col text-center rounded-2xl">
       <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm border border-slate-100">

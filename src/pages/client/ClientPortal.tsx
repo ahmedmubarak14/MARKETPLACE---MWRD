@@ -969,13 +969,280 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
     );
   }
 
+  // --- ORDERS VIEW ---
+  if (activeTab === 'orders') {
+    const [orderStatusFilter, setOrderStatusFilter] = useState<string>('all');
+    const [orderSearch, setOrderSearch] = useState('');
+    const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
+
+    const filteredOrders = orders.filter(order => {
+      const matchesStatus = orderStatusFilter === 'all' || order.status === orderStatusFilter;
+      const matchesSearch = orderSearch === '' || order.id.toLowerCase().includes(orderSearch.toLowerCase());
+      return matchesStatus && matchesSearch;
+    });
+
+    const selectedOrderDetails = selectedOrder ? orders.find(o => o.id === selectedOrder) : null;
+
+    if (selectedOrderDetails) {
+      return (
+        <div className="p-8 md:p-12">
+          <div className="flex flex-wrap items-center gap-2 mb-6">
+            <button onClick={() => onNavigate('dashboard')} className="text-slate-500 text-sm font-medium hover:text-[#137fec]">Home</button>
+            <span className="text-slate-400 text-sm">/</span>
+            <button onClick={() => setSelectedOrder(null)} className="text-slate-500 text-sm font-medium hover:text-[#137fec]">Orders</button>
+            <span className="text-slate-400 text-sm">/</span>
+            <span className="text-slate-800 text-sm font-medium">{selectedOrderDetails.id}</span>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="p-8 border-b border-slate-200">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900">Order {selectedOrderDetails.id}</h2>
+                  <p className="text-slate-500 mt-1">Placed on {selectedOrderDetails.date}</p>
+                </div>
+                <span className={`px-4 py-2 rounded-full text-sm font-bold ${
+                  selectedOrderDetails.status === 'Delivered' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' :
+                  selectedOrderDetails.status === 'In Transit' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
+                  'bg-amber-100 text-amber-700 border border-amber-200'
+                }`}>{selectedOrderDetails.status}</span>
+              </div>
+            </div>
+
+            <div className="p-8 border-b border-slate-200">
+              <h3 className="text-lg font-semibold text-slate-900 mb-6">Order Progress</h3>
+              <div className="flex items-center justify-between relative">
+                <div className="absolute top-4 left-0 right-0 h-1 bg-slate-200">
+                  <div className={`h-full bg-[#137fec] transition-all ${
+                    selectedOrderDetails.status === 'Delivered' ? 'w-full' :
+                    selectedOrderDetails.status === 'In Transit' ? 'w-2/3' : 'w-1/3'
+                  }`}></div>
+                </div>
+                {['Order Placed', 'Processing', 'In Transit', 'Delivered'].map((step, idx) => {
+                  const isComplete = (idx === 0) || (idx === 1 && ['Processing', 'In Transit', 'Delivered'].includes(selectedOrderDetails.status)) ||
+                    (idx === 2 && ['In Transit', 'Delivered'].includes(selectedOrderDetails.status)) || (idx === 3 && selectedOrderDetails.status === 'Delivered');
+                  return (
+                    <div key={step} className="flex flex-col items-center relative z-10">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isComplete ? 'bg-[#137fec] text-white' : 'bg-slate-200 text-slate-400'}`}>
+                        {isComplete ? <span className="material-symbols-outlined text-lg">check</span> : <span className="text-sm font-bold">{idx + 1}</span>}
+                      </div>
+                      <span className={`text-xs font-medium mt-2 ${isComplete ? 'text-slate-900' : 'text-slate-400'}`}>{step}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-4">Order Summary</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between"><span className="text-slate-500">Subtotal</span><span className="text-slate-900 font-medium">${(selectedOrderDetails.amount * 0.9).toFixed(2)}</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Shipping</span><span className="text-slate-900 font-medium">${(selectedOrderDetails.amount * 0.05).toFixed(2)}</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Tax</span><span className="text-slate-900 font-medium">${(selectedOrderDetails.amount * 0.05).toFixed(2)}</span></div>
+                  <div className="border-t border-slate-200 pt-3 flex justify-between"><span className="text-slate-900 font-bold">Total</span><span className="text-slate-900 font-bold">${selectedOrderDetails.amount.toFixed(2)}</span></div>
+                </div>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-4">Shipping Address</h3>
+                <div className="bg-slate-50 rounded-lg p-4 text-slate-600">
+                  <p className="font-medium text-slate-900">{currentUser?.companyName || 'Company Name'}</p>
+                  <p>123 Business Street, Suite 456</p>
+                  <p>City, State 12345</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-8 bg-slate-50 border-t border-slate-200 flex flex-wrap gap-3">
+              <button onClick={() => setSelectedOrder(null)} className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50">Back to Orders</button>
+              <button className="px-4 py-2 text-sm font-medium text-white bg-[#137fec] rounded-lg hover:bg-[#137fec]/90">Download Invoice</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="p-8 md:p-12 space-y-8">
+        <div className="flex items-center justify-between bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+          <div>
+            <h2 className="text-2xl font-bold text-slate-900">Order History</h2>
+            <p className="text-slate-500 mt-1">Track and manage all your orders in one place.</p>
+          </div>
+          <button className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-50 rounded-lg hover:bg-slate-100 flex items-center gap-2">
+            <span className="material-symbols-outlined text-lg">download</span>Export
+          </button>
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-grow">
+            <div className="flex w-full items-stretch rounded-lg h-12 bg-white border border-slate-200 focus-within:ring-2 focus-within:ring-[#137fec]/50">
+              <div className="text-slate-400 flex items-center justify-center pl-4"><span className="material-symbols-outlined">search</span></div>
+              <input className="flex w-full min-w-0 flex-1 text-slate-900 focus:outline-none border-none bg-transparent h-full placeholder:text-slate-400 px-2" placeholder="Search orders by ID..." value={orderSearch} onChange={(e) => setOrderSearch(e.target.value)} />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-2 flex-wrap">
+          {[{ value: 'all', label: 'All Orders' }, { value: 'In Transit', label: 'In Transit' }, { value: 'Delivered', label: 'Delivered' }].map(tab => (
+            <button key={tab.value} onClick={() => setOrderStatusFilter(tab.value)}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${orderStatusFilter === tab.value ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}`}>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead className="bg-slate-50 border-b border-slate-200">
+                <tr>
+                  <th className="px-8 py-5 font-semibold text-slate-600 uppercase text-xs tracking-wider">Order ID</th>
+                  <th className="px-8 py-5 font-semibold text-slate-600 uppercase text-xs tracking-wider">Date</th>
+                  <th className="px-8 py-5 font-semibold text-slate-600 uppercase text-xs tracking-wider">Amount</th>
+                  <th className="px-8 py-5 font-semibold text-slate-600 uppercase text-xs tracking-wider">Status</th>
+                  <th className="px-8 py-5 font-semibold text-slate-600 uppercase text-xs tracking-wider text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filteredOrders.length === 0 ? (
+                  <tr><td colSpan={5} className="px-8 py-12 text-center text-slate-500"><span className="material-symbols-outlined text-4xl text-slate-300 mb-2 block">inbox</span>No orders found.</td></tr>
+                ) : filteredOrders.map(order => (
+                  <tr key={order.id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-8 py-6"><span className="font-bold text-slate-900 text-sm">{order.id}</span></td>
+                    <td className="px-8 py-6 text-slate-600 text-sm font-medium">{order.date}</td>
+                    <td className="px-8 py-6"><span className="text-slate-900 font-bold">${order.amount.toFixed(2)}</span></td>
+                    <td className="px-8 py-6">
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${
+                        order.status === 'Delivered' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                        order.status === 'In Transit' ? 'bg-blue-50 text-blue-700 border-blue-100' : 'bg-amber-50 text-amber-700 border-amber-100'
+                      }`}>{order.status}</span>
+                    </td>
+                    <td className="px-8 py-6 text-right">
+                      <button onClick={() => setSelectedOrder(order.id)} className="text-[#137fec] text-sm font-bold hover:underline flex items-center justify-end gap-1">
+                        View Details<span className="material-symbols-outlined text-sm">arrow_forward</span>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- SETTINGS VIEW ---
+  if (activeTab === 'settings') {
+    const [settingsTab, setSettingsTab] = useState<'profile' | 'notifications' | 'security'>('profile');
+
+    return (
+      <div className="p-8 md:p-12">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900">Account Settings</h2>
+            <p className="text-slate-500 mt-1">Manage your account preferences and security settings.</p>
+          </div>
+
+          <div className="flex gap-1 mb-8 bg-slate-100 rounded-lg p-1 w-fit">
+            {[{ id: 'profile', label: 'Profile', icon: 'person' }, { id: 'notifications', label: 'Notifications', icon: 'notifications' }, { id: 'security', label: 'Security', icon: 'lock' }].map(tab => (
+              <button key={tab.id} onClick={() => setSettingsTab(tab.id as any)}
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors flex items-center gap-2 ${settingsTab === tab.id ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}>
+                <span className="material-symbols-outlined text-lg">{tab.icon}</span>{tab.label}
+              </button>
+            ))}
+          </div>
+
+          {settingsTab === 'profile' && (
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm">
+              <div className="p-8 border-b border-slate-200">
+                <h3 className="text-lg font-semibold text-slate-900">Profile Information</h3>
+                <p className="text-slate-500 text-sm mt-1">Update your personal and company information.</p>
+              </div>
+              <div className="p-8 space-y-6">
+                <div className="flex items-center gap-6">
+                  <div className="w-20 h-20 rounded-full bg-[#137fec] text-white flex items-center justify-center text-2xl font-bold">{currentUser?.name?.charAt(0) || 'U'}</div>
+                  <div>
+                    <button className="px-4 py-2 text-sm font-medium text-[#137fec] bg-[#137fec]/10 rounded-lg hover:bg-[#137fec]/20">Change Photo</button>
+                    <p className="text-xs text-slate-400 mt-2">JPG, PNG or GIF. Max size 2MB.</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div><label className="block text-sm font-medium text-slate-700 mb-2">Full Name</label><input type="text" defaultValue={currentUser?.name || ''} className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#137fec] outline-none" /></div>
+                  <div><label className="block text-sm font-medium text-slate-700 mb-2">Email</label><input type="email" defaultValue={currentUser?.email || ''} className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#137fec] outline-none" /></div>
+                  <div><label className="block text-sm font-medium text-slate-700 mb-2">Company Name</label><input type="text" defaultValue={currentUser?.companyName || ''} className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#137fec] outline-none" /></div>
+                  <div><label className="block text-sm font-medium text-slate-700 mb-2">Phone Number</label><input type="tel" placeholder="+1 (555) 000-0000" className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#137fec] outline-none" /></div>
+                </div>
+              </div>
+              <div className="p-8 bg-slate-50 border-t border-slate-200 flex justify-end gap-3">
+                <button className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50">Cancel</button>
+                <button className="px-4 py-2 text-sm font-medium text-white bg-[#137fec] rounded-lg hover:bg-[#137fec]/90">Save Changes</button>
+              </div>
+            </div>
+          )}
+
+          {settingsTab === 'notifications' && (
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm">
+              <div className="p-8 border-b border-slate-200">
+                <h3 className="text-lg font-semibold text-slate-900">Notification Preferences</h3>
+                <p className="text-slate-500 text-sm mt-1">Choose how you want to be notified about updates.</p>
+              </div>
+              <div className="p-8 space-y-6">
+                {[{ id: 'quotes', label: 'New Quote Received', desc: 'Get notified when a supplier sends you a quote' },
+                  { id: 'orders', label: 'Order Updates', desc: 'Track your order status and delivery updates' },
+                  { id: 'rfq', label: 'RFQ Status Changes', desc: 'Notifications when your RFQ status changes' }].map(item => (
+                  <div key={item.id} className="flex items-center justify-between py-4 border-b border-slate-100 last:border-0">
+                    <div><p className="font-medium text-slate-900">{item.label}</p><p className="text-sm text-slate-500">{item.desc}</p></div>
+                    <div className="flex items-center gap-4">
+                      <label className="flex items-center gap-2"><input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 text-[#137fec]" /><span className="text-sm text-slate-600">Email</span></label>
+                      <label className="flex items-center gap-2"><input type="checkbox" defaultChecked className="w-4 h-4 rounded border-slate-300 text-[#137fec]" /><span className="text-sm text-slate-600">Push</span></label>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="p-8 bg-slate-50 border-t border-slate-200 flex justify-end">
+                <button className="px-4 py-2 text-sm font-medium text-white bg-[#137fec] rounded-lg hover:bg-[#137fec]/90">Save Preferences</button>
+              </div>
+            </div>
+          )}
+
+          {settingsTab === 'security' && (
+            <div className="space-y-6">
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm">
+                <div className="p-8 border-b border-slate-200">
+                  <h3 className="text-lg font-semibold text-slate-900">Change Password</h3>
+                  <p className="text-slate-500 text-sm mt-1">Update your password to keep your account secure.</p>
+                </div>
+                <div className="p-8 space-y-6">
+                  <div><label className="block text-sm font-medium text-slate-700 mb-2">Current Password</label><input type="password" className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#137fec] outline-none" /></div>
+                  <div><label className="block text-sm font-medium text-slate-700 mb-2">New Password</label><input type="password" className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#137fec] outline-none" /></div>
+                  <div><label className="block text-sm font-medium text-slate-700 mb-2">Confirm New Password</label><input type="password" className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#137fec] outline-none" /></div>
+                </div>
+                <div className="p-8 bg-slate-50 border-t border-slate-200 flex justify-end">
+                  <button className="px-4 py-2 text-sm font-medium text-white bg-[#137fec] rounded-lg hover:bg-[#137fec]/90">Update Password</button>
+                </div>
+              </div>
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
+                <div className="flex items-center justify-between">
+                  <div><h3 className="text-lg font-semibold text-slate-900">Two-Factor Authentication</h3><p className="text-slate-500 text-sm mt-1">Add an extra layer of security.</p></div>
+                  <button className="px-4 py-2 text-sm font-medium text-[#137fec] bg-[#137fec]/10 rounded-lg hover:bg-[#137fec]/20">Enable 2FA</button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-8 md:p-12 flex items-center justify-center h-96 flex-col text-center rounded-2xl">
       <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm border border-slate-100">
          <span className="material-symbols-outlined text-4xl text-slate-300">construction</span>
       </div>
       <h3 className="text-xl font-bold text-slate-900">Feature Coming Soon</h3>
-      <p className="text-slate-500 max-w-md mt-2 leading-relaxed">We are currently building this module. Please check back later for updates on Order Tracking and Settings.</p>
+      <p className="text-slate-500 max-w-md mt-2 leading-relaxed">We are currently building this module. Please check back later.</p>
     </div>
   );
 };

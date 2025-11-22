@@ -1042,6 +1042,174 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
     );
   };
 
+  // --- BROWSE RFQs VIEW ---
+  const BrowseRfqsView = () => {
+    const [browseSearch, setBrowseSearch] = useState('');
+    const [browseStatusFilter, setBrowseStatusFilter] = useState<string>('OPEN');
+    const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+    // Get all open RFQs that suppliers can quote on
+    const openRfqs = rfqs.filter(rfq => {
+      const matchesStatus = browseStatusFilter === 'all' || rfq.status === browseStatusFilter;
+      const matchesSearch = browseSearch === '' || rfq.id.toLowerCase().includes(browseSearch.toLowerCase());
+      return matchesStatus && matchesSearch;
+    });
+
+    // Get categories from products in RFQs
+    const getCategories = () => {
+      const categories = new Set<string>();
+      rfqs.forEach(rfq => {
+        rfq.items.forEach(item => {
+          const product = allProducts.find(p => p.id === item.productId);
+          if (product) categories.add(product.category);
+        });
+      });
+      return Array.from(categories);
+    };
+
+    return (
+      <div className="mx-auto max-w-7xl space-y-8 animate-in fade-in duration-500 p-8">
+        {/* Header */}
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-neutral-800 text-3xl font-bold tracking-tight">Browse RFQs</h1>
+            <p className="text-neutral-500 text-base font-normal">Discover new opportunities and submit competitive quotes.</p>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+          <div className="flex flex-col gap-2 rounded-xl p-6 border border-neutral-200 bg-white shadow-sm">
+            <div className="flex items-center justify-between">
+              <p className="text-neutral-700 text-base font-medium">Open RFQs</p>
+              <span className="material-symbols-outlined text-emerald-500">assignment</span>
+            </div>
+            <p className="text-emerald-500 tracking-tight text-4xl font-bold">{rfqs.filter(r => r.status === 'OPEN').length}</p>
+          </div>
+          <div className="flex flex-col gap-2 rounded-xl p-6 border border-neutral-200 bg-white shadow-sm">
+            <div className="flex items-center justify-between">
+              <p className="text-neutral-700 text-base font-medium">Quoted by You</p>
+              <span className="material-symbols-outlined text-blue-500">send</span>
+            </div>
+            <p className="text-blue-500 tracking-tight text-4xl font-bold">{quotes.filter(q => q.supplierId === currentUser?.id).length}</p>
+          </div>
+          <div className="flex flex-col gap-2 rounded-xl p-6 border border-neutral-200 bg-white shadow-sm">
+            <div className="flex items-center justify-between">
+              <p className="text-neutral-700 text-base font-medium">Win Rate</p>
+              <span className="material-symbols-outlined text-amber-500">emoji_events</span>
+            </div>
+            <p className="text-amber-500 tracking-tight text-4xl font-bold">67%</p>
+          </div>
+        </div>
+
+        {/* Search and Filters */}
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-grow">
+            <div className="flex w-full items-stretch rounded-lg h-12 bg-white border border-neutral-200 focus-within:ring-2 focus-within:ring-[#137fec]/50">
+              <div className="text-neutral-400 flex items-center justify-center pl-4"><span className="material-symbols-outlined">search</span></div>
+              <input className="flex w-full min-w-0 flex-1 text-neutral-900 focus:outline-none border-none bg-transparent h-full placeholder:text-neutral-400 px-2" placeholder="Search RFQs by ID or keywords..." value={browseSearch} onChange={(e) => setBrowseSearch(e.target.value)} />
+            </div>
+          </div>
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="h-12 px-4 rounded-lg border border-neutral-200 bg-white text-neutral-700 font-medium focus:ring-2 focus:ring-[#137fec]/50"
+          >
+            <option value="all">All Categories</option>
+            {getCategories().map(cat => <option key={cat} value={cat}>{cat}</option>)}
+          </select>
+        </div>
+
+        {/* Status Filter Tabs */}
+        <div className="flex gap-2 flex-wrap">
+          {[
+            { value: 'OPEN', label: 'Open', count: rfqs.filter(r => r.status === 'OPEN').length },
+            { value: 'all', label: 'All', count: rfqs.length }
+          ].map(tab => (
+            <button key={tab.value} onClick={() => setBrowseStatusFilter(tab.value)}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${browseStatusFilter === tab.value ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50'}`}>
+              {tab.label} ({tab.count})
+            </button>
+          ))}
+        </div>
+
+        {/* RFQ Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {openRfqs.map(rfq => {
+            const hasQuoted = quotes.some(q => q.rfqId === rfq.id && q.supplierId === currentUser?.id);
+            const itemsPreview = rfq.items.slice(0, 2).map(item => {
+              const product = allProducts.find(p => p.id === item.productId);
+              return product?.name || 'Unknown Product';
+            });
+
+            return (
+              <div key={rfq.id} className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="font-bold text-neutral-900">RFQ-{rfq.id.toUpperCase()}</span>
+                    <span className={`px-3 py-1 text-xs font-bold rounded-full ${
+                      rfq.status === 'OPEN' ? 'bg-emerald-100 text-emerald-700' :
+                      rfq.status === 'QUOTED' ? 'bg-blue-100 text-blue-700' : 'bg-neutral-100 text-neutral-700'
+                    }`}>{rfq.status}</span>
+                  </div>
+
+                  <div className="space-y-3 mb-4">
+                    <div className="flex items-center gap-2 text-sm text-neutral-500">
+                      <span className="material-symbols-outlined text-lg">calendar_today</span>
+                      <span>Posted: {rfq.date}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-neutral-500">
+                      <span className="material-symbols-outlined text-lg">inventory_2</span>
+                      <span>{rfq.items.length} item{rfq.items.length > 1 ? 's' : ''}</span>
+                    </div>
+                  </div>
+
+                  <div className="mb-4">
+                    <p className="text-xs font-medium text-neutral-400 uppercase mb-2">Items Requested</p>
+                    <div className="flex flex-wrap gap-2">
+                      {itemsPreview.map((item, idx) => (
+                        <span key={idx} className="px-2 py-1 bg-neutral-100 text-neutral-700 text-xs rounded-md">{item}</span>
+                      ))}
+                      {rfq.items.length > 2 && <span className="px-2 py-1 bg-neutral-100 text-neutral-500 text-xs rounded-md">+{rfq.items.length - 2} more</span>}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-neutral-50 border-t border-neutral-200">
+                  {hasQuoted ? (
+                    <button disabled className="w-full flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-neutral-200 text-neutral-500 text-sm font-bold cursor-not-allowed">
+                      <span className="material-symbols-outlined text-lg">check_circle</span>
+                      Quote Submitted
+                    </button>
+                  ) : rfq.status === 'OPEN' ? (
+                    <button onClick={() => handleDraftQuote(rfq.id)} className="w-full flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-[#137fec] text-white text-sm font-bold hover:bg-[#137fec]/90">
+                      <span className="material-symbols-outlined text-lg">edit_note</span>
+                      Submit Quote
+                    </button>
+                  ) : (
+                    <button disabled className="w-full flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-neutral-200 text-neutral-500 text-sm font-bold cursor-not-allowed">
+                      Closed
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {openRfqs.length === 0 && (
+          <div className="flex flex-col items-center justify-center bg-white border border-neutral-200 rounded-xl shadow-sm p-12">
+            <div className="p-4 bg-neutral-100 rounded-full mb-4">
+              <span className="material-symbols-outlined text-4xl text-neutral-400">search_off</span>
+            </div>
+            <h3 className="text-xl font-bold text-neutral-800">No RFQs Found</h3>
+            <p className="max-w-md mt-2 text-neutral-500 text-center">No RFQs match your current filters. Try adjusting your search criteria.</p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   if (activeTab === 'dashboard') return <DashboardView />;
   if (activeTab === 'products') {
       if (editingProduct) return <EditProductView product={editingProduct} onBack={() => setEditingProduct(null)} />;
@@ -1050,6 +1218,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
   if (activeTab === 'requests') return <RequestsView />;
   if (activeTab === 'quotes') return <QuotesView />;
   if (activeTab === 'orders') return <OrdersView />;
+  if (activeTab === 'browse') return <BrowseRfqsView />;
 
   // Default / Fallback
   return (
