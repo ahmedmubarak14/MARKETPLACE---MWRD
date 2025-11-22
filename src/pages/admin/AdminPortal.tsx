@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useStore } from '../../store/useStore';
 import { Quote, UserRole } from '../../types/types';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
 
 interface AdminPortalProps {
   activeTab: string;
@@ -41,6 +42,27 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
   // User Management Sub-tab state
   const [userViewMode, setUserViewMode] = useState<'suppliers' | 'clients'>('suppliers');
 
+  // Search and filter state
+  const [productSearch, setProductSearch] = useState('');
+  const [productStatusFilter, setProductStatusFilter] = useState<string>('PENDING');
+  const [userSearch, setUserSearch] = useState('');
+  const [quoteSearch, setQuoteSearch] = useState('');
+
+  // Confirmation dialog state
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    variant: 'danger' | 'warning' | 'info';
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    variant: 'danger',
+    onConfirm: () => {}
+  });
+
   // Charts Refs
   const salesChartRef = useRef<HTMLCanvasElement>(null);
   const marginChartRef = useRef<HTMLCanvasElement>(null);
@@ -56,6 +78,11 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
     return product ? product.category : 'General';
   };
 
+  // Close confirm dialog helper
+  const closeConfirmDialog = () => {
+    setConfirmDialog(prev => ({ ...prev, isOpen: false }));
+  };
+
   // Handlers for product approval
   const handleApproveProduct = (productId: string) => {
     setProcessingProduct(productId);
@@ -66,11 +93,21 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
   };
 
   const handleRejectProduct = (productId: string) => {
-    setProcessingProduct(productId);
-    setTimeout(() => {
-      rejectProduct(productId);
-      setProcessingProduct(null);
-    }, 500);
+    const product = products.find(p => p.id === productId);
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Reject Product',
+      message: `Are you sure you want to reject "${product?.name}"? This action cannot be undone.`,
+      variant: 'danger',
+      onConfirm: () => {
+        closeConfirmDialog();
+        setProcessingProduct(productId);
+        setTimeout(() => {
+          rejectProduct(productId);
+          setProcessingProduct(null);
+        }, 500);
+      }
+    });
   };
 
   // Handlers for user management
@@ -83,11 +120,21 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
   };
 
   const handleRejectSupplier = (userId: string) => {
-    setProcessingUser(userId);
-    setTimeout(() => {
-      rejectSupplier(userId);
-      setProcessingUser(null);
-    }, 500);
+    const user = users.find(u => u.id === userId);
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Reject Supplier',
+      message: `Are you sure you want to reject "${user?.companyName || user?.name}"? They will not be able to access the platform.`,
+      variant: 'danger',
+      onConfirm: () => {
+        closeConfirmDialog();
+        setProcessingUser(userId);
+        setTimeout(() => {
+          rejectSupplier(userId);
+          setProcessingUser(null);
+        }, 500);
+      }
+    });
   };
 
   // Handler for quote margin approval
@@ -490,9 +537,30 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
   }
 
   if (activeTab === 'approvals') {
-    const pendingProducts = products.filter(p => p.status === 'PENDING');
-    
+    // Filter products based on search and status
+    const filteredProducts = products.filter(p => {
+      const matchesSearch = productSearch === '' ||
+        p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
+        p.description.toLowerCase().includes(productSearch.toLowerCase()) ||
+        p.category.toLowerCase().includes(productSearch.toLowerCase()) ||
+        (p.sku && p.sku.toLowerCase().includes(productSearch.toLowerCase()));
+      const matchesStatus = productStatusFilter === 'all' || p.status === productStatusFilter;
+      return matchesSearch && matchesStatus;
+    });
+    const pendingProducts = filteredProducts;
+
     return (
+      <>
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        variant={confirmDialog.variant}
+        confirmLabel="Yes, proceed"
+        cancelLabel="Cancel"
+        onConfirm={confirmDialog.onConfirm}
+        onCancel={closeConfirmDialog}
+      />
       <div className="flex flex-col min-h-screen bg-background-light dark:bg-background-dark font-display">
          {/* Header */}
          <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-gray-200 bg-white px-8 py-3 dark:border-b-gray-700 dark:bg-background-dark sticky top-0 z-10">
@@ -502,7 +570,12 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
             <div className="flex items-center justify-center rounded-l-lg border-r-0 bg-background-light pl-4 text-[#616f89] dark:bg-gray-700">
             <span className="material-symbols-outlined text-xl"> search </span>
             </div>
-            <input className="form-input flex h-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg rounded-l-none border-l-0 border-none bg-background-light px-4 pl-2 text-base font-normal leading-normal text-[#111318] placeholder:text-[#616f89] focus:outline-0 focus:ring-0 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400" placeholder="Search" value=""/>
+            <input
+              className="form-input flex h-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg rounded-l-none border-l-0 border-none bg-background-light px-4 pl-2 text-base font-normal leading-normal text-[#111318] placeholder:text-[#616f89] focus:outline-0 focus:ring-0 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+              placeholder="Search products..."
+              value={productSearch}
+              onChange={(e) => setProductSearch(e.target.value)}
+            />
             </div>
             </label>
             </div>
@@ -533,20 +606,26 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                   </div>
                </div>
 
-               {/* Chips/Filters */}
+               {/* Status Filter Tabs */}
                <div className="mt-6 flex flex-wrap gap-3 border-b border-b-gray-200 pb-4 dark:border-b-gray-700">
-                  <button className="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white pl-4 pr-2 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:ring-gray-600 dark:hover:bg-gray-700">
-                  <p className="text-sm font-medium leading-normal text-[#111318] dark:text-white">Supplier</p>
-                  <span className="material-symbols-outlined text-lg text-[#111318] dark:text-white"> expand_more </span>
-                  </button>
-                  <button className="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white pl-4 pr-2 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:ring-gray-600 dark:hover:bg-gray-700">
-                  <p className="text-sm font-medium leading-normal text-[#111318] dark:text-white">Category</p>
-                  <span className="material-symbols-outlined text-lg text-[#111318] dark:text-white"> expand_more </span>
-                  </button>
-                  <button className="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white pl-4 pr-2 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:ring-gray-600 dark:hover:bg-gray-700">
-                  <p className="text-sm font-medium leading-normal text-[#111318] dark:text-white">Date Submitted</p>
-                  <span className="material-symbols-outlined text-lg text-[#111318] dark:text-white"> expand_more </span>
-                  </button>
+                  {[
+                    { value: 'all', label: 'All Products', count: products.length },
+                    { value: 'PENDING', label: 'Pending', count: products.filter(p => p.status === 'PENDING').length },
+                    { value: 'APPROVED', label: 'Approved', count: products.filter(p => p.status === 'APPROVED').length },
+                    { value: 'REJECTED', label: 'Rejected', count: products.filter(p => p.status === 'REJECTED').length }
+                  ].map(tab => (
+                    <button
+                      key={tab.value}
+                      onClick={() => setProductStatusFilter(tab.value)}
+                      className={`flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 text-sm font-medium transition-colors ${
+                        productStatusFilter === tab.value
+                          ? 'bg-[#135bec] text-white'
+                          : 'bg-white ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:ring-gray-600 dark:hover:bg-gray-700 text-[#111318] dark:text-white'
+                      }`}
+                    >
+                      {tab.label} ({tab.count})
+                    </button>
+                  ))}
                </div>
 
                {/* Table */}
@@ -629,6 +708,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
             </div>
          </main>
       </div>
+      </>
     );
   }
 
