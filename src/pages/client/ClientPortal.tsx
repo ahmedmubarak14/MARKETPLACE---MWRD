@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Product, RFQ, Quote } from '../../types/types';
-import { PRODUCTS, RFQS, QUOTES, ORDERS, USERS } from '../../services/mockData';
+import { useStore } from '../../store/useStore';
 
 interface ClientPortalProps {
   activeTab: string;
@@ -14,11 +14,15 @@ interface SelectedItem {
 }
 
 export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigate }) => {
+  // Get data from store
+  const { products, rfqs, quotes, orders, users, currentUser, addRFQ, acceptQuote } = useStore();
+
   const [rfqItems, setRfqItems] = useState<string[]>([]);
   const [selectedItemsMap, setSelectedItemsMap] = useState<Record<string, SelectedItem>>({});
   const [submitted, setSubmitted] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRfqId, setSelectedRfqId] = useState<string | null>(null);
+  const [acceptingQuote, setAcceptingQuote] = useState<string | null>(null);
 
   const toggleRfqItem = (productId: string) => {
     // Logic for simple list
@@ -52,14 +56,45 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
   };
 
   const submitRfq = () => {
+    const selectedKeys = Object.keys(selectedItemsMap);
+    if (selectedKeys.length === 0) return;
+
     setSubmitted(true);
+
+    // Create RFQ items from selection
+    const rfqItemsList = selectedKeys.map(key => ({
+      productId: selectedItemsMap[key].productId,
+      quantity: selectedItemsMap[key].quantity,
+      notes: selectedItemsMap[key].notes
+    }));
+
+    // Create new RFQ
+    const newRFQ: RFQ = {
+      id: `r${Date.now()}`,
+      clientId: currentUser?.id || 'u1',
+      items: rfqItemsList,
+      status: 'OPEN',
+      date: new Date().toISOString().split('T')[0]
+    };
+
+    // Add to store
+    addRFQ(newRFQ);
+
     setTimeout(() => {
       setSubmitted(false);
       setRfqItems([]);
       setSelectedItemsMap({});
-      onNavigate('dashboard');
-      alert('RFQ Submitted Successfully!');
-    }, 1500);
+      onNavigate('rfqs');
+    }, 1000);
+  };
+
+  const handleAcceptQuote = (quoteId: string) => {
+    setAcceptingQuote(quoteId);
+    setTimeout(() => {
+      acceptQuote(quoteId);
+      setAcceptingQuote(null);
+      onNavigate('orders');
+    }, 800);
   };
 
   const handleViewQuotes = (rfqId: string) => {
@@ -104,7 +139,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 <button onClick={() => onNavigate('rfqs')} className="text-[#137fec] text-sm font-medium hover:underline">View All</button>
               </div>
               <div className="flex flex-col mt-4">
-                {RFQS.slice(0, 3).map(rfq => (
+                {rfqs.slice(0, 3).map(rfq => (
                   <div key={rfq.id} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
                     <div>
                       <p className="font-medium text-[#111827]">RFQ-{rfq.id.toUpperCase()}</p>
@@ -131,7 +166,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 <button onClick={() => onNavigate('rfqs')} className="text-[#137fec] text-sm font-medium hover:underline">View All</button>
               </div>
               <div className="flex flex-col mt-4">
-                {QUOTES.slice(0, 5).map(quote => (
+                {quotes.filter(q => q.status === 'SENT_TO_CLIENT').slice(0, 5).map(quote => (
                   <div 
                     key={quote.id} 
                     className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0 cursor-pointer hover:bg-gray-50 transition-colors px-2 -mx-2 rounded"
@@ -139,7 +174,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                   >
                     <div>
                       <p className="font-medium text-[#111827] group-hover:text-[#137fec]">For RFQ-{quote.rfqId.toUpperCase()}</p>
-                      <p className="text-sm text-[#6b7280]">from Supplier {USERS.find(u => u.id === quote.supplierId)?.publicId}</p>
+                      <p className="text-sm text-[#6b7280]">from Supplier {users.find(u => u.id === quote.supplierId)?.publicId}</p>
                     </div>
                     <div className="text-right">
                         <p className="text-[#111827] font-medium">${quote.finalPrice.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
@@ -147,7 +182,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                     </div>
                   </div>
                 ))}
-                {QUOTES.length === 0 && (
+                {quotes.filter(q => q.status === 'SENT_TO_CLIENT').length === 0 && (
                   <p className="text-sm text-gray-400 py-4">No active quotes yet.</p>
                 )}
               </div>
@@ -162,7 +197,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
             <button onClick={() => onNavigate('orders')} className="text-[#137fec] text-sm font-medium hover:underline">View All</button>
           </div>
           <div className="flex flex-col mt-4">
-            {ORDERS.map(order => (
+            {orders.map(order => (
               <div key={order.id} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
                 <div>
                   <p className="font-medium text-[#111827]">{order.id}</p>
@@ -185,10 +220,10 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
 
   // --- VIEW QUOTES DETAIL ---
   if (activeTab === 'view-quotes') {
-    const rfq = RFQS.find(r => r.id === selectedRfqId);
-    const quotes = QUOTES.filter(q => q.rfqId === selectedRfqId);
+    const rfq = rfqs.find(r => r.id === selectedRfqId);
+    const rfqQuotes = quotes.filter(q => q.rfqId === selectedRfqId && q.status === 'SENT_TO_CLIENT');
     // Helper to get first item name for title
-    const firstItem = rfq?.items[0] ? PRODUCTS.find(p => p.id === rfq.items[0].productId) : null;
+    const firstItem = rfq?.items[0] ? products.find(p => p.id === rfq.items[0].productId) : null;
     const itemTitle = firstItem ? firstItem.name : 'Multiple Items';
 
     if (!rfq) return <div className="p-12 text-center">RFQ Not Found</div>;
@@ -229,14 +264,14 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                     </div>
                     <div className="flex flex-col gap-1">
                         <p className="text-slate-500 text-sm font-normal">Quotes Received</p>
-                        <p className="text-slate-800 text-sm font-medium">{quotes.length}</p>
+                        <p className="text-slate-800 text-sm font-medium">{rfqQuotes.length}</p>
                     </div>
                 </div>
             </div>
 
             {/* Sort/Filter Controls */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <p className="text-slate-600 font-medium">{quotes.length} quotes found. Ready for review.</p>
+                <p className="text-slate-600 font-medium">{rfqQuotes.length} quotes found. Ready for review.</p>
                 <div className="flex gap-2 overflow-x-auto">
                     <button className="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white border border-slate-200 pl-3 pr-2 shadow-sm hover:bg-slate-50">
                         <p className="text-slate-700 text-sm font-medium">Price (Low to High)</p>
@@ -255,8 +290,8 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
 
             {/* Quote Display Area */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {quotes.map((quote, idx) => {
-                    const supplier = USERS.find(u => u.id === quote.supplierId);
+                {rfqQuotes.map((quote, idx) => {
+                    const supplier = users.find(u => u.id === quote.supplierId);
                     // For visual distinctness like the design, we highlight one as 'recommended' if it has best rating or price, 
                     // or just style them based on index for demo variety
                     const isHighlighted = idx === 1; 
@@ -287,15 +322,23 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                                 </div>
                             </div>
                             <div className="p-4 bg-slate-50 border-t border-slate-200">
-                                <button className="w-full flex items-center justify-center h-10 px-4 rounded-lg bg-[#137fec] text-white text-sm font-bold hover:bg-[#137fec]/90 focus:outline-none focus:ring-2 focus:ring-[#137fec] focus:ring-offset-2">
-                                    Accept Quote
+                                <button
+                                    onClick={() => handleAcceptQuote(quote.id)}
+                                    disabled={acceptingQuote === quote.id}
+                                    className="w-full flex items-center justify-center h-10 px-4 rounded-lg bg-[#137fec] text-white text-sm font-bold hover:bg-[#137fec]/90 focus:outline-none focus:ring-2 focus:ring-[#137fec] focus:ring-offset-2 disabled:opacity-50"
+                                >
+                                    {acceptingQuote === quote.id ? (
+                                        <span className="material-symbols-outlined animate-spin">refresh</span>
+                                    ) : (
+                                        'Accept Quote'
+                                    )}
                                 </button>
                             </div>
                         </div>
                     );
                 })}
 
-                {quotes.length === 0 && (
+                {rfqQuotes.length === 0 && (
                      <div className="col-span-full flex flex-col items-center justify-center text-center bg-white border border-slate-200 rounded-xl shadow-sm p-12 mt-6">
                         <div className="p-4 bg-[#137fec]/10 rounded-full mb-4">
                             <span className="material-symbols-outlined text-4xl text-[#137fec]">hourglass_empty</span>
@@ -312,8 +355,8 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
 
   // --- CREATE RFQ VIEW ---
   if (activeTab === 'create-rfq') {
-    const createRfqProducts = PRODUCTS.filter(p => 
-      p.category === 'Industrial' || p.category === 'Safety Gear' || p.category === 'Electrical'
+    const createRfqProducts = products.filter(p =>
+      p.status === 'APPROVED' && (p.category === 'Industrial' || p.category === 'Safety Gear' || p.category === 'Electrical')
     );
 
     const selectedKeys = Object.keys(selectedItemsMap);
@@ -407,7 +450,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                     ) : (
                       selectedKeys.map(key => {
                         const item = selectedItemsMap[key];
-                        const product = PRODUCTS.find(p => p.id === item.productId);
+                        const product = products.find(p => p.id === item.productId);
                         return (
                           <tr key={key} className="border-t border-[#DEE2E6]">
                             <td className="px-6 py-4 font-medium text-[#343A40]">{product?.name}</td>
@@ -539,7 +582,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
 
   // --- BROWSE VIEW ---
   if (activeTab === 'browse') {
-    const filteredProducts = PRODUCTS.filter(p => p.status === 'APPROVED' && p.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    const filteredProducts = products.filter(p => p.status === 'APPROVED' && p.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
     return (
       <div className="w-full max-w-screen-2xl mx-auto px-6 md:px-10 lg:px-20 py-8 font-display text-[#0d141b]">
@@ -745,9 +788,9 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                {RFQS.map(rfq => {
-                    const rfqQuotes = QUOTES.filter(q => q.rfqId === rfq.id);
-                    const quoteCount = rfqQuotes.length;
+                {rfqs.map(rfq => {
+                    const rfqQuotesForRow = quotes.filter(q => q.rfqId === rfq.id);
+                    const quoteCount = rfqQuotesForRow.length;
                     
                     return (
                     <tr key={rfq.id} className="hover:bg-slate-50/50 transition-colors group">

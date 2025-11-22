@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { PRODUCTS, QUOTES, USERS, RFQS } from '../../services/mockData';
+import { useStore } from '../../store/useStore';
 import { Quote, UserRole } from '../../types/types';
 
 interface AdminPortalProps {
@@ -13,8 +13,18 @@ declare global {
 }
 
 export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
+  // Get data and actions from store
+  const {
+    products, quotes, users, rfqs,
+    approveProduct, rejectProduct,
+    approveQuote, approveSupplier, rejectSupplier,
+    updateUser
+  } = useStore();
+
   // State for individual quote overrides (Manual)
   const [editingQuotes, setEditingQuotes] = useState<Record<string, number>>({});
+  const [processingProduct, setProcessingProduct] = useState<string | null>(null);
+  const [processingUser, setProcessingUser] = useState<string | null>(null);
   
   // State for Global Universal Margin
   const [globalMargin, setGlobalMargin] = useState<number>(15);
@@ -40,10 +50,49 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
 
   // Helper: Get category for a quote based on the first item in its RFQ
   const getQuoteCategory = (quote: Quote): string => {
-    const rfq = RFQS.find(r => r.id === quote.rfqId);
+    const rfq = rfqs.find(r => r.id === quote.rfqId);
     if (!rfq || rfq.items.length === 0) return 'General';
-    const product = PRODUCTS.find(p => p.id === rfq.items[0].productId);
+    const product = products.find(p => p.id === rfq.items[0].productId);
     return product ? product.category : 'General';
+  };
+
+  // Handlers for product approval
+  const handleApproveProduct = (productId: string) => {
+    setProcessingProduct(productId);
+    setTimeout(() => {
+      approveProduct(productId);
+      setProcessingProduct(null);
+    }, 500);
+  };
+
+  const handleRejectProduct = (productId: string) => {
+    setProcessingProduct(productId);
+    setTimeout(() => {
+      rejectProduct(productId);
+      setProcessingProduct(null);
+    }, 500);
+  };
+
+  // Handlers for user management
+  const handleApproveSupplier = (userId: string) => {
+    setProcessingUser(userId);
+    setTimeout(() => {
+      approveSupplier(userId);
+      setProcessingUser(null);
+    }, 500);
+  };
+
+  const handleRejectSupplier = (userId: string) => {
+    setProcessingUser(userId);
+    setTimeout(() => {
+      rejectSupplier(userId);
+      setProcessingUser(null);
+    }, 500);
+  };
+
+  // Handler for quote margin approval
+  const handleApproveQuoteMargin = (quoteId: string, margin: number) => {
+    approveQuote(quoteId, margin);
   };
 
   // Helper: Determine effective margin and source
@@ -441,7 +490,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
   }
 
   if (activeTab === 'approvals') {
-    const pendingProducts = PRODUCTS.filter(p => p.status === 'PENDING');
+    const pendingProducts = products.filter(p => p.status === 'PENDING');
     
     return (
       <div className="flex flex-col min-h-screen bg-background-light dark:bg-background-dark font-display">
@@ -517,7 +566,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                      {pendingProducts.map(product => {
-                        const supplier = USERS.find(u => u.id === product.supplierId);
+                        const supplier = users.find(u => u.id === product.supplierId);
                         // Mock date based on index to show some variance like in design
                         const dates = ['2023-10-26', '2023-10-26', '2023-10-25', '2023-10-24'];
                         const displayDate = dates[pendingProducts.indexOf(product) % dates.length];
@@ -544,8 +593,20 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                               <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                               <div className="flex items-center justify-end gap-2">
                               <button className="flex h-8 items-center justify-center gap-1 rounded-md bg-yellow-100 px-3 text-xs font-semibold text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-500/20 dark:text-yellow-400 dark:hover:bg-yellow-500/30 transition-colors">Info</button>
-                              <button className="flex h-8 items-center justify-center gap-1 rounded-md bg-red-100 px-3 text-xs font-semibold text-red-800 hover:bg-red-200 dark:bg-red-500/20 dark:text-red-400 dark:hover:bg-red-500/30 transition-colors">Reject</button>
-                              <button className="flex h-8 items-center justify-center gap-1 rounded-md bg-green-100 px-3 text-xs font-semibold text-green-800 hover:bg-green-200 dark:bg-green-500/20 dark:text-green-400 dark:hover:bg-green-500/30 transition-colors">Approve</button>
+                              <button
+                                onClick={() => handleRejectProduct(product.id)}
+                                disabled={processingProduct === product.id}
+                                className="flex h-8 items-center justify-center gap-1 rounded-md bg-red-100 px-3 text-xs font-semibold text-red-800 hover:bg-red-200 dark:bg-red-500/20 dark:text-red-400 dark:hover:bg-red-500/30 transition-colors disabled:opacity-50"
+                              >
+                                {processingProduct === product.id ? '...' : 'Reject'}
+                              </button>
+                              <button
+                                onClick={() => handleApproveProduct(product.id)}
+                                disabled={processingProduct === product.id}
+                                className="flex h-8 items-center justify-center gap-1 rounded-md bg-green-100 px-3 text-xs font-semibold text-green-800 hover:bg-green-200 dark:bg-green-500/20 dark:text-green-400 dark:hover:bg-green-500/30 transition-colors disabled:opacity-50"
+                              >
+                                {processingProduct === product.id ? '...' : 'Approve'}
+                              </button>
                               </div>
                               </td>
                            </tr>
@@ -636,7 +697,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
         </div>
         
         <div className="space-y-6">
-          {QUOTES.map(quote => {
+          {quotes.map(quote => {
              const { value: currentMargin, source, type } = getEffectiveMarginData(quote);
              const calculatedPrice = quote.supplierPrice * (1 + currentMargin / 100);
              const profit = calculatedPrice - quote.supplierPrice;
@@ -751,7 +812,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
   // Unified Users Management View (Supports Suppliers and Clients)
   if (activeTab === 'users') {
     // -- SUPPLIER LOGIC --
-    const supplierUsers = USERS.filter(u => u.role === UserRole.SUPPLIER && u.status);
+    const supplierUsers = users.filter(u => u.role === UserRole.SUPPLIER && u.status);
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'APPROVED':
@@ -782,7 +843,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
     };
 
     // -- CLIENT LOGIC --
-    const clientUsers = USERS.filter(u => u.role === UserRole.CLIENT && u.status);
+    const clientUsers = users.filter(u => u.role === UserRole.CLIENT && u.status);
     const getClientStatusBadge = (status: string) => {
        switch (status) {
           case 'ACTIVE':

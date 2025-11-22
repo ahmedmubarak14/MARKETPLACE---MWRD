@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { PRODUCTS, RFQS, QUOTES } from '../../services/mockData';
-import { Product } from '../../types/types';
+import { useStore } from '../../store/useStore';
+import { Product, Quote } from '../../types/types';
 
 interface SupplierPortalProps {
   activeTab: string;
@@ -9,8 +9,25 @@ interface SupplierPortalProps {
 }
 
 export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNavigate }) => {
-  const [products, setProducts] = useState(PRODUCTS.filter(p => p.supplierId === 'u2'));
+  // Get data from store
+  const {
+    products: allProducts,
+    rfqs,
+    quotes,
+    currentUser,
+    addProduct,
+    updateProduct,
+    addQuote
+  } = useStore();
+
+  // Filter products for this supplier
+  const supplierProducts = allProducts.filter(p => p.supplierId === currentUser?.id || p.supplierId === 'u2');
+
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [selectedRfqId, setSelectedRfqId] = useState<string | null>(null);
+  const [quotePrice, setQuotePrice] = useState<string>('');
+  const [quoteLeadTime, setQuoteLeadTime] = useState<string>('14 Days');
+  const [submittingQuote, setSubmittingQuote] = useState(false);
 
   // Reset editing state when changing tabs
   useEffect(() => {
@@ -20,7 +37,37 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
   }, [activeTab]);
 
   const handleDraftQuote = (rfqId: string) => {
+      setSelectedRfqId(rfqId);
+      setQuotePrice('');
+      setQuoteLeadTime('14 Days');
       onNavigate('quotes');
+  };
+
+  const handleSubmitQuote = () => {
+    if (!selectedRfqId || !quotePrice) return;
+
+    setSubmittingQuote(true);
+    const priceNum = parseFloat(quotePrice);
+
+    // Create new quote
+    const newQuote: Quote = {
+      id: `q${Date.now()}`,
+      rfqId: selectedRfqId,
+      supplierId: currentUser?.id || 'u2',
+      supplierPrice: priceNum,
+      leadTime: quoteLeadTime,
+      marginPercent: 0, // Admin will set this
+      finalPrice: priceNum, // Will be recalculated by admin
+      status: 'PENDING_ADMIN'
+    };
+
+    setTimeout(() => {
+      addQuote(newQuote);
+      setSubmittingQuote(false);
+      setSelectedRfqId(null);
+      setQuotePrice('');
+      onNavigate('requests');
+    }, 800);
   };
 
   const handleSaveProduct = () => {
@@ -33,7 +80,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
   // --- VIEWS ---
 
   const DashboardView = () => {
-    const pendingRFQs = RFQS.slice(0, 4);
+    const pendingRFQs = rfqs.slice(0, 4);
     const getStatusBadge = (status: string) => {
         if (status === 'OPEN') return <span className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800 ring-1 ring-inset ring-amber-600/20">Awaiting Quote</span>;
         if (status === 'QUOTED') return <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">Quote Submitted</span>;
@@ -296,7 +343,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-neutral-200">
-                        {RFQS.map(rfq => (
+                        {rfqs.map(rfq => (
                             <tr key={rfq.id} className="hover:bg-neutral-50">
                                 <td className="px-6 py-4 font-medium text-neutral-800">#{rfq.id.toUpperCase()}</td>
                                 <td className="px-6 py-4 text-neutral-500">{rfq.date}</td>
@@ -727,12 +774,159 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
     )
   }
 
+  // Quote Submission View
+  const QuotesView = () => {
+    const selectedRfq = rfqs.find(r => r.id === selectedRfqId);
+
+    if (!selectedRfq) {
+      return (
+        <div className="p-12 text-center">
+          <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span className="material-symbols-outlined text-amber-500 text-4xl">request_quote</span>
+          </div>
+          <h2 className="text-xl font-bold text-neutral-700">No RFQ Selected</h2>
+          <p className="text-neutral-500 mt-2 max-w-md mx-auto">Please select an RFQ from the "Received RFQs" section to submit a quote.</p>
+          <button
+            onClick={() => onNavigate('requests')}
+            className="mt-6 bg-[#137fec] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#137fec]/90"
+          >
+            View RFQs
+          </button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="mx-auto max-w-3xl p-8 animate-in fade-in">
+        <button
+          onClick={() => onNavigate('requests')}
+          className="flex items-center gap-2 text-neutral-600 hover:text-neutral-900 mb-6"
+        >
+          <span className="material-symbols-outlined">arrow_back</span>
+          Back to RFQs
+        </button>
+
+        <div className="bg-white border border-neutral-200 rounded-xl shadow-sm overflow-hidden">
+          <div className="bg-gradient-to-r from-[#137fec] to-[#137fec]/80 text-white p-6">
+            <h2 className="text-2xl font-bold">Submit Quote</h2>
+            <p className="text-white/80 mt-1">For RFQ #{selectedRfq.id.toUpperCase()}</p>
+          </div>
+
+          <div className="p-6 space-y-6">
+            {/* RFQ Details */}
+            <div className="bg-neutral-50 rounded-lg p-4">
+              <h3 className="font-semibold text-neutral-800 mb-3">RFQ Details</h3>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="text-neutral-500">Date Submitted</p>
+                  <p className="font-medium">{selectedRfq.date}</p>
+                </div>
+                <div>
+                  <p className="text-neutral-500">Items Requested</p>
+                  <p className="font-medium">{selectedRfq.items.length} items</p>
+                </div>
+              </div>
+              <div className="mt-4">
+                <p className="text-neutral-500 text-sm mb-2">Requested Products:</p>
+                <ul className="space-y-1">
+                  {selectedRfq.items.map((item, idx) => {
+                    const product = allProducts.find(p => p.id === item.productId);
+                    return (
+                      <li key={idx} className="text-sm flex justify-between">
+                        <span>{product?.name || 'Unknown Product'}</span>
+                        <span className="text-neutral-500">Qty: {item.quantity}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </div>
+
+            {/* Quote Form */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Your Price (USD) *
+                </label>
+                <input
+                  type="number"
+                  value={quotePrice}
+                  onChange={(e) => setQuotePrice(e.target.value)}
+                  placeholder="Enter your total price"
+                  className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-[#137fec] focus:border-[#137fec] outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Lead Time
+                </label>
+                <select
+                  value={quoteLeadTime}
+                  onChange={(e) => setQuoteLeadTime(e.target.value)}
+                  className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-[#137fec] focus:border-[#137fec] outline-none"
+                >
+                  <option value="3 Days">3 Days</option>
+                  <option value="5 Days">5 Days</option>
+                  <option value="7 Days">7 Days</option>
+                  <option value="10 Days">10 Days</option>
+                  <option value="14 Days">14 Days</option>
+                  <option value="21 Days">21 Days</option>
+                  <option value="30 Days">30 Days</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Additional Notes (Optional)
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="Any additional information about your quote..."
+                  className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-[#137fec] focus:border-[#137fec] outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="flex gap-3 pt-4">
+              <button
+                onClick={() => onNavigate('requests')}
+                className="flex-1 px-6 py-3 border border-neutral-300 rounded-lg text-neutral-700 font-medium hover:bg-neutral-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmitQuote}
+                disabled={!quotePrice || submittingQuote}
+                className="flex-1 bg-[#137fec] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#137fec]/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {submittingQuote ? (
+                  <>
+                    <span className="material-symbols-outlined animate-spin">refresh</span>
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined">send</span>
+                    Submit Quote
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (activeTab === 'dashboard') return <DashboardView />;
   if (activeTab === 'products') {
       if (editingProduct) return <EditProductView product={editingProduct} onBack={() => setEditingProduct(null)} />;
       return <ProductsView />;
   }
   if (activeTab === 'requests') return <RequestsView />;
+  if (activeTab === 'quotes') return <QuotesView />;
   if (activeTab === 'orders') return <OrdersView />;
 
   // Default / Fallback
