@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Product, RFQ, Quote } from '../../types/types';
+import { Product, RFQ } from '../../types/types';
 import { useStore } from '../../store/useStore';
+import { RfqItemSchema } from '../../lib/validations';
 
 interface ClientPortalProps {
   activeTab: string;
@@ -23,6 +24,10 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRfqId, setSelectedRfqId] = useState<string | null>(null);
   const [acceptingQuote, setAcceptingQuote] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [rfqError, setRfqError] = useState<string | null>(null);
+  const [createRfqSearch, setCreateRfqSearch] = useState('');
+  const [rfqStatusFilter, setRfqStatusFilter] = useState<string>('all');
 
   const toggleRfqItem = (productId: string) => {
     // Logic for simple list
@@ -48,17 +53,58 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
 
   const updateItemDetails = (productId: string, field: 'quantity' | 'notes', value: any) => {
     if (selectedItemsMap[productId]) {
+      const newValue = field === 'quantity' ? Math.max(1, parseInt(value) || 1) : value;
       setSelectedItemsMap({
         ...selectedItemsMap,
-        [productId]: { ...selectedItemsMap[productId], [field]: value }
+        [productId]: { ...selectedItemsMap[productId], [field]: newValue }
       });
+
+      // Validate the item
+      const updatedItem = { ...selectedItemsMap[productId], [field]: newValue };
+      const result = RfqItemSchema.safeParse(updatedItem);
+      if (!result.success) {
+        const error = result.error.errors[0];
+        setValidationErrors(prev => ({ ...prev, [productId]: error.message }));
+      } else {
+        setValidationErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors[productId];
+          return newErrors;
+        });
+      }
     }
   };
 
   const submitRfq = () => {
     const selectedKeys = Object.keys(selectedItemsMap);
-    if (selectedKeys.length === 0) return;
 
+    // Validate: at least one item
+    if (selectedKeys.length === 0) {
+      setRfqError('Please add at least one item to your RFQ');
+      return;
+    }
+
+    // Validate all items
+    const errors: Record<string, string> = {};
+    let hasErrors = false;
+
+    selectedKeys.forEach(key => {
+      const item = selectedItemsMap[key];
+      const result = RfqItemSchema.safeParse(item);
+      if (!result.success) {
+        errors[key] = result.error.errors[0].message;
+        hasErrors = true;
+      }
+    });
+
+    if (hasErrors) {
+      setValidationErrors(errors);
+      setRfqError('Please fix the errors below before submitting');
+      return;
+    }
+
+    setRfqError(null);
+    setValidationErrors({});
     setSubmitted(true);
 
     // Create RFQ items from selection
@@ -355,9 +401,15 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
 
   // --- CREATE RFQ VIEW ---
   if (activeTab === 'create-rfq') {
-    const createRfqProducts = products.filter(p =>
-      p.status === 'APPROVED' && (p.category === 'Industrial' || p.category === 'Safety Gear' || p.category === 'Electrical')
-    );
+    const createRfqProducts = products.filter(p => {
+      const matchesStatus = p.status === 'APPROVED';
+      const matchesCategory = p.category === 'Industrial' || p.category === 'Safety Gear' || p.category === 'Electrical';
+      const matchesSearch = createRfqSearch === '' ||
+        p.name.toLowerCase().includes(createRfqSearch.toLowerCase()) ||
+        p.description.toLowerCase().includes(createRfqSearch.toLowerCase()) ||
+        p.category.toLowerCase().includes(createRfqSearch.toLowerCase());
+      return matchesStatus && matchesCategory && matchesSearch;
+    });
 
     const selectedKeys = Object.keys(selectedItemsMap);
 
@@ -384,14 +436,27 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                     <div className="text-[#6C757D] flex bg-[#F7F8FA] items-center justify-center pl-4 rounded-l-lg">
                       <span aria-hidden="true" className="material-symbols-outlined">search</span>
                     </div>
-                    <input 
-                      className="flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg text-[#343A40] focus:outline-none border-none bg-[#F7F8FA] h-full placeholder:text-[#6C757D] pl-2 text-base font-normal" 
-                      placeholder="Search for products or services..." 
-                      value=""
-                      readOnly
+                    <input
+                      className="flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg text-[#343A40] focus:outline-none border-none bg-[#F7F8FA] h-full placeholder:text-[#6C757D] pl-2 text-base font-normal"
+                      placeholder="Search for products or services..."
+                      value={createRfqSearch}
+                      onChange={(e) => setCreateRfqSearch(e.target.value)}
                     />
+                    {createRfqSearch && (
+                      <button
+                        onClick={() => setCreateRfqSearch('')}
+                        className="text-[#6C757D] hover:text-[#343A40] flex items-center justify-center pr-4 bg-[#F7F8FA] rounded-r-lg"
+                      >
+                        <span className="material-symbols-outlined text-lg">close</span>
+                      </button>
+                    )}
                   </div>
                 </label>
+                {createRfqSearch && (
+                  <p className="text-sm text-[#6C757D] mt-2">
+                    Found {createRfqProducts.length} product{createRfqProducts.length !== 1 ? 's' : ''} matching "{createRfqSearch}"
+                  </p>
+                )}
               </div>
               
               {/* ImageGrid */}
@@ -452,28 +517,36 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                         const item = selectedItemsMap[key];
                         const product = products.find(p => p.id === item.productId);
                         return (
-                          <tr key={key} className="border-t border-[#DEE2E6]">
-                            <td className="px-6 py-4 font-medium text-[#343A40]">{product?.name}</td>
+                          <tr key={key} className={`border-t ${validationErrors[key] ? 'border-red-200 bg-red-50/50' : 'border-[#DEE2E6]'}`}>
+                            <td className="px-6 py-4 font-medium text-[#343A40]">
+                              {product?.name}
+                              {validationErrors[key] && (
+                                <p className="text-red-500 text-xs mt-1">{validationErrors[key]}</p>
+                              )}
+                            </td>
                             <td className="px-6 py-4">
-                              <input 
-                                className="w-24 rounded-md border border-[#DEE2E6] bg-white focus:ring-[#0052CC] focus:border-[#0052CC] px-3 py-1.5 outline-none" 
-                                type="number" 
+                              <input
+                                className={`w-24 rounded-md border bg-white focus:ring-[#0052CC] focus:border-[#0052CC] px-3 py-1.5 outline-none ${
+                                  validationErrors[key] ? 'border-red-400' : 'border-[#DEE2E6]'
+                                }`}
+                                type="number"
                                 min="1"
                                 value={item.quantity}
                                 onChange={(e) => updateItemDetails(key, 'quantity', parseInt(e.target.value))}
                               />
                             </td>
                             <td className="px-6 py-4">
-                              <input 
-                                className="w-full rounded-md border border-[#DEE2E6] bg-white focus:ring-[#0052CC] focus:border-[#0052CC] px-3 py-1.5 outline-none" 
-                                placeholder="Optional notes..." 
+                              <input
+                                className="w-full rounded-md border border-[#DEE2E6] bg-white focus:ring-[#0052CC] focus:border-[#0052CC] px-3 py-1.5 outline-none"
+                                placeholder="Optional notes..."
                                 type="text"
+                                maxLength={500}
                                 value={item.notes}
                                 onChange={(e) => updateItemDetails(key, 'notes', e.target.value)}
                               />
                             </td>
                             <td className="px-6 py-4 text-right">
-                              <button 
+                              <button
                                 onClick={() => toggleSelectedItem(product!)}
                                 className="text-[#6C757D] hover:text-red-600"
                               >
@@ -533,7 +606,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 <div className="flex flex-col gap-4">
                   {selectedKeys.map(key => {
                     const item = selectedItemsMap[key];
-                    const product = PRODUCTS.find(p => p.id === item.productId);
+                    const product = products.find(p => p.id === item.productId);
                     return (
                       <div key={key} className="flex justify-between items-center text-sm">
                         <p className="text-[#343A40] line-clamp-1 mr-2">{product?.name}</p>
@@ -550,10 +623,17 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                     <p>{selectedKeys.length}</p>
                   </div>
                 </div>
+                {/* Validation Error */}
+                {rfqError && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2 text-red-700 text-sm">
+                    <span className="material-symbols-outlined text-lg shrink-0">error</span>
+                    <span>{rfqError}</span>
+                  </div>
+                )}
                 <div className="flex flex-col gap-3 pt-2">
-                  <button 
+                  <button
                     onClick={submitRfq}
-                    disabled={selectedKeys.length === 0 || submitted}
+                    disabled={selectedKeys.length === 0 || submitted || Object.keys(validationErrors).length > 0}
                     className="w-full bg-[#0052CC] text-white font-semibold py-3 px-4 rounded-lg hover:bg-[#0052CC]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0052CC] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {submitted ? (
@@ -762,6 +842,12 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
 
   // --- RFQS VIEW ---
   if (activeTab === 'rfqs') {
+    // Filter RFQs based on status
+    const filteredRfqs = rfqs.filter(rfq => {
+      if (rfqStatusFilter === 'all') return true;
+      return rfq.status === rfqStatusFilter;
+    });
+
     return (
       <div className="p-8 md:p-12 space-y-8">
         <div className="flex items-center justify-between bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
@@ -774,7 +860,29 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 <button onClick={() => onNavigate('create-rfq')} className="px-4 py-2 text-sm font-medium text-white bg-slate-900 rounded-lg hover:bg-slate-800 transition-colors">New Request</button>
             </div>
         </div>
-        
+
+        {/* Status Filter Tabs */}
+        <div className="flex gap-2 flex-wrap">
+          {[
+            { value: 'all', label: 'All', count: rfqs.length },
+            { value: 'OPEN', label: 'Open', count: rfqs.filter(r => r.status === 'OPEN').length },
+            { value: 'QUOTED', label: 'Quoted', count: rfqs.filter(r => r.status === 'QUOTED').length },
+            { value: 'CLOSED', label: 'Closed', count: rfqs.filter(r => r.status === 'CLOSED').length }
+          ].map(tab => (
+            <button
+              key={tab.value}
+              onClick={() => setRfqStatusFilter(tab.value)}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                rfqStatusFilter === tab.value
+                  ? 'bg-slate-900 text-white'
+                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              {tab.label} ({tab.count})
+            </button>
+          ))}
+        </div>
+
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
@@ -788,7 +896,13 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                {rfqs.map(rfq => {
+                {filteredRfqs.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-8 py-12 text-center text-slate-500">
+                      No RFQs found with the selected filter.
+                    </td>
+                  </tr>
+                ) : filteredRfqs.map(rfq => {
                     const rfqQuotesForRow = quotes.filter(q => q.rfqId === rfq.id);
                     const quoteCount = rfqQuotesForRow.length;
                     

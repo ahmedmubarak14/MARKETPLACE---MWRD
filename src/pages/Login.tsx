@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { UserRole } from '../types/types';
+import { LoginSchema, LoginFormData } from '../lib/validations';
 
 interface LoginProps {
   onLogin: (email: string, password: string) => UserRole | null;
@@ -7,28 +10,48 @@ interface LoginProps {
 }
 
 export const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  const onSubmit = (data: LoginFormData) => {
     setIsLoading(true);
+    setLoginError(null);
 
     // Simulate network delay
     setTimeout(() => {
+      const result = onLogin(data.email, data.password);
       setIsLoading(false);
-      onLogin(email, password);
+      if (!result) {
+        setLoginError('Invalid email or password. Please try again.');
+      }
     }, 800);
+  };
+
+  const setDemoEmail = (email: string) => {
+    setValue('email', email, { shouldValidate: true });
+    setLoginError(null);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-200 p-4 font-sans">
       <div className="bg-white rounded-3xl shadow-2xl flex overflow-hidden max-w-5xl w-full min-h-[650px] animate-in zoom-in-95 duration-300">
-        
+
         {/* Left Side - Form */}
         <div className="w-full md:w-1/2 p-12 lg:p-16 flex flex-col justify-center relative">
-          <button 
+          <button
             onClick={onBack}
             className="absolute top-8 left-8 text-slate-400 hover:text-slate-600 flex items-center gap-1 text-sm font-medium transition-colors"
           >
@@ -48,36 +71,56 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Welcome Back</h1>
           <p className="text-slate-500 mb-8">Sign in to access your account</p>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-1">
-              <input 
-                type="email" 
-                placeholder="Work Email" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full px-4 py-3.5 rounded-lg border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-[#0A2540] focus:border-transparent outline-none transition-all"
-              />
+          {/* Login Error Alert */}
+          {loginError && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700 text-sm">
+              <span className="material-symbols-outlined text-lg">error</span>
+              {loginError}
             </div>
-            
+          )}
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <div className="space-y-1">
+              <input
+                type="email"
+                placeholder="Work Email"
+                {...register('email')}
+                className={`w-full px-4 py-3.5 rounded-lg border text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-[#0A2540] focus:border-transparent outline-none transition-all ${
+                  errors.email ? 'border-red-400 bg-red-50' : 'border-slate-200'
+                }`}
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                  <span className="material-symbols-outlined text-sm">error</span>
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
+
             <div className="space-y-1 relative">
-              <input 
-                type="password" 
-                placeholder="Password" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full pl-4 pr-36 py-3.5 rounded-lg border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-[#0A2540] focus:border-transparent outline-none transition-all"
+              <input
+                type="password"
+                placeholder="Password"
+                {...register('password')}
+                className={`w-full pl-4 pr-36 py-3.5 rounded-lg border text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-[#0A2540] focus:border-transparent outline-none transition-all ${
+                  errors.password ? 'border-red-400 bg-red-50' : 'border-slate-200'
+                }`}
               />
               <button type="button" className="absolute right-4 top-3.5 text-sm font-medium text-blue-600 hover:text-blue-700">
                 Forgot Password?
               </button>
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                  <span className="material-symbols-outlined text-sm">error</span>
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={isLoading}
-              className="w-full bg-[#0A2540] hover:bg-[#0A2540]/90 text-white font-bold py-3.5 rounded-lg transition-all shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2"
+              className="w-full bg-[#0A2540] hover:bg-[#0A2540]/90 text-white font-bold py-3.5 rounded-lg transition-all shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <span className="material-symbols-outlined animate-spin text-xl">progress_activity</span>
@@ -97,12 +140,13 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
           <div className="mt-12 p-4 bg-slate-50 rounded-xl border border-slate-100">
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 text-center">Demo Credentials</p>
             <div className="flex flex-wrap justify-center gap-2 text-xs text-slate-500">
-              <button onClick={() => setEmail('client@mwrd.com')} className="hover:text-[#0A2540] underline">Client</button>
+              <button onClick={() => setDemoEmail('client@mwrd.com')} className="hover:text-[#0A2540] underline">Client</button>
               <span>•</span>
-              <button onClick={() => setEmail('supplier@mwrd.com')} className="hover:text-[#0A2540] underline">Supplier</button>
+              <button onClick={() => setDemoEmail('supplier@mwrd.com')} className="hover:text-[#0A2540] underline">Supplier</button>
               <span>•</span>
-              <button onClick={() => setEmail('admin@mwrd.com')} className="hover:text-[#0A2540] underline">Admin</button>
+              <button onClick={() => setDemoEmail('admin@mwrd.com')} className="hover:text-[#0A2540] underline">Admin</button>
             </div>
+            <p className="text-xs text-slate-400 text-center mt-2">(Any password with 6+ characters)</p>
           </div>
         </div>
 

@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../../store/useStore';
 import { Product, Quote } from '../../types/types';
+import { SubmitQuoteSchema } from '../../lib/validations';
 
 interface SupplierPortalProps {
   activeTab: string;
@@ -28,6 +28,9 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
   const [quotePrice, setQuotePrice] = useState<string>('');
   const [quoteLeadTime, setQuoteLeadTime] = useState<string>('14 Days');
   const [submittingQuote, setSubmittingQuote] = useState(false);
+  const [quoteErrors, setQuoteErrors] = useState<Record<string, string>>({});
+  const [productSearch, setProductSearch] = useState<string>('');
+  const [productStatusFilter, setProductStatusFilter] = useState<string>('all');
 
   // Reset editing state when changing tabs
   useEffect(() => {
@@ -44,15 +47,33 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
   };
 
   const handleSubmitQuote = () => {
-    if (!selectedRfqId || !quotePrice) return;
+    // Validate form data
+    const priceNum = parseFloat(quotePrice) || 0;
+    const formData = {
+      rfqId: selectedRfqId || '',
+      supplierPrice: priceNum,
+      leadTime: quoteLeadTime
+    };
 
+    const result = SubmitQuoteSchema.safeParse(formData);
+
+    if (!result.success) {
+      const errors: Record<string, string> = {};
+      result.error.errors.forEach(err => {
+        const field = err.path[0] as string;
+        errors[field] = err.message;
+      });
+      setQuoteErrors(errors);
+      return;
+    }
+
+    setQuoteErrors({});
     setSubmittingQuote(true);
-    const priceNum = parseFloat(quotePrice);
 
     // Create new quote
     const newQuote: Quote = {
       id: `q${Date.now()}`,
-      rfqId: selectedRfqId,
+      rfqId: selectedRfqId!,
       supplierId: currentUser?.id || 'u2',
       supplierPrice: priceNum,
       leadTime: quoteLeadTime,
@@ -283,9 +304,19 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
   };
 
   const ProductsView = () => {
+      // Filter products based on search and status
+      const filteredProducts = supplierProducts.filter(p => {
+        const matchesSearch = productSearch === '' ||
+          p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
+          p.description.toLowerCase().includes(productSearch.toLowerCase()) ||
+          p.category.toLowerCase().includes(productSearch.toLowerCase());
+        const matchesStatus = productStatusFilter === 'all' || p.status === productStatusFilter;
+        return matchesSearch && matchesStatus;
+      });
+
       return (
         <div className="p-8 mx-auto max-w-7xl animate-in fade-in duration-300">
-            <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                 <div className="flex flex-col gap-1">
                     <h1 className="text-2xl font-bold text-neutral-800">Product Catalog</h1>
                     <p className="text-neutral-500">Manage your product listings and availability.</p>
@@ -296,8 +327,64 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                 </button>
             </div>
 
+            {/* Search and Filter */}
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
+              <div className="flex-1">
+                <div className="flex items-stretch rounded-lg h-11 border border-neutral-200 bg-white focus-within:ring-2 focus-within:ring-[#137fec]/50">
+                  <div className="flex items-center justify-center pl-4 text-neutral-400">
+                    <span className="material-symbols-outlined">search</span>
+                  </div>
+                  <input
+                    className="flex-1 px-3 outline-none text-sm"
+                    placeholder="Search products..."
+                    value={productSearch}
+                    onChange={(e) => setProductSearch(e.target.value)}
+                  />
+                  {productSearch && (
+                    <button
+                      onClick={() => setProductSearch('')}
+                      className="px-3 text-neutral-400 hover:text-neutral-600"
+                    >
+                      <span className="material-symbols-outlined text-lg">close</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="flex gap-2">
+                {[
+                  { value: 'all', label: 'All' },
+                  { value: 'APPROVED', label: 'Approved' },
+                  { value: 'PENDING', label: 'Pending' },
+                  { value: 'REJECTED', label: 'Rejected' }
+                ].map(tab => (
+                  <button
+                    key={tab.value}
+                    onClick={() => setProductStatusFilter(tab.value)}
+                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                      productStatusFilter === tab.value
+                        ? 'bg-[#137fec] text-white'
+                        : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {productSearch && (
+              <p className="text-sm text-neutral-500 mb-4">
+                Found {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} matching "{productSearch}"
+              </p>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {products.map(product => (
+                {filteredProducts.length === 0 ? (
+                  <div className="col-span-full py-12 text-center">
+                    <span className="material-symbols-outlined text-4xl text-neutral-300 mb-2">inventory_2</span>
+                    <p className="text-neutral-500">No products found matching your criteria.</p>
+                  </div>
+                ) : filteredProducts.map(product => (
                     <div key={product.id} className="bg-white rounded-xl border border-neutral-200 overflow-hidden flex flex-col shadow-sm hover:shadow-md transition-all group">
                         <div className="aspect-[4/3] relative bg-neutral-100">
                             <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
@@ -844,6 +931,14 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
 
             {/* Quote Form */}
             <div className="space-y-4">
+              {/* Global Error */}
+              {Object.keys(quoteErrors).length > 0 && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2 text-red-700 text-sm">
+                  <span className="material-symbols-outlined text-lg shrink-0">error</span>
+                  <span>Please fix the errors below before submitting</span>
+                </div>
+              )}
+
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-2">
                   Your Price (USD) *
@@ -851,20 +946,41 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                 <input
                   type="number"
                   value={quotePrice}
-                  onChange={(e) => setQuotePrice(e.target.value)}
+                  onChange={(e) => {
+                    setQuotePrice(e.target.value);
+                    if (quoteErrors.supplierPrice) {
+                      setQuoteErrors(prev => {
+                        const newErrors = { ...prev };
+                        delete newErrors.supplierPrice;
+                        return newErrors;
+                      });
+                    }
+                  }}
                   placeholder="Enter your total price"
-                  className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-[#137fec] focus:border-[#137fec] outline-none"
+                  min="0.01"
+                  step="0.01"
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#137fec] focus:border-[#137fec] outline-none ${
+                    quoteErrors.supplierPrice ? 'border-red-400 bg-red-50' : 'border-neutral-300'
+                  }`}
                 />
+                {quoteErrors.supplierPrice && (
+                  <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                    <span className="material-symbols-outlined text-sm">error</span>
+                    {quoteErrors.supplierPrice}
+                  </p>
+                )}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  Lead Time
+                  Lead Time *
                 </label>
                 <select
                   value={quoteLeadTime}
                   onChange={(e) => setQuoteLeadTime(e.target.value)}
-                  className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-[#137fec] focus:border-[#137fec] outline-none"
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#137fec] focus:border-[#137fec] outline-none ${
+                    quoteErrors.leadTime ? 'border-red-400 bg-red-50' : 'border-neutral-300'
+                  }`}
                 >
                   <option value="3 Days">3 Days</option>
                   <option value="5 Days">5 Days</option>
@@ -874,6 +990,12 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                   <option value="21 Days">21 Days</option>
                   <option value="30 Days">30 Days</option>
                 </select>
+                {quoteErrors.leadTime && (
+                  <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                    <span className="material-symbols-outlined text-sm">error</span>
+                    {quoteErrors.leadTime}
+                  </p>
+                )}
               </div>
 
               <div>
