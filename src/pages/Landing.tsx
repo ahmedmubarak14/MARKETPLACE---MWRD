@@ -1,11 +1,13 @@
 import React from 'react';
-import { UserRole } from '../types/types';
+import { useToastContext } from '../contexts/ToastContext';
 
 interface LandingProps {
   onNavigateToLogin: () => void;
 }
 
 export const Landing: React.FC<LandingProps> = ({ onNavigateToLogin }) => {
+  const toast = useToastContext();
+
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden font-sans bg-[#F6F9FC] text-[#4A4A4A]">
       {/* TopNavBar */}
@@ -23,7 +25,7 @@ export const Landing: React.FC<LandingProps> = ({ onNavigateToLogin }) => {
             <nav className="hidden md:flex flex-1 justify-center items-center gap-8">
               <button onClick={() => document.getElementById('value-section')?.scrollIntoView({ behavior: 'smooth' })} className="text-[#4A4A4A] text-sm font-medium leading-normal hover:text-[#0A2540]">For Clients</button>
               <button onClick={() => document.getElementById('value-section')?.scrollIntoView({ behavior: 'smooth' })} className="text-[#4A4A4A] text-sm font-medium leading-normal hover:text-[#0A2540]">For Suppliers</button>
-              <button onClick={() => alert('Pricing page coming soon!')} className="text-[#4A4A4A] text-sm font-medium leading-normal hover:text-[#0A2540]">Pricing</button>
+              <button onClick={() => toast.info('Pricing page coming soon!')} className="text-[#4A4A4A] text-sm font-medium leading-normal hover:text-[#0A2540]">Pricing</button>
               <button onClick={() => document.getElementById('social-proof')?.scrollIntoView({ behavior: 'smooth' })} className="text-[#4A4A4A] text-sm font-medium leading-normal hover:text-[#0A2540]">About</button>
             </nav>
             <div className="flex gap-2">
@@ -214,26 +216,26 @@ export const Landing: React.FC<LandingProps> = ({ onNavigateToLogin }) => {
                 <h4 className="font-bold text-white">Platform</h4>
                 <button onClick={onNavigateToLogin} className="text-sm text-gray-300 hover:text-white text-left">For Clients</button>
                 <button onClick={onNavigateToLogin} className="text-sm text-gray-300 hover:text-white text-left">For Suppliers</button>
-                <button onClick={() => alert('Pricing page coming soon!')} className="text-sm text-gray-300 hover:text-white text-left">Pricing</button>
+                <button onClick={() => toast.info('Pricing page coming soon!')} className="text-sm text-gray-300 hover:text-white text-left">Pricing</button>
               </div>
               <div className="flex flex-col gap-4">
                 <h4 className="font-bold text-white">Company</h4>
-                <button onClick={() => alert('About Us page coming soon!')} className="text-sm text-gray-300 hover:text-white text-left">About Us</button>
-                <button onClick={() => alert('Careers page coming soon!')} className="text-sm text-gray-300 hover:text-white text-left">Careers</button>
-                <button onClick={() => alert('Contact page coming soon!')} className="text-sm text-gray-300 hover:text-white text-left">Contact</button>
+                <button onClick={() => toast.info('About Us page coming soon!')} className="text-sm text-gray-300 hover:text-white text-left">About Us</button>
+                <button onClick={() => toast.info('Careers page coming soon!')} className="text-sm text-gray-300 hover:text-white text-left">Careers</button>
+                <button onClick={() => toast.info('Contact page coming soon!')} className="text-sm text-gray-300 hover:text-white text-left">Contact</button>
               </div>
               <div className="flex flex-col gap-4">
                 <h4 className="font-bold text-white">Legal</h4>
-                <button onClick={() => alert('Privacy Policy page coming soon!')} className="text-sm text-gray-300 hover:text-white text-left">Privacy Policy</button>
-                <button onClick={() => alert('Terms of Service page coming soon!')} className="text-sm text-gray-300 hover:text-white text-left">Terms of Service</button>
+                <button onClick={() => toast.info('Privacy Policy page coming soon!')} className="text-sm text-gray-300 hover:text-white text-left">Privacy Policy</button>
+                <button onClick={() => toast.info('Terms of Service page coming soon!')} className="text-sm text-gray-300 hover:text-white text-left">Terms of Service</button>
               </div>
             </div>
             <div className="mt-12 border-t border-gray-100/20 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-300">
               <p>© 2024 mwrd. All rights reserved.</p>
               <div className="flex gap-4 mt-4 md:mt-0">
-                <button onClick={() => alert('Follow us on social media!')} className="hover:text-white">LinkedIn</button>
-                <button onClick={() => alert('Follow us on social media!')} className="hover:text-white">Twitter</button>
-                <button onClick={() => alert('Follow us on social media!')} className="hover:text-white">Facebook</button>
+                <button onClick={() => toast.info('Follow us on LinkedIn!')} className="hover:text-white">LinkedIn</button>
+                <button onClick={() => toast.info('Follow us on Twitter!')} className="hover:text-white">Twitter</button>
+                <button onClick={() => toast.info('Follow us on Facebook!')} className="hover:text-white">Facebook</button>
               </div>
             </div>
           </div>

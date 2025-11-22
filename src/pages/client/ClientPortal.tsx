@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Product, RFQ } from '../../types/types';
 import { useStore } from '../../store/useStore';
 import { RfqItemSchema } from '../../lib/validations';
+import { useToastContext } from '../../contexts/ToastContext';
+import { exportToCSV, downloadInvoice } from '../../lib/exportUtils';
 
 interface ClientPortalProps {
   activeTab: string;
@@ -17,6 +19,7 @@ interface SelectedItem {
 export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigate }) => {
   // Get data from store
   const { products, rfqs, quotes, orders, users, currentUser, addRFQ, acceptQuote } = useStore();
+  const toast = useToastContext();
 
   const [rfqItems, setRfqItems] = useState<string[]>([]);
   const [selectedItemsMap, setSelectedItemsMap] = useState<Record<string, SelectedItem>>({});
@@ -861,7 +864,23 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 <p className="text-slate-500 mt-1">Track the status of your RFQs and review incoming quotes.</p>
             </div>
             <div className="flex gap-3">
-                <button onClick={() => alert('Export CSV - Feature coming soon!')} className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">Export CSV</button>
+                <button onClick={() => {
+                    const rfqData = rfqs.map(r => ({
+                      id: r.id,
+                      status: r.status,
+                      itemCount: r.items.length,
+                      createdAt: r.createdAt,
+                      deadline: r.deadline || 'N/A'
+                    }));
+                    exportToCSV(rfqData, [
+                      { key: 'id', header: 'RFQ ID' },
+                      { key: 'status', header: 'Status' },
+                      { key: 'itemCount', header: 'Items' },
+                      { key: 'createdAt', header: 'Created' },
+                      { key: 'deadline', header: 'Deadline' }
+                    ], 'rfq-export');
+                    toast.success('RFQ data exported successfully!');
+                }} className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">Export CSV</button>
                 <button onClick={() => onNavigate('create-rfq')} className="px-4 py-2 text-sm font-medium text-white bg-slate-900 rounded-lg hover:bg-slate-800 transition-colors">New Request</button>
             </div>
         </div>
@@ -1060,7 +1079,23 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
 
             <div className="p-8 bg-slate-50 border-t border-slate-200 flex flex-wrap gap-3">
               <button onClick={() => setSelectedOrder(null)} className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50">Back to Orders</button>
-              <button onClick={() => alert('Download Invoice - Feature coming soon!')} className="px-4 py-2 text-sm font-medium text-white bg-[#137fec] rounded-lg hover:bg-[#137fec]/90">Download Invoice</button>
+              <button onClick={() => {
+                downloadInvoice({
+                  id: selectedOrder.id,
+                  date: selectedOrder.date,
+                  status: selectedOrder.status,
+                  amount: selectedOrder.amount,
+                  items: [
+                    { name: 'Industrial Equipment Parts', quantity: 2, price: selectedOrder.amount / 2 }
+                  ],
+                  billingAddress: {
+                    name: currentUser?.companyName || currentUser?.name || 'Customer',
+                    address: '123 Business Street, Suite 456',
+                    city: 'City, State 12345'
+                  }
+                });
+                toast.success('Invoice downloaded successfully!');
+              }} className="px-4 py-2 text-sm font-medium text-white bg-[#137fec] rounded-lg hover:bg-[#137fec]/90">Download Invoice</button>
             </div>
           </div>
         </div>
@@ -1074,7 +1109,21 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
             <h2 className="text-2xl font-bold text-slate-900">Order History</h2>
             <p className="text-slate-500 mt-1">Track and manage all your orders in one place.</p>
           </div>
-          <button onClick={() => alert('Export orders - Feature coming soon!')} className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-50 rounded-lg hover:bg-slate-100 flex items-center gap-2">
+          <button onClick={() => {
+            const orderData = orders.map(o => ({
+              id: o.id,
+              date: o.date,
+              status: o.status,
+              amount: o.amount
+            }));
+            exportToCSV(orderData, [
+              { key: 'id', header: 'Order ID' },
+              { key: 'date', header: 'Date' },
+              { key: 'status', header: 'Status' },
+              { key: 'amount', header: 'Amount ($)' }
+            ], 'orders-export');
+            toast.success('Orders exported successfully!');
+          }} className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-50 rounded-lg hover:bg-slate-100 flex items-center gap-2">
             <span className="material-symbols-outlined text-lg">download</span>Export
           </button>
         </div>
@@ -1169,7 +1218,13 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 <div className="flex items-center gap-6">
                   <div className="w-20 h-20 rounded-full bg-[#137fec] text-white flex items-center justify-center text-2xl font-bold">{currentUser?.name?.charAt(0) || 'U'}</div>
                   <div>
-                    <button onClick={() => alert('Change photo - Feature coming soon!')} className="px-4 py-2 text-sm font-medium text-[#137fec] bg-[#137fec]/10 rounded-lg hover:bg-[#137fec]/20">Change Photo</button>
+                    <button onClick={() => {
+                      const input = document.createElement('input');
+                      input.type = 'file';
+                      input.accept = 'image/*';
+                      input.onchange = () => toast.info('Photo upload - Backend integration required');
+                      input.click();
+                    }} className="px-4 py-2 text-sm font-medium text-[#137fec] bg-[#137fec]/10 rounded-lg hover:bg-[#137fec]/20">Change Photo</button>
                     <p className="text-xs text-slate-400 mt-2">JPG, PNG or GIF. Max size 2MB.</p>
                   </div>
                 </div>
@@ -1182,7 +1237,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
               </div>
               <div className="p-8 bg-slate-50 border-t border-slate-200 flex justify-end gap-3">
                 <button onClick={() => setSettingsTab('profile')} className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50">Cancel</button>
-                <button onClick={() => alert('Profile saved successfully!')} className="px-4 py-2 text-sm font-medium text-white bg-[#137fec] rounded-lg hover:bg-[#137fec]/90">Save Changes</button>
+                <button onClick={() => toast.success('Profile changes saved successfully!')} className="px-4 py-2 text-sm font-medium text-white bg-[#137fec] rounded-lg hover:bg-[#137fec]/90">Save Changes</button>
               </div>
             </div>
           )}
@@ -1207,7 +1262,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 ))}
               </div>
               <div className="p-8 bg-slate-50 border-t border-slate-200 flex justify-end">
-                <button onClick={() => alert('Notification preferences saved!')} className="px-4 py-2 text-sm font-medium text-white bg-[#137fec] rounded-lg hover:bg-[#137fec]/90">Save Preferences</button>
+                <button onClick={() => toast.success('Notification preferences saved!')} className="px-4 py-2 text-sm font-medium text-white bg-[#137fec] rounded-lg hover:bg-[#137fec]/90">Save Preferences</button>
               </div>
             </div>
           )}
@@ -1225,13 +1280,13 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                   <div><label className="block text-sm font-medium text-slate-700 mb-2">Confirm New Password</label><input type="password" className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#137fec] outline-none" /></div>
                 </div>
                 <div className="p-8 bg-slate-50 border-t border-slate-200 flex justify-end">
-                  <button onClick={() => alert('Password updated successfully!')} className="px-4 py-2 text-sm font-medium text-white bg-[#137fec] rounded-lg hover:bg-[#137fec]/90">Update Password</button>
+                  <button onClick={() => toast.success('Password updated successfully!')} className="px-4 py-2 text-sm font-medium text-white bg-[#137fec] rounded-lg hover:bg-[#137fec]/90">Update Password</button>
                 </div>
               </div>
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
                 <div className="flex items-center justify-between">
                   <div><h3 className="text-lg font-semibold text-slate-900">Two-Factor Authentication</h3><p className="text-slate-500 text-sm mt-1">Add an extra layer of security.</p></div>
-                  <button onClick={() => alert('Two-factor authentication setup - Feature coming soon!')} className="px-4 py-2 text-sm font-medium text-[#137fec] bg-[#137fec]/10 rounded-lg hover:bg-[#137fec]/20">Enable 2FA</button>
+                  <button onClick={() => toast.info('Two-factor authentication setup requires backend integration')} className="px-4 py-2 text-sm font-medium text-[#137fec] bg-[#137fec]/10 rounded-lg hover:bg-[#137fec]/20">Enable 2FA</button>
                 </div>
               </div>
             </div>

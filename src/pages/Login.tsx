@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UserRole } from '../types/types';
 import { LoginSchema, LoginFormData } from '../lib/validations';
+import { useToastContext } from '../contexts/ToastContext';
 
 interface LoginProps {
   onLogin: (email: string, password: string) => UserRole | null;
@@ -12,6 +13,7 @@ interface LoginProps {
 export const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+  const toast = useToastContext();
 
   const {
     register,
@@ -106,7 +108,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
                   errors.password ? 'border-red-400 bg-red-50' : 'border-slate-200'
                 }`}
               />
-              <button type="button" onClick={() => alert('Password reset - Feature coming soon!')} className="absolute right-4 top-3.5 text-sm font-medium text-blue-600 hover:text-blue-700">
+              <button type="button" onClick={() => toast.info('Password reset link would be sent to your email. Backend integration required.')} className="absolute right-4 top-3.5 text-sm font-medium text-blue-600 hover:text-blue-700">
                 Forgot Password?
               </button>
               {errors.password && (
@@ -132,7 +134,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
 
           <div className="mt-8 text-center">
             <p className="text-slate-500 text-sm">
-              Don't have your account? <button onClick={() => alert('Sign up - Feature coming soon! Use demo credentials for now.')} className="text-blue-600 font-bold hover:underline">Sign Up</button>
+              Don't have your account? <button onClick={() => toast.info('Registration requires backend integration. Please use demo credentials for now.')} className="text-blue-600 font-bold hover:underline">Sign Up</button>
             </p>
           </div>
 

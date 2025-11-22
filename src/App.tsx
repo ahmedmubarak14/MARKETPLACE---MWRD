@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { UserRole } from './types/types';
 import { useStore, LoginResult } from './store/useStore';
-import { useToast } from './hooks/useToast';
 import { useSessionTimeout } from './hooks/useSessionTimeout';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { ToastContainer } from './components/ui/Toast';
 import { SessionTimeoutWarning } from './components/SessionTimeoutWarning';
 import { Sidebar } from './components/Sidebar';
 import { Landing } from './pages/Landing';
@@ -12,12 +10,13 @@ import { Login } from './pages/Login';
 import { ClientPortal } from './pages/client/ClientPortal';
 import { SupplierPortal } from './pages/supplier/SupplierPortal';
 import { AdminPortal } from './pages/admin/AdminPortal';
+import { ToastProvider, useToastContext } from './contexts/ToastContext';
 
 type ViewState = 'LANDING' | 'LOGIN' | 'APP';
 
-function App() {
+function AppContent() {
   const { currentUser, isAuthenticated, login, logout, checkSession } = useStore();
-  const toast = useToast();
+  const toast = useToastContext();
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [view, setView] = useState<ViewState>(isAuthenticated ? 'APP' : 'LANDING');
   const [showSessionWarning, setShowSessionWarning] = useState(false);
@@ -87,7 +86,6 @@ function App() {
   if (view === 'LANDING') {
     return (
       <ErrorBoundary>
-        <ToastContainer toasts={toast.toasts} onClose={toast.removeToast} />
         <Landing onNavigateToLogin={() => setView('LOGIN')} />
       </ErrorBoundary>
     );
@@ -96,7 +94,6 @@ function App() {
   if (view === 'LOGIN') {
     return (
       <ErrorBoundary>
-        <ToastContainer toasts={toast.toasts} onClose={toast.removeToast} />
         <Login onLogin={handleLogin} onBack={() => setView('LANDING')} />
       </ErrorBoundary>
     );
@@ -104,7 +101,6 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <ToastContainer toasts={toast.toasts} onClose={toast.removeToast} />
       {/* Session Timeout Warning Modal */}
       <SessionTimeoutWarning
         isVisible={showSessionWarning}
@@ -127,6 +123,14 @@ function App() {
         </main>
       </div>
     </ErrorBoundary>
+  );
+}
+
+function App() {
+  return (
+    <ToastProvider>
+      <AppContent />
+    </ToastProvider>
   );
 }
 

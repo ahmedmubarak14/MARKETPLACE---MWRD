@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useStore } from '../../store/useStore';
 import { Quote, UserRole } from '../../types/types';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
+import { useToastContext } from '../../contexts/ToastContext';
 
 interface AdminPortalProps {
   activeTab: string;
@@ -21,6 +22,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
     approveQuote, approveSupplier, rejectSupplier,
     updateUser
   } = useStore();
+
+  const toast = useToastContext();
 
   // State for individual quote overrides (Manual)
   const [editingQuotes, setEditingQuotes] = useState<Record<string, number>>({});
@@ -485,7 +488,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                         <p className="text-xs text-neutral-600 dark:text-neutral-200">{action.type}</p>
                         <p className="text-sm font-medium text-neutral-800 dark:text-white">{action.desc}</p>
                       </div>
-                      <button onClick={() => alert(`Viewing: ${action.desc}`)} className="text-primary text-sm font-bold hover:underline">View</button>
+                      <button onClick={() => toast.info(`Viewing: ${action.desc}`)} className="text-primary text-sm font-bold hover:underline">View</button>
                     </div>
                   ))}
                 </div>

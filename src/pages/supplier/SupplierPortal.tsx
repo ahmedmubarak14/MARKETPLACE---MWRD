@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useStore } from '../../store/useStore';
 import { Product, Quote } from '../../types/types';
 import { SubmitQuoteSchema } from '../../lib/validations';
+import { useToastContext } from '../../contexts/ToastContext';
 
 interface SupplierPortalProps {
   activeTab: string;
@@ -19,6 +20,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
     updateProduct,
     addQuote
   } = useStore();
+  const toast = useToastContext();
 
   // Filter products for this supplier
   const supplierProducts = allProducts.filter(p => p.supplierId === currentUser?.id || p.supplierId === 'u2');
@@ -31,6 +33,14 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
   const [quoteErrors, setQuoteErrors] = useState<Record<string, string>>({});
   const [productSearch, setProductSearch] = useState<string>('');
   const [productStatusFilter, setProductStatusFilter] = useState<string>('all');
+
+  // Pagination state for order tabs
+  const [pendingOrdersPage, setPendingOrdersPage] = useState(1);
+  const [wonOrdersPage, setWonOrdersPage] = useState(1);
+  const [completedOrdersPage, setCompletedOrdersPage] = useState(1);
+
+  // Selected order for detail view
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
   // Reset editing state when changing tabs
   useEffect(() => {
@@ -93,7 +103,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
 
   const handleSaveProduct = () => {
     setTimeout(() => {
-        alert("Product changes saved successfully!");
+        toast.success("Product changes saved successfully!");
         setEditingProduct(null);
     }, 500);
   };
@@ -321,7 +331,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                     <h1 className="text-2xl font-bold text-neutral-800">Product Catalog</h1>
                     <p className="text-neutral-500">Manage your product listings and availability.</p>
                 </div>
-                <button onClick={() => alert("Add Product Demo")} className="bg-[#137fec] text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-[#137fec]/90">
+                <button onClick={() => toast.info("Add Product - Navigate to product form")} className="bg-[#137fec] text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-[#137fec]/90">
                     <span className="material-symbols-outlined">add</span>
                     Add New Product
                 </button>
@@ -558,7 +568,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                                                     </span>
             </td>
             <td className="px-6 py-4 text-right">
-            <button onClick={() => alert('Order #OD78952 details - Feature coming soon!')} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
+            <button onClick={() => { setSelectedOrderId('OD78952'); toast.info('Order #OD78952 - Total: $12,450, Status: Pending Confirmation'); }} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
             <span>View Details</span>
             <span className="material-symbols-outlined" style={{fontSize: '16px'}}>arrow_forward</span>
             </button>
@@ -576,7 +586,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                                                     </span>
             </td>
             <td className="px-6 py-4 text-right">
-            <button onClick={() => alert('Order #OD78950 details - Feature coming soon!')} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
+            <button onClick={() => { setSelectedOrderId('OD78950'); toast.info('Order #OD78950 - Total: $8,900, Status: Processing'); }} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
             <span>View Details</span>
             <span className="material-symbols-outlined" style={{fontSize: '16px'}}>arrow_forward</span>
             </button>
@@ -594,7 +604,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                                                     </span>
             </td>
             <td className="px-6 py-4 text-right">
-            <button onClick={() => alert('Order #OD78948 details - Feature coming soon!')} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
+            <button onClick={() => { setSelectedOrderId('OD78948'); toast.info('Order #OD78948 - Total: $3,200, Status: Shipped'); }} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
             <span>View Details</span>
             <span className="material-symbols-outlined" style={{fontSize: '16px'}}>arrow_forward</span>
             </button>
@@ -604,12 +614,12 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             </table>
             </div>
             <nav aria-label="Table navigation" className="flex items-center justify-between p-4">
-            <span className="text-sm font-normal text-slate-500 dark:text-slate-400">Showing <span className="font-semibold text-slate-900 dark:text-white">1-3</span> of <span className="font-semibold text-slate-900 dark:text-white">15</span></span>
+            <span className="text-sm font-normal text-slate-500 dark:text-slate-400">Showing <span className="font-semibold text-slate-900 dark:text-white">{pendingOrdersPage === 1 ? '1-3' : '4-6'}</span> of <span className="font-semibold text-slate-900 dark:text-white">15</span></span>
             <div className="inline-flex items-center -space-x-px">
-            <button onClick={() => alert('Previous page')} className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-l-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">Previous</button>
-            <button onClick={() => alert('Page 1')} className="flex items-center justify-center h-9 w-9 leading-tight text-[#137fec] bg-[#137fec]/10 border border-[#137fec] hover:bg-[#137fec]/20 hover:text-[#137fec] dark:bg-slate-700 dark:border-slate-600 dark:text-white transition-colors">1</button>
-            <button onClick={() => alert('Page 2')} className="flex items-center justify-center h-9 w-9 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">2</button>
-            <button onClick={() => alert('Next page')} className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-r-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">Next</button>
+            <button onClick={() => setPendingOrdersPage(Math.max(1, pendingOrdersPage - 1))} disabled={pendingOrdersPage === 1} className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-l-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors disabled:opacity-50">Previous</button>
+            <button onClick={() => setPendingOrdersPage(1)} className={`flex items-center justify-center h-9 w-9 leading-tight border transition-colors ${pendingOrdersPage === 1 ? 'text-[#137fec] bg-[#137fec]/10 border-[#137fec]' : 'text-slate-500 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 hover:bg-slate-100'}`}>1</button>
+            <button onClick={() => setPendingOrdersPage(2)} className={`flex items-center justify-center h-9 w-9 leading-tight border transition-colors ${pendingOrdersPage === 2 ? 'text-[#137fec] bg-[#137fec]/10 border-[#137fec]' : 'text-slate-500 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 hover:bg-slate-100'}`}>2</button>
+            <button onClick={() => setPendingOrdersPage(Math.min(2, pendingOrdersPage + 1))} disabled={pendingOrdersPage === 2} className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-r-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors disabled:opacity-50">Next</button>
             </div>
             </nav>
             </div>
@@ -669,7 +679,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                                                     </span>
             </td>
             <td className="px-6 py-4 text-right">
-            <button onClick={() => alert('Order #PO-86753 details - Feature coming soon!')} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
+            <button onClick={() => { setSelectedOrderId('PO-86753'); toast.info('Order #PO-86753 - Total: $24,500, Status: Won'); }} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
             <span>View Details</span>
             <span className="material-symbols-outlined" style={{fontSize: '16px'}}>arrow_forward</span>
             </button>
@@ -687,7 +697,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                                                     </span>
             </td>
             <td className="px-6 py-4 text-right">
-            <button onClick={() => alert('Order #PO-86751 details - Feature coming soon!')} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
+            <button onClick={() => { setSelectedOrderId('PO-86751'); toast.info('Order #PO-86751 - Total: $18,200, Status: Won'); }} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
             <span>View Details</span>
             <span className="material-symbols-outlined" style={{fontSize: '16px'}}>arrow_forward</span>
             </button>
@@ -705,7 +715,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                                                     </span>
             </td>
             <td className="px-6 py-4 text-right">
-            <button onClick={() => alert('Order #PO-86749 details - Feature coming soon!')} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
+            <button onClick={() => { setSelectedOrderId('PO-86749'); toast.info('Order #PO-86749 - Total: $6,800, Status: Won'); }} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
             <span>View Details</span>
             <span className="material-symbols-outlined" style={{fontSize: '16px'}}>arrow_forward</span>
             </button>
@@ -715,12 +725,12 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             </table>
             </div>
             <nav aria-label="Table navigation" className="flex items-center justify-between p-4">
-            <span className="text-sm font-normal text-slate-500 dark:text-slate-400">Showing <span className="font-semibold text-slate-900 dark:text-white">1-3</span> of <span className="font-semibold text-slate-900 dark:text-white">15</span></span>
+            <span className="text-sm font-normal text-slate-500 dark:text-slate-400">Showing <span className="font-semibold text-slate-900 dark:text-white">{wonOrdersPage === 1 ? '1-3' : '4-6'}</span> of <span className="font-semibold text-slate-900 dark:text-white">15</span></span>
             <div className="inline-flex items-center -space-x-px">
-            <button onClick={() => alert('Previous page')} className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-l-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">Previous</button>
-            <button onClick={() => alert('Page 1')} className="flex items-center justify-center h-9 w-9 leading-tight text-[#137fec] bg-[#137fec]/10 border border-[#137fec] hover:bg-[#137fec]/20 hover:text-[#137fec] dark:bg-slate-700 dark:border-slate-600 dark:text-white transition-colors">1</button>
-            <button onClick={() => alert('Page 2')} className="flex items-center justify-center h-9 w-9 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">2</button>
-            <button onClick={() => alert('Next page')} className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-r-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">Next</button>
+            <button onClick={() => setWonOrdersPage(Math.max(1, wonOrdersPage - 1))} disabled={wonOrdersPage === 1} className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-l-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors disabled:opacity-50">Previous</button>
+            <button onClick={() => setWonOrdersPage(1)} className={`flex items-center justify-center h-9 w-9 leading-tight border transition-colors ${wonOrdersPage === 1 ? 'text-[#137fec] bg-[#137fec]/10 border-[#137fec]' : 'text-slate-500 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 hover:bg-slate-100'}`}>1</button>
+            <button onClick={() => setWonOrdersPage(2)} className={`flex items-center justify-center h-9 w-9 leading-tight border transition-colors ${wonOrdersPage === 2 ? 'text-[#137fec] bg-[#137fec]/10 border-[#137fec]' : 'text-slate-500 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 hover:bg-slate-100'}`}>2</button>
+            <button onClick={() => setWonOrdersPage(Math.min(2, wonOrdersPage + 1))} disabled={wonOrdersPage === 2} className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-r-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors disabled:opacity-50">Next</button>
             </div>
             </nav>
             </div>
@@ -780,7 +790,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             </span>
             </td>
             <td className="px-6 py-4 text-right">
-            <button onClick={() => alert('Order #CO-91245 details - Feature coming soon!')} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
+            <button onClick={() => { setSelectedOrderId('CO-91245'); toast.info('Order #CO-91245 - Total: $15,750, Status: Delivered'); }} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
             <span>View Details</span>
             <span className="material-symbols-outlined" style={{fontSize: '16px'}}>arrow_forward</span>
             </button>
@@ -798,7 +808,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             </span>
             </td>
             <td className="px-6 py-4 text-right">
-            <button onClick={() => alert('Order #CO-91240 details - Feature coming soon!')} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
+            <button onClick={() => { setSelectedOrderId('CO-91240'); toast.info('Order #CO-91240 - Total: $42,800, Status: Closed'); }} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
             <span>View Details</span>
             <span className="material-symbols-outlined" style={{fontSize: '16px'}}>arrow_forward</span>
             </button>
@@ -816,7 +826,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             </span>
             </td>
             <td className="px-6 py-4 text-right">
-            <button onClick={() => alert('Order #CO-91233 details - Feature coming soon!')} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
+            <button onClick={() => { setSelectedOrderId('CO-91233'); toast.info('Order #CO-91233 - Total: $9,500, Status: Delivered'); }} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
             <span>View Details</span>
             <span className="material-symbols-outlined" style={{fontSize: '16px'}}>arrow_forward</span>
             </button>
@@ -834,7 +844,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             </span>
             </td>
             <td className="px-6 py-4 text-right">
-            <button onClick={() => alert('Order #CO-91225 details - Feature coming soon!')} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
+            <button onClick={() => { setSelectedOrderId('CO-91225'); toast.info('Order #CO-91225 - Total: $2,100, Status: Closed'); }} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
             <span>View Details</span>
             <span className="material-symbols-outlined" style={{fontSize: '16px'}}>arrow_forward</span>
             </button>
@@ -844,12 +854,12 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             </table>
             </div>
             <nav aria-label="Table navigation" className="flex items-center justify-between p-4">
-            <span className="text-sm font-normal text-slate-500 dark:text-slate-400">Showing <span className="font-semibold text-slate-900 dark:text-white">1-4</span> of <span className="font-semibold text-slate-900 dark:text-white">28</span></span>
+            <span className="text-sm font-normal text-slate-500 dark:text-slate-400">Showing <span className="font-semibold text-slate-900 dark:text-white">{completedOrdersPage === 1 ? '1-4' : '5-8'}</span> of <span className="font-semibold text-slate-900 dark:text-white">28</span></span>
             <div className="inline-flex items-center -space-x-px">
-            <button onClick={() => alert('Previous page')} className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-l-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">Previous</button>
-            <button onClick={() => alert('Page 1')} className="flex items-center justify-center h-9 w-9 leading-tight text-[#137fec] bg-[#137fec]/10 border border-[#137fec] hover:bg-[#137fec]/20 hover:text-[#137fec] dark:bg-slate-700 dark:border-slate-600 dark:text-white transition-colors">1</button>
-            <button onClick={() => alert('Page 2')} className="flex items-center justify-center h-9 w-9 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">2</button>
-            <button onClick={() => alert('Next page')} className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-r-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">Next</button>
+            <button onClick={() => setCompletedOrdersPage(Math.max(1, completedOrdersPage - 1))} disabled={completedOrdersPage === 1} className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-l-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors disabled:opacity-50">Previous</button>
+            <button onClick={() => setCompletedOrdersPage(1)} className={`flex items-center justify-center h-9 w-9 leading-tight border transition-colors ${completedOrdersPage === 1 ? 'text-[#137fec] bg-[#137fec]/10 border-[#137fec]' : 'text-slate-500 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 hover:bg-slate-100'}`}>1</button>
+            <button onClick={() => setCompletedOrdersPage(2)} className={`flex items-center justify-center h-9 w-9 leading-tight border transition-colors ${completedOrdersPage === 2 ? 'text-[#137fec] bg-[#137fec]/10 border-[#137fec]' : 'text-slate-500 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 hover:bg-slate-100'}`}>2</button>
+            <button onClick={() => setCompletedOrdersPage(Math.min(2, completedOrdersPage + 1))} disabled={completedOrdersPage === 2} className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-r-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors disabled:opacity-50">Next</button>
             </div>
             </nav>
             </div>
