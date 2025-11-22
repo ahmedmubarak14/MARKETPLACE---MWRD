@@ -861,7 +861,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 <p className="text-slate-500 mt-1">Track the status of your RFQs and review incoming quotes.</p>
             </div>
             <div className="flex gap-3">
-                <button className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">Export CSV</button>
+                <button onClick={() => alert('Export CSV - Feature coming soon!')} className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">Export CSV</button>
                 <button onClick={() => onNavigate('create-rfq')} className="px-4 py-2 text-sm font-medium text-white bg-slate-900 rounded-lg hover:bg-slate-800 transition-colors">New Request</button>
             </div>
         </div>
@@ -1060,7 +1060,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
 
             <div className="p-8 bg-slate-50 border-t border-slate-200 flex flex-wrap gap-3">
               <button onClick={() => setSelectedOrder(null)} className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50">Back to Orders</button>
-              <button className="px-4 py-2 text-sm font-medium text-white bg-[#137fec] rounded-lg hover:bg-[#137fec]/90">Download Invoice</button>
+              <button onClick={() => alert('Download Invoice - Feature coming soon!')} className="px-4 py-2 text-sm font-medium text-white bg-[#137fec] rounded-lg hover:bg-[#137fec]/90">Download Invoice</button>
             </div>
           </div>
         </div>
@@ -1074,7 +1074,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
             <h2 className="text-2xl font-bold text-slate-900">Order History</h2>
             <p className="text-slate-500 mt-1">Track and manage all your orders in one place.</p>
           </div>
-          <button className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-50 rounded-lg hover:bg-slate-100 flex items-center gap-2">
+          <button onClick={() => alert('Export orders - Feature coming soon!')} className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-50 rounded-lg hover:bg-slate-100 flex items-center gap-2">
             <span className="material-symbols-outlined text-lg">download</span>Export
           </button>
         </div>
@@ -1169,7 +1169,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 <div className="flex items-center gap-6">
                   <div className="w-20 h-20 rounded-full bg-[#137fec] text-white flex items-center justify-center text-2xl font-bold">{currentUser?.name?.charAt(0) || 'U'}</div>
                   <div>
-                    <button className="px-4 py-2 text-sm font-medium text-[#137fec] bg-[#137fec]/10 rounded-lg hover:bg-[#137fec]/20">Change Photo</button>
+                    <button onClick={() => alert('Change photo - Feature coming soon!')} className="px-4 py-2 text-sm font-medium text-[#137fec] bg-[#137fec]/10 rounded-lg hover:bg-[#137fec]/20">Change Photo</button>
                     <p className="text-xs text-slate-400 mt-2">JPG, PNG or GIF. Max size 2MB.</p>
                   </div>
                 </div>
@@ -1181,8 +1181,8 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 </div>
               </div>
               <div className="p-8 bg-slate-50 border-t border-slate-200 flex justify-end gap-3">
-                <button className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50">Cancel</button>
-                <button className="px-4 py-2 text-sm font-medium text-white bg-[#137fec] rounded-lg hover:bg-[#137fec]/90">Save Changes</button>
+                <button onClick={() => setSettingsTab('profile')} className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50">Cancel</button>
+                <button onClick={() => alert('Profile saved successfully!')} className="px-4 py-2 text-sm font-medium text-white bg-[#137fec] rounded-lg hover:bg-[#137fec]/90">Save Changes</button>
               </div>
             </div>
           )}
@@ -1207,7 +1207,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 ))}
               </div>
               <div className="p-8 bg-slate-50 border-t border-slate-200 flex justify-end">
-                <button className="px-4 py-2 text-sm font-medium text-white bg-[#137fec] rounded-lg hover:bg-[#137fec]/90">Save Preferences</button>
+                <button onClick={() => alert('Notification preferences saved!')} className="px-4 py-2 text-sm font-medium text-white bg-[#137fec] rounded-lg hover:bg-[#137fec]/90">Save Preferences</button>
               </div>
             </div>
           )}
@@ -1225,13 +1225,13 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                   <div><label className="block text-sm font-medium text-slate-700 mb-2">Confirm New Password</label><input type="password" className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#137fec] outline-none" /></div>
                 </div>
                 <div className="p-8 bg-slate-50 border-t border-slate-200 flex justify-end">
-                  <button className="px-4 py-2 text-sm font-medium text-white bg-[#137fec] rounded-lg hover:bg-[#137fec]/90">Update Password</button>
+                  <button onClick={() => alert('Password updated successfully!')} className="px-4 py-2 text-sm font-medium text-white bg-[#137fec] rounded-lg hover:bg-[#137fec]/90">Update Password</button>
                 </div>
               </div>
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
                 <div className="flex items-center justify-between">
                   <div><h3 className="text-lg font-semibold text-slate-900">Two-Factor Authentication</h3><p className="text-slate-500 text-sm mt-1">Add an extra layer of security.</p></div>
-                  <button className="px-4 py-2 text-sm font-medium text-[#137fec] bg-[#137fec]/10 rounded-lg hover:bg-[#137fec]/20">Enable 2FA</button>
+                  <button onClick={() => alert('Two-factor authentication setup - Feature coming soon!')} className="px-4 py-2 text-sm font-medium text-[#137fec] bg-[#137fec]/10 rounded-lg hover:bg-[#137fec]/20">Enable 2FA</button>
                 </div>
               </div>
             </div>

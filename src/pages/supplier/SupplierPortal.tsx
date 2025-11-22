@@ -558,7 +558,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                                                     </span>
             </td>
             <td className="px-6 py-4 text-right">
-            <button className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
+            <button onClick={() => alert('Order #OD78952 details - Feature coming soon!')} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
             <span>View Details</span>
             <span className="material-symbols-outlined" style={{fontSize: '16px'}}>arrow_forward</span>
             </button>
@@ -576,7 +576,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                                                     </span>
             </td>
             <td className="px-6 py-4 text-right">
-            <button className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
+            <button onClick={() => alert('Order #OD78950 details - Feature coming soon!')} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
             <span>View Details</span>
             <span className="material-symbols-outlined" style={{fontSize: '16px'}}>arrow_forward</span>
             </button>
@@ -594,7 +594,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                                                     </span>
             </td>
             <td className="px-6 py-4 text-right">
-            <button className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
+            <button onClick={() => alert('Order #OD78948 details - Feature coming soon!')} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
             <span>View Details</span>
             <span className="material-symbols-outlined" style={{fontSize: '16px'}}>arrow_forward</span>
             </button>
@@ -606,10 +606,10 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             <nav aria-label="Table navigation" className="flex items-center justify-between p-4">
             <span className="text-sm font-normal text-slate-500 dark:text-slate-400">Showing <span className="font-semibold text-slate-900 dark:text-white">1-3</span> of <span className="font-semibold text-slate-900 dark:text-white">15</span></span>
             <div className="inline-flex items-center -space-x-px">
-            <button className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-l-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">Previous</button>
-            <button className="flex items-center justify-center h-9 w-9 leading-tight text-[#137fec] bg-[#137fec]/10 border border-[#137fec] hover:bg-[#137fec]/20 hover:text-[#137fec] dark:bg-slate-700 dark:border-slate-600 dark:text-white transition-colors">1</button>
-            <button className="flex items-center justify-center h-9 w-9 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">2</button>
-            <button className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-r-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">Next</button>
+            <button onClick={() => alert('Previous page')} className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-l-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">Previous</button>
+            <button onClick={() => alert('Page 1')} className="flex items-center justify-center h-9 w-9 leading-tight text-[#137fec] bg-[#137fec]/10 border border-[#137fec] hover:bg-[#137fec]/20 hover:text-[#137fec] dark:bg-slate-700 dark:border-slate-600 dark:text-white transition-colors">1</button>
+            <button onClick={() => alert('Page 2')} className="flex items-center justify-center h-9 w-9 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">2</button>
+            <button onClick={() => alert('Next page')} className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-r-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">Next</button>
             </div>
             </nav>
             </div>
@@ -717,16 +717,16 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             <nav aria-label="Table navigation" className="flex items-center justify-between p-4">
             <span className="text-sm font-normal text-slate-500 dark:text-slate-400">Showing <span className="font-semibold text-slate-900 dark:text-white">1-3</span> of <span className="font-semibold text-slate-900 dark:text-white">15</span></span>
             <div className="inline-flex items-center -space-x-px">
-            <button className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-l-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">Previous</button>
-            <button className="flex items-center justify-center h-9 w-9 leading-tight text-[#137fec] bg-[#137fec]/10 border border-[#137fec] hover:bg-[#137fec]/20 hover:text-[#137fec] dark:bg-slate-700 dark:border-slate-600 dark:text-white transition-colors">1</button>
-            <button className="flex items-center justify-center h-9 w-9 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">2</button>
-            <button className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-r-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">Next</button>
+            <button onClick={() => alert('Previous page')} className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-l-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">Previous</button>
+            <button onClick={() => alert('Page 1')} className="flex items-center justify-center h-9 w-9 leading-tight text-[#137fec] bg-[#137fec]/10 border border-[#137fec] hover:bg-[#137fec]/20 hover:text-[#137fec] dark:bg-slate-700 dark:border-slate-600 dark:text-white transition-colors">1</button>
+            <button onClick={() => alert('Page 2')} className="flex items-center justify-center h-9 w-9 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">2</button>
+            <button onClick={() => alert('Next page')} className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-r-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">Next</button>
             </div>
             </nav>
             </div>
             </div>
         )}
-        
+
         {/* --- COMPLETED ORDERS TABLE --- */}
         {activeOrderTab === 'completed' && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -780,7 +780,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             </span>
             </td>
             <td className="px-6 py-4 text-right">
-            <button className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
+            <button onClick={() => alert('Order #CO-91245 details - Feature coming soon!')} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
             <span>View Details</span>
             <span className="material-symbols-outlined" style={{fontSize: '16px'}}>arrow_forward</span>
             </button>
@@ -798,7 +798,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             </span>
             </td>
             <td className="px-6 py-4 text-right">
-            <button className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
+            <button onClick={() => alert('Order #CO-91240 details - Feature coming soon!')} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
             <span>View Details</span>
             <span className="material-symbols-outlined" style={{fontSize: '16px'}}>arrow_forward</span>
             </button>
@@ -816,7 +816,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             </span>
             </td>
             <td className="px-6 py-4 text-right">
-            <button className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
+            <button onClick={() => alert('Order #CO-91233 details - Feature coming soon!')} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
             <span>View Details</span>
             <span className="material-symbols-outlined" style={{fontSize: '16px'}}>arrow_forward</span>
             </button>
@@ -834,7 +834,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             </span>
             </td>
             <td className="px-6 py-4 text-right">
-            <button className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
+            <button onClick={() => alert('Order #CO-91225 details - Feature coming soon!')} className="inline-flex items-center gap-2 text-sm font-medium text-[#137fec] hover:underline">
             <span>View Details</span>
             <span className="material-symbols-outlined" style={{fontSize: '16px'}}>arrow_forward</span>
             </button>
@@ -846,10 +846,10 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             <nav aria-label="Table navigation" className="flex items-center justify-between p-4">
             <span className="text-sm font-normal text-slate-500 dark:text-slate-400">Showing <span className="font-semibold text-slate-900 dark:text-white">1-4</span> of <span className="font-semibold text-slate-900 dark:text-white">28</span></span>
             <div className="inline-flex items-center -space-x-px">
-            <button className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-l-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">Previous</button>
-            <button className="flex items-center justify-center h-9 w-9 leading-tight text-[#137fec] bg-[#137fec]/10 border border-[#137fec] hover:bg-[#137fec]/20 hover:text-[#137fec] dark:bg-slate-700 dark:border-slate-600 dark:text-white transition-colors">1</button>
-            <button className="flex items-center justify-center h-9 w-9 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">2</button>
-            <button className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-r-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">Next</button>
+            <button onClick={() => alert('Previous page')} className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-l-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">Previous</button>
+            <button onClick={() => alert('Page 1')} className="flex items-center justify-center h-9 w-9 leading-tight text-[#137fec] bg-[#137fec]/10 border border-[#137fec] hover:bg-[#137fec]/20 hover:text-[#137fec] dark:bg-slate-700 dark:border-slate-600 dark:text-white transition-colors">1</button>
+            <button onClick={() => alert('Page 2')} className="flex items-center justify-center h-9 w-9 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">2</button>
+            <button onClick={() => alert('Next page')} className="flex items-center justify-center h-9 px-3 leading-tight text-slate-500 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-r-lg hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-white transition-colors">Next</button>
             </div>
             </nav>
             </div>

@@ -106,7 +106,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
                   errors.password ? 'border-red-400 bg-red-50' : 'border-slate-200'
                 }`}
               />
-              <button type="button" className="absolute right-4 top-3.5 text-sm font-medium text-blue-600 hover:text-blue-700">
+              <button type="button" onClick={() => alert('Password reset - Feature coming soon!')} className="absolute right-4 top-3.5 text-sm font-medium text-blue-600 hover:text-blue-700">
                 Forgot Password?
               </button>
               {errors.password && (
@@ -132,7 +132,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
 
           <div className="mt-8 text-center">
             <p className="text-slate-500 text-sm">
-              Don't have your account? <button className="text-blue-600 font-bold hover:underline">Sign Up</button>
+              Don't have your account? <button onClick={() => alert('Sign up - Feature coming soon! Use demo credentials for now.')} className="text-blue-600 font-bold hover:underline">Sign Up</button>
             </p>
           </div>
 

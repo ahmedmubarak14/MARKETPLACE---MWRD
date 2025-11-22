@@ -21,10 +21,10 @@ export const Landing: React.FC<LandingProps> = ({ onNavigateToLogin }) => {
               <h2 className="text-[#0A2540] text-xl font-bold leading-tight tracking-[-0.015em]">mwrd</h2>
             </div>
             <nav className="hidden md:flex flex-1 justify-center items-center gap-8">
-              <a className="text-[#4A4A4A] text-sm font-medium leading-normal hover:text-[#0A2540]" href="#">For Clients</a>
-              <a className="text-[#4A4A4A] text-sm font-medium leading-normal hover:text-[#0A2540]" href="#">For Suppliers</a>
-              <a className="text-[#4A4A4A] text-sm font-medium leading-normal hover:text-[#0A2540]" href="#">Pricing</a>
-              <a className="text-[#4A4A4A] text-sm font-medium leading-normal hover:text-[#0A2540]" href="#">About</a>
+              <button onClick={() => document.getElementById('value-section')?.scrollIntoView({ behavior: 'smooth' })} className="text-[#4A4A4A] text-sm font-medium leading-normal hover:text-[#0A2540]">For Clients</button>
+              <button onClick={() => document.getElementById('value-section')?.scrollIntoView({ behavior: 'smooth' })} className="text-[#4A4A4A] text-sm font-medium leading-normal hover:text-[#0A2540]">For Suppliers</button>
+              <button onClick={() => alert('Pricing page coming soon!')} className="text-[#4A4A4A] text-sm font-medium leading-normal hover:text-[#0A2540]">Pricing</button>
+              <button onClick={() => document.getElementById('social-proof')?.scrollIntoView({ behavior: 'smooth' })} className="text-[#4A4A4A] text-sm font-medium leading-normal hover:text-[#0A2540]">About</button>
             </nav>
             <div className="flex gap-2">
               <button 
@@ -82,18 +82,18 @@ export const Landing: React.FC<LandingProps> = ({ onNavigateToLogin }) => {
         </section>
 
         {/* Value Proposition Section */}
-        <section className="py-16 md:py-24 bg-white">
+        <section id="value-section" className="py-16 md:py-24 bg-white">
           <div className="container mx-auto px-4">
             <div className="flex flex-col gap-12">
               {/* Tabs */}
               <div className="border-b border-gray-200">
                 <div className="flex justify-center gap-8">
-                  <a className="flex flex-col items-center justify-center border-b-[3px] border-b-[#0A2540] text-[#0A2540] pb-[13px] pt-4" href="#">
+                  <button className="flex flex-col items-center justify-center border-b-[3px] border-b-[#0A2540] text-[#0A2540] pb-[13px] pt-4">
                     <p className="text-base font-bold leading-normal tracking-[0.015em]">For Clients</p>
-                  </a>
-                  <a className="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#6b7280] pb-[13px] pt-4 hover:text-[#0A2540] transition-colors" href="#">
+                  </button>
+                  <button onClick={onNavigateToLogin} className="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#6b7280] pb-[13px] pt-4 hover:text-[#0A2540] transition-colors">
                     <p className="text-base font-bold leading-normal tracking-[0.015em]">For Suppliers</p>
-                  </a>
+                  </button>
                 </div>
               </div>
               {/* Feature Grid */}
@@ -154,7 +154,7 @@ export const Landing: React.FC<LandingProps> = ({ onNavigateToLogin }) => {
         </section>
 
         {/* Social Proof Section */}
-        <section className="py-16 md:py-24 bg-white">
+        <section id="social-proof" className="py-16 md:py-24 bg-white">
           <div className="container mx-auto px-4">
             <div className="flex flex-col items-center text-center gap-12">
               <div className="flex flex-col gap-3 max-w-2xl">
@@ -212,28 +212,28 @@ export const Landing: React.FC<LandingProps> = ({ onNavigateToLogin }) => {
               </div>
               <div className="flex flex-col gap-4">
                 <h4 className="font-bold text-white">Platform</h4>
-                <a className="text-sm text-gray-300 hover:text-white" href="#">For Clients</a>
-                <a className="text-sm text-gray-300 hover:text-white" href="#">For Suppliers</a>
-                <a className="text-sm text-gray-300 hover:text-white" href="#">Pricing</a>
+                <button onClick={onNavigateToLogin} className="text-sm text-gray-300 hover:text-white text-left">For Clients</button>
+                <button onClick={onNavigateToLogin} className="text-sm text-gray-300 hover:text-white text-left">For Suppliers</button>
+                <button onClick={() => alert('Pricing page coming soon!')} className="text-sm text-gray-300 hover:text-white text-left">Pricing</button>
               </div>
               <div className="flex flex-col gap-4">
                 <h4 className="font-bold text-white">Company</h4>
-                <a className="text-sm text-gray-300 hover:text-white" href="#">About Us</a>
-                <a className="text-sm text-gray-300 hover:text-white" href="#">Careers</a>
-                <a className="text-sm text-gray-300 hover:text-white" href="#">Contact</a>
+                <button onClick={() => alert('About Us page coming soon!')} className="text-sm text-gray-300 hover:text-white text-left">About Us</button>
+                <button onClick={() => alert('Careers page coming soon!')} className="text-sm text-gray-300 hover:text-white text-left">Careers</button>
+                <button onClick={() => alert('Contact page coming soon!')} className="text-sm text-gray-300 hover:text-white text-left">Contact</button>
               </div>
               <div className="flex flex-col gap-4">
                 <h4 className="font-bold text-white">Legal</h4>
-                <a className="text-sm text-gray-300 hover:text-white" href="#">Privacy Policy</a>
-                <a className="text-sm text-gray-300 hover:text-white" href="#">Terms of Service</a>
+                <button onClick={() => alert('Privacy Policy page coming soon!')} className="text-sm text-gray-300 hover:text-white text-left">Privacy Policy</button>
+                <button onClick={() => alert('Terms of Service page coming soon!')} className="text-sm text-gray-300 hover:text-white text-left">Terms of Service</button>
               </div>
             </div>
             <div className="mt-12 border-t border-gray-100/20 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-300">
               <p>© 2024 mwrd. All rights reserved.</p>
               <div className="flex gap-4 mt-4 md:mt-0">
-                <a className="hover:text-white" href="#">Social 1</a>
-                <a className="hover:text-white" href="#">Social 2</a>
-                <a className="hover:text-white" href="#">Social 3</a>
+                <button onClick={() => alert('Follow us on social media!')} className="hover:text-white">LinkedIn</button>
+                <button onClick={() => alert('Follow us on social media!')} className="hover:text-white">Twitter</button>
+                <button onClick={() => alert('Follow us on social media!')} className="hover:text-white">Facebook</button>
               </div>
             </div>
           </div>
