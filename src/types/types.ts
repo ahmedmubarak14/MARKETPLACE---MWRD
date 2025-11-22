@@ -45,6 +45,8 @@ export interface RFQ {
   items: RFQItem[];
   status: 'OPEN' | 'QUOTED' | 'CLOSED';
   date: string;
+  createdAt?: string;
+  deadline?: string;
 }
 
 export interface Quote {

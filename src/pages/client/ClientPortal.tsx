@@ -68,7 +68,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
       const updatedItem = { ...selectedItemsMap[productId], [field]: newValue };
       const result = RfqItemSchema.safeParse(updatedItem);
       if (!result.success) {
-        const error = result.error.errors[0];
+        const error = result.error.issues[0];
         setValidationErrors(prev => ({ ...prev, [productId]: error.message }));
       } else {
         setValidationErrors(prev => {
@@ -97,7 +97,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
       const item = selectedItemsMap[key];
       const result = RfqItemSchema.safeParse(item);
       if (!result.success) {
-        errors[key] = result.error.errors[0].message;
+        errors[key] = result.error.issues[0].message;
         hasErrors = true;
       }
     });
@@ -869,7 +869,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                       id: r.id,
                       status: r.status,
                       itemCount: r.items.length,
-                      createdAt: r.createdAt,
+                      createdAt: r.createdAt || r.date,
                       deadline: r.deadline || 'N/A'
                     }));
                     exportToCSV(rfqData, [
@@ -1081,12 +1081,12 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
               <button onClick={() => setSelectedOrder(null)} className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50">Back to Orders</button>
               <button onClick={() => {
                 downloadInvoice({
-                  id: selectedOrder.id,
-                  date: selectedOrder.date,
-                  status: selectedOrder.status,
-                  amount: selectedOrder.amount,
+                  id: selectedOrderDetails.id,
+                  date: selectedOrderDetails.date,
+                  status: selectedOrderDetails.status,
+                  amount: selectedOrderDetails.amount,
                   items: [
-                    { name: 'Industrial Equipment Parts', quantity: 2, price: selectedOrder.amount / 2 }
+                    { name: 'Industrial Equipment Parts', quantity: 2, price: selectedOrderDetails.amount / 2 }
                   ],
                   billingAddress: {
                     name: currentUser?.companyName || currentUser?.name || 'Customer',

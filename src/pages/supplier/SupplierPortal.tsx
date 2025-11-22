@@ -69,7 +69,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
 
     if (!result.success) {
       const errors: Record<string, string> = {};
-      result.error.errors.forEach(err => {
+      result.error.issues.forEach(err => {
         const field = err.path[0] as string;
         errors[field] = err.message;
       });
