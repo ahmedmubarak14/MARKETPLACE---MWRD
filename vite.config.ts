@@ -18,6 +18,8 @@ export default defineConfig(({ mode }) => {
         alias: {
           '@': path.resolve(__dirname, '.'),
         }
-      }
+      },
+      // Expose Supabase environment variables (VITE_ prefixed vars are automatically exposed)
+      envPrefix: ['VITE_'],
     };
 });
