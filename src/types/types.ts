@@ -30,6 +30,8 @@ export interface Product {
   image: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
   costPrice?: number; // Only visible to supplier and admin
+  retailPrice?: number; // Price clients see (cost + margin)
+  marginPercent?: number; // MWRD's margin percentage
   sku?: string;
 }
 
