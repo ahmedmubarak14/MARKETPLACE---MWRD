@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserRole } from './types/types';
 import { useStore } from './store/useStore';
 import { useToast } from './hooks/useToast';
@@ -10,17 +10,30 @@ import { Login } from './pages/Login';
 import { ClientPortal } from './pages/client/ClientPortal';
 import { SupplierPortal } from './pages/supplier/SupplierPortal';
 import { AdminPortal } from './pages/admin/AdminPortal';
+import { LoadingSpinner } from './components/ui/LoadingSpinner';
 
 type ViewState = 'LANDING' | 'LOGIN' | 'APP';
 
 function App() {
-  const { currentUser, isAuthenticated, login, logout } = useStore();
+  const { currentUser, isAuthenticated, isLoading, login, logout, initializeAuth } = useStore();
   const toast = useToast();
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [view, setView] = useState<ViewState>(isAuthenticated ? 'APP' : 'LANDING');
 
-  const handleLogin = (email: string, password: string) => {
-    const user = login(email, password);
+  // Initialize auth on mount (restore Supabase session if exists)
+  useEffect(() => {
+    initializeAuth();
+  }, [initializeAuth]);
+
+  // Update view when authentication state changes
+  useEffect(() => {
+    if (isAuthenticated && currentUser) {
+      setView('APP');
+    }
+  }, [isAuthenticated, currentUser]);
+
+  const handleLogin = async (email: string, password: string) => {
+    const user = await login(email, password);
     if (user) {
       setView('APP');
       if (user.role === UserRole.CLIENT) setActiveTab('dashboard');
@@ -34,11 +47,23 @@ function App() {
     }
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     setView('LANDING');
     toast.info('You have been logged out');
   };
+
+  // Show loading spinner while initializing auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <LoadingSpinner size="lg" />
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (view === 'LANDING') {
     return (
