@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { UserRole } from '../types/types';
 
 interface LoginProps {
-  onLogin: (email: string, password: string) => UserRole | null;
+  onLogin: (email: string, password: string) => Promise<UserRole | null>;
   onBack: () => void;
 }
 
@@ -11,15 +11,27 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate network delay
-    setTimeout(() => {
+    try {
+      await onLogin(email, password);
+    } catch (error) {
+      console.error('Login error:', error);
+    } finally {
       setIsLoading(false);
-      onLogin(email, password);
-    }, 800);
+    }
+  };
+
+  const fillDemoCredentials = (role: 'client' | 'supplier' | 'admin') => {
+    const credentials = {
+      client: { email: 'client@mwrd.com', password: 'client123' },
+      supplier: { email: 'supplier@mwrd.com', password: 'supplier123' },
+      admin: { email: 'admin@mwrd.com', password: 'admin123' }
+    };
+    setEmail(credentials[role].email);
+    setPassword(credentials[role].password);
   };
 
   return (
@@ -97,11 +109,11 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
           <div className="mt-12 p-4 bg-slate-50 rounded-xl border border-slate-100">
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 text-center">Demo Credentials</p>
             <div className="flex flex-wrap justify-center gap-2 text-xs text-slate-500">
-              <button onClick={() => setEmail('client@mwrd.com')} className="hover:text-[#0A2540] underline">Client</button>
+              <button onClick={() => fillDemoCredentials('client')} className="hover:text-[#0A2540] underline">Client</button>
               <span>•</span>
-              <button onClick={() => setEmail('supplier@mwrd.com')} className="hover:text-[#0A2540] underline">Supplier</button>
+              <button onClick={() => fillDemoCredentials('supplier')} className="hover:text-[#0A2540] underline">Supplier</button>
               <span>•</span>
-              <button onClick={() => setEmail('admin@mwrd.com')} className="hover:text-[#0A2540] underline">Admin</button>
+              <button onClick={() => fillDemoCredentials('admin')} className="hover:text-[#0A2540] underline">Admin</button>
             </div>
           </div>
         </div>
