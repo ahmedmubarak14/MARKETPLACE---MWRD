@@ -58,6 +58,47 @@ export interface Quote {
   status: 'PENDING_ADMIN' | 'SENT_TO_CLIENT' | 'ACCEPTED' | 'REJECTED';
 }
 
+export enum OrderStatus {
+  PENDING_PAYMENT = 'PENDING_PAYMENT',
+  IN_TRANSIT = 'IN_TRANSIT',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED',
+}
+
+export interface Order {
+  id: string;
+  quoteId?: string;
+  clientId: string;
+  supplierId: string;
+  amount: number;
+  status: OrderStatus;
+  date: string;
+  // Payment tracking (Phase One - Bank Transfer)
+  paymentReference?: string;
+  paymentConfirmedAt?: string;
+  paymentConfirmedBy?: string;
+  paymentNotes?: string;
+  paymentReceiptUrl?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface BankDetails {
+  id: string;
+  bankName: string;
+  accountName: string;
+  accountNumber: string;
+  iban?: string;
+  swiftCode?: string;
+  branchName?: string;
+  branchCode?: string;
+  currency: string;
+  notes?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface AppState {
   currentUser: User | null;
 }
