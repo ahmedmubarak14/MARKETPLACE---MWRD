@@ -101,6 +101,55 @@ export interface BankDetails {
   updatedAt: string;
 }
 
+export enum CustomRequestStatus {
+  PENDING = 'PENDING',
+  UNDER_REVIEW = 'UNDER_REVIEW',
+  ASSIGNED = 'ASSIGNED',
+  QUOTED = 'QUOTED',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  CANCELLED = 'CANCELLED',
+}
+
+export enum RequestPriority {
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
+  URGENT = 'URGENT',
+}
+
+export interface CustomItemRequest {
+  id: string;
+  clientId: string;
+  // Request details
+  itemName: string;
+  description: string;
+  specifications?: string;
+  category?: string;
+  // Quantity and pricing
+  quantity: number;
+  targetPrice?: number;
+  currency: string;
+  // Additional info
+  deadline?: string;
+  priority: RequestPriority;
+  referenceImages?: string[];
+  attachmentUrls?: string[];
+  // Status tracking
+  status: CustomRequestStatus;
+  adminNotes?: string;
+  assignedTo?: string;
+  assignedAt?: string;
+  assignedBy?: string;
+  // Response
+  supplierQuoteId?: string;
+  respondedAt?: string;
+  rejectionReason?: string;
+  // Timestamps
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface AppState {
   currentUser: User | null;
 }
