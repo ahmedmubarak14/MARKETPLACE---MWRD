@@ -130,11 +130,11 @@ BEGIN
 
   -- Create order from accepted quote
   INSERT INTO orders (quote_id, client_id, supplier_id, amount, status, date)
-  VALUES (v_quote2_id, v_client_id, v_supplier_id, 481.80, 'In Transit', CURRENT_DATE - INTERVAL '8 days');
+  VALUES (v_quote2_id, v_client_id, v_supplier_id, 481.80, 'IN_TRANSIT', CURRENT_DATE - INTERVAL '8 days');
 
   -- Another order (Delivered)
   INSERT INTO orders (client_id, supplier_id, amount, status, date)
-  VALUES (v_client_id, v_supplier_id, 1250.00, 'Delivered', CURRENT_DATE - INTERVAL '15 days');
+  VALUES (v_client_id, v_supplier_id, 1250.00, 'DELIVERED', CURRENT_DATE - INTERVAL '15 days');
 
   RAISE NOTICE '✅ Sample office supplies data loaded successfully!';
 END $$;
