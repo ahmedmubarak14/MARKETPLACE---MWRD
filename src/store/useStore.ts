@@ -4,13 +4,14 @@ import { User, UserRole, Product, RFQ, Quote } from '../types/types';
 import { USERS, PRODUCTS, RFQS, QUOTES, ORDERS, Order } from '../services/mockData';
 import { authService } from '../services/authService';
 import { api } from '../services/api';
+import { appConfig } from '../config/appConfig';
+import { initializeStorage } from '../utils/storage';
 
-// Flag to determine if we should use Supabase or mock data
-// Set to true once you've configured your Supabase environment variables
-const USE_SUPABASE = Boolean(
-  import.meta.env.VITE_SUPABASE_URL &&
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+// Initialize and validate storage before creating store
+initializeStorage();
+
+// Use centralized config for mode detection
+const USE_SUPABASE = appConfig.features.useDatabase;
 
 interface StoreState {
   // Auth
@@ -80,11 +81,26 @@ export const useStore = create<StoreState>()(
 
       // Initialize auth state from Supabase session
       initializeAuth: async () => {
+        if (appConfig.debug.logAuthFlow) {
+          console.log('🔄 Initializing authentication...');
+        }
+
         if (USE_SUPABASE) {
           set({ isLoading: true });
+
+          if (appConfig.debug.logAuthFlow) {
+            console.log('   Checking for existing Supabase session...');
+          }
+
           const { user } = await authService.getSession();
+
           if (user) {
+            if (appConfig.debug.logAuthFlow) {
+              console.log(`✅ Found existing session for ${user.name}`);
+            }
+
             set({ currentUser: user, isAuthenticated: true, isLoading: false });
+
             // Load data for authenticated user
             get().loadProducts();
             get().loadRFQs();
@@ -94,19 +110,45 @@ export const useStore = create<StoreState>()(
               get().loadUsers();
             }
           } else {
+            if (appConfig.debug.logAuthFlow) {
+              console.log('   No existing session found');
+            }
             set({ currentUser: null, isAuthenticated: false, isLoading: false });
           }
         } else {
+          if (appConfig.debug.logAuthFlow) {
+            console.log('   MOCK mode - skipping session check');
+          }
           set({ isLoading: false });
         }
       },
 
       // Auth actions
       login: async (email: string, password: string) => {
+        if (appConfig.debug.logAuthFlow) {
+          console.log('═══════════════════════════════════');
+          console.log('🔐 LOGIN ATTEMPT');
+          console.log(`   Email: ${email}`);
+          console.log(`   Mode: ${USE_SUPABASE ? 'SUPABASE' : 'MOCK'}`);
+          console.log('═══════════════════════════════════');
+        }
+
         if (USE_SUPABASE) {
+          // Supabase authentication
+          if (appConfig.debug.logAuthFlow) {
+            console.log('→ Using Supabase authentication');
+          }
+
           const result = await authService.signIn(email, password);
+
           if (result.success && result.user) {
+            if (appConfig.debug.logAuthFlow) {
+              console.log('✅ Supabase authentication successful');
+              console.log(`   User: ${result.user.name} (${result.user.role})`);
+            }
+
             set({ currentUser: result.user, isAuthenticated: true });
+
             // Load data for authenticated user
             get().loadProducts();
             get().loadRFQs();
@@ -117,15 +159,49 @@ export const useStore = create<StoreState>()(
             }
             return result.user;
           }
-          return null;
-        } else {
-          // Fallback to mock data
-          const user = get().users.find(u => u.email === email);
-          if (user) {
-            set({ currentUser: user, isAuthenticated: true });
-            return user;
+
+          if (appConfig.debug.logAuthFlow) {
+            console.log('❌ Supabase authentication failed');
+            console.log(`   Error: ${result.error}`);
           }
           return null;
+        } else {
+          // Mock data authentication
+          if (appConfig.debug.logAuthFlow) {
+            console.log('→ Using MOCK authentication');
+            console.log(`   Checking credentials against ${get().users.length} mock users`);
+          }
+
+          const user = get().users.find(u => u.email === email);
+
+          if (!user) {
+            if (appConfig.debug.logAuthFlow) {
+              console.log('❌ Email not found in mock data');
+            }
+            return null;
+          }
+
+          // In mock mode, we validate password against demo credentials
+          // Since mock data doesn't store passwords, we check against expected demo passwords
+          if (appConfig.features.validatePasswordInMockMode) {
+            const validDemoPasswords = ['client123', 'supplier123', 'admin123', 'demo', 'test', '123'];
+            if (!validDemoPasswords.includes(password)) {
+              if (appConfig.debug.logAuthFlow) {
+                console.log('❌ Invalid password for mock mode');
+                console.log(`   Hint: Use one of: ${validDemoPasswords.join(', ')}`);
+              }
+              return null;
+            }
+          }
+
+          if (appConfig.debug.logAuthFlow) {
+            console.log('✅ Mock authentication successful');
+            console.log(`   User: ${user.name} (${user.role})`);
+            console.log(`   ID: ${user.id}`);
+          }
+
+          set({ currentUser: user, isAuthenticated: true });
+          return user;
         }
       },
 

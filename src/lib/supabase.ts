@@ -1,19 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '../types/database';
+import { appConfig } from '../config/appConfig';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn(
-    'Missing Supabase environment variables. Please check your .env.local file.'
-  );
-}
-
-export const supabase = createClient<Database>(
-  supabaseUrl || '',
-  supabaseAnonKey || ''
-);
+// Only create real client if Supabase is configured
+// Otherwise, create a dummy client that won't attempt any connections
+export const supabase = appConfig.supabase.isConfigured
+  ? createClient<Database>(appConfig.supabase.url!, appConfig.supabase.anonKey!)
+  : createClient<Database>('https://placeholder.supabase.co', 'placeholder-key');
 
 // Auth helper functions
 export const auth = {

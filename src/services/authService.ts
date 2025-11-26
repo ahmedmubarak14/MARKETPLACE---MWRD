@@ -4,6 +4,7 @@
 import { supabase, auth } from '../lib/supabase';
 import { User, UserRole } from '../types/types';
 import type { AuthError, Session } from '@supabase/supabase-js';
+import { appConfig } from '../config/appConfig';
 
 export interface AuthResponse {
   success: boolean;
@@ -90,15 +91,48 @@ class AuthService {
 
   // Sign in existing user
   async signIn(email: string, password: string): Promise<AuthResponse> {
+    // If Supabase is not configured, don't attempt authentication
+    if (!appConfig.supabase.isConfigured) {
+      if (appConfig.debug.logAuthFlow) {
+        console.warn('⚠️ authService.signIn() called in MOCK mode - this should not happen!');
+        console.warn('   Login should be handled by mock data in useStore');
+      }
+      return { success: false, error: 'Supabase not configured. Use mock mode authentication.' };
+    }
+
+    if (appConfig.debug.logAuthFlow) {
+      console.log('🔐 Attempting Supabase authentication...');
+      console.log(`   Email: ${email}`);
+      console.log(`   Supabase URL: ${appConfig.supabase.url}`);
+    }
+
     try {
       const { data: authData, error: authError } = await auth.signIn(email, password);
 
+      if (appConfig.debug.logAuthFlow) {
+        console.log('📡 Supabase auth response received');
+        console.log(`   Error: ${authError ? authError.message : 'None'}`);
+        console.log(`   User: ${authData?.user ? authData.user.email : 'None'}`);
+        if (authError) {
+          console.log(`   Error code: ${authError.status}`);
+          console.log(`   Error details:`, authError);
+        }
+      }
+
       if (authError) {
+        console.error('❌ Supabase auth error:', authError);
         return { success: false, error: authError.message };
       }
 
       if (!authData.user) {
+        console.error('❌ No user data returned from Supabase');
         return { success: false, error: 'Invalid credentials' };
+      }
+
+      if (appConfig.debug.logAuthFlow) {
+        console.log('✅ Supabase authentication successful');
+        console.log(`   User ID: ${authData.user.id}`);
+        console.log('   Fetching user profile from database...');
       }
 
       // Fetch user profile
@@ -108,12 +142,37 @@ class AuthService {
         .eq('id', authData.user.id)
         .single();
 
+      if (appConfig.debug.logAuthFlow) {
+        console.log('📡 User profile query response');
+        console.log(`   Error: ${profileError ? profileError.message : 'None'}`);
+        console.log(`   Profile found: ${profile ? 'Yes' : 'No'}`);
+        if (profileError) {
+          console.log('   Error details:', profileError);
+        }
+        if (profile) {
+          console.log(`   Profile: ${profile.name} (${profile.role})`);
+        }
+      }
+
       if (profileError) {
-        console.error('Error fetching user profile:', profileError);
+        console.error('❌ Error fetching user profile:', profileError);
+        console.error('   Code:', profileError.code);
+        console.error('   Details:', profileError.details);
+        console.error('   Hint:', profileError.hint);
+        return { success: false, error: 'User profile not found' };
+      }
+
+      if (!profile) {
+        console.error('❌ No profile data returned');
         return { success: false, error: 'User profile not found' };
       }
 
       const user = this.mapDbUserToUser(profile);
+
+      if (appConfig.debug.logAuthFlow) {
+        console.log('✅ Complete authentication successful');
+        console.log(`   User: ${user.name} (${user.role})`);
+      }
 
       return {
         success: true,
@@ -121,7 +180,7 @@ class AuthService {
         session: authData.session || undefined
       };
     } catch (error) {
-      console.error('Sign in error:', error);
+      console.error('❌ Sign in error:', error);
       return { success: false, error: 'An unexpected error occurred' };
     }
   }
@@ -144,6 +203,14 @@ class AuthService {
 
   // Get current session
   async getSession(): Promise<{ session: Session | null; user: User | null }> {
+    // If Supabase is not configured, return null session
+    if (!appConfig.supabase.isConfigured) {
+      if (appConfig.debug.logAuthFlow) {
+        console.log('📋 getSession() called in MOCK mode - returning null');
+      }
+      return { session: null, user: null };
+    }
+
     try {
       const { data } = await auth.getSession();
 
