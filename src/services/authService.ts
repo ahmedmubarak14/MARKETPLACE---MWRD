@@ -4,12 +4,7 @@
 import { supabase, auth } from '../lib/supabase';
 import { User, UserRole } from '../types/types';
 import type { AuthError, Session } from '@supabase/supabase-js';
-
-// Check if Supabase is properly configured
-const isSupabaseConfigured = Boolean(
-  import.meta.env.VITE_SUPABASE_URL &&
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+import { appConfig } from '../config/appConfig';
 
 export interface AuthResponse {
   success: boolean;
@@ -97,9 +92,16 @@ class AuthService {
   // Sign in existing user
   async signIn(email: string, password: string): Promise<AuthResponse> {
     // If Supabase is not configured, don't attempt authentication
-    if (!isSupabaseConfigured) {
-      console.warn('⚠️ Supabase not configured. Use mock mode for authentication.');
-      return { success: false, error: 'Supabase not configured' };
+    if (!appConfig.supabase.isConfigured) {
+      if (appConfig.debug.logAuthFlow) {
+        console.warn('⚠️ authService.signIn() called in MOCK mode - this should not happen!');
+        console.warn('   Login should be handled by mock data in useStore');
+      }
+      return { success: false, error: 'Supabase not configured. Use mock mode authentication.' };
+    }
+
+    if (appConfig.debug.logAuthFlow) {
+      console.log('🔐 Attempting Supabase authentication...');
     }
 
     try {
@@ -157,7 +159,10 @@ class AuthService {
   // Get current session
   async getSession(): Promise<{ session: Session | null; user: User | null }> {
     // If Supabase is not configured, return null session
-    if (!isSupabaseConfigured) {
+    if (!appConfig.supabase.isConfigured) {
+      if (appConfig.debug.logAuthFlow) {
+        console.log('📋 getSession() called in MOCK mode - returning null');
+      }
       return { session: null, user: null };
     }
 
