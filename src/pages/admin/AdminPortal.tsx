@@ -1035,6 +1035,151 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
     );
   }
 
+  // --- LOGISTICS VIEW ---
+  if (activeTab === 'logistics') {
+    const shipments = [
+      { id: 'SH-001', order: 'ORD-78952', supplier: 'Supplier Alpha', client: 'Client-A8B4', status: 'In Transit', eta: 'Jan 25, 2024', location: 'Distribution Center - NYC' },
+      { id: 'SH-002', order: 'ORD-78951', supplier: 'Supplier Beta', client: 'Client-C2D9', status: 'Delivered', eta: 'Jan 20, 2024', location: 'Delivered' },
+      { id: 'SH-003', order: 'ORD-78950', supplier: 'Supplier Gamma', client: 'Client-F5E1', status: 'Preparing', eta: 'Jan 28, 2024', location: 'Warehouse - LA' },
+      { id: 'SH-004', order: 'ORD-78949', supplier: 'Supplier Delta', client: 'Client-B3F7', status: 'In Transit', eta: 'Jan 26, 2024', location: 'In Transit - Route 66' },
+    ];
+
+    return (
+      <div className="flex flex-col h-full bg-background-light dark:bg-background-dark p-8 space-y-8">
+        {/* Header */}
+        <div className="flex items-center justify-between bg-white dark:bg-background-dark p-8 rounded-2xl border border-border-light dark:border-border-dark shadow-sm">
+          <div>
+            <h2 className="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark">Logistics & Shipping</h2>
+            <p className="text-subtext-light dark:text-subtext-dark mt-1">Track shipments and manage delivery logistics</p>
+          </div>
+          <div className="flex gap-3">
+            <button className="px-4 py-2 text-sm font-medium text-subtext-light dark:text-subtext-dark bg-slate-50 dark:bg-slate-800 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+              <span className="material-symbols-outlined text-base mr-2 inline-block align-middle">download</span>
+              Export
+            </button>
+            <button className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors">
+              <span className="material-symbols-outlined text-base mr-2 inline-block align-middle">add</span>
+              New Shipment
+            </button>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-white dark:bg-background-dark rounded-xl border border-border-light dark:border-border-dark p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-subtext-light dark:text-subtext-dark">In Transit</p>
+                <p className="text-3xl font-bold text-text-primary-light dark:text-text-primary-dark mt-2">24</p>
+              </div>
+              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-full">
+                <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-2xl">local_shipping</span>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white dark:bg-background-dark rounded-xl border border-border-light dark:border-border-dark p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-subtext-light dark:text-subtext-dark">Delivered Today</p>
+                <p className="text-3xl font-bold text-text-primary-light dark:text-text-primary-dark mt-2">12</p>
+              </div>
+              <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-full">
+                <span className="material-symbols-outlined text-green-600 dark:text-green-400 text-2xl">check_circle</span>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white dark:bg-background-dark rounded-xl border border-border-light dark:border-border-dark p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-subtext-light dark:text-subtext-dark">Preparing</p>
+                <p className="text-3xl font-bold text-text-primary-light dark:text-text-primary-dark mt-2">8</p>
+              </div>
+              <div className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-full">
+                <span className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-2xl">package</span>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white dark:bg-background-dark rounded-xl border border-border-light dark:border-border-dark p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-subtext-light dark:text-subtext-dark">Delayed</p>
+                <p className="text-3xl font-bold text-text-primary-light dark:text-text-primary-dark mt-2">3</p>
+              </div>
+              <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-full">
+                <span className="material-symbols-outlined text-red-600 dark:text-red-400 text-2xl">warning</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Shipments Table */}
+        <div className="bg-white dark:bg-background-dark rounded-2xl border border-border-light dark:border-border-dark shadow-sm overflow-hidden">
+          <div className="p-6 border-b border-border-light dark:border-border-dark">
+            <h3 className="text-lg font-bold text-text-primary-light dark:text-text-primary-dark">Active Shipments</h3>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead className="bg-slate-50 dark:bg-slate-800 border-b border-border-light dark:border-border-dark">
+                <tr>
+                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider">Shipment ID</th>
+                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider">Order ID</th>
+                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider">Route</th>
+                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider">Status</th>
+                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider">ETA</th>
+                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider">Location</th>
+                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border-light dark:divide-border-dark">
+                {shipments.map(shipment => (
+                  <tr key={shipment.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-text-primary-light dark:text-text-primary-dark">{shipment.id}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-sm text-subtext-light dark:text-subtext-dark">{shipment.order}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col text-sm">
+                        <span className="font-medium text-text-primary-light dark:text-text-primary-dark">{shipment.supplier}</span>
+                        <span className="text-xs text-subtext-light dark:text-subtext-dark">→ {shipment.client}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
+                        shipment.status === 'In Transit' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400' :
+                        shipment.status === 'Delivered' ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400' :
+                        'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400'
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${
+                          shipment.status === 'In Transit' ? 'bg-blue-500' :
+                          shipment.status === 'Delivered' ? 'bg-green-500' :
+                          'bg-amber-500'
+                        }`}></span>
+                        {shipment.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-sm text-subtext-light dark:text-subtext-dark">{shipment.eta}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-sm text-subtext-light dark:text-subtext-dark">{shipment.location}</span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button className="text-primary text-sm font-bold hover:underline">
+                        Track
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-8 md:p-12 flex items-center justify-center h-96 flex-col text-center rounded-2xl">
       <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm border border-slate-100">

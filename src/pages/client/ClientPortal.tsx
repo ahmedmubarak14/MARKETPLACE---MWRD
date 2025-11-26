@@ -812,13 +812,224 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
     );
   }
 
+  // --- ORDERS VIEW ---
+  if (activeTab === 'orders') {
+    return (
+      <div className="p-8 md:p-12 space-y-8">
+        <div className="flex items-center justify-between bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+          <div>
+            <h2 className="text-2xl font-bold text-slate-900">Order Management</h2>
+            <p className="text-slate-500 mt-1">Track your purchase orders and delivery status.</p>
+          </div>
+          <div className="flex gap-3">
+            <button className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+              <span className="material-symbols-outlined text-base mr-2 inline-block align-middle">download</span>
+              Export
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead className="bg-slate-50 border-b border-slate-200">
+                <tr>
+                  <th className="px-8 py-5 font-semibold text-slate-600 uppercase text-xs tracking-wider">Order ID</th>
+                  <th className="px-8 py-5 font-semibold text-slate-600 uppercase text-xs tracking-wider">Date</th>
+                  <th className="px-8 py-5 font-semibold text-slate-600 uppercase text-xs tracking-wider">Items</th>
+                  <th className="px-8 py-5 font-semibold text-slate-600 uppercase text-xs tracking-wider">Amount</th>
+                  <th className="px-8 py-5 font-semibold text-slate-600 uppercase text-xs tracking-wider">Status</th>
+                  <th className="px-8 py-5 font-semibold text-slate-600 uppercase text-xs tracking-wider text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {ORDERS.map(order => (
+                  <tr key={order.id} className="hover:bg-slate-50/50 transition-colors group">
+                    <td className="px-8 py-6">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-slate-900 text-sm">{order.id}</span>
+                        <span className="text-xs text-slate-400 mt-0.5">Purchase Order</span>
+                      </div>
+                    </td>
+                    <td className="px-8 py-6 text-slate-600 text-sm font-medium">{order.date}</td>
+                    <td className="px-8 py-6">
+                      <span className="px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 text-xs font-bold border border-slate-200">
+                        Multiple Items
+                      </span>
+                    </td>
+                    <td className="px-8 py-6">
+                      <span className="font-bold text-slate-900">${order.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                    </td>
+                    <td className="px-8 py-6">
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${
+                        order.status === 'In Transit' ? 'bg-blue-50 text-blue-700 border-blue-100' :
+                        order.status === 'Delivered' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                        'bg-amber-50 text-amber-700 border-amber-100'
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${
+                          order.status === 'In Transit' ? 'bg-blue-500' :
+                          order.status === 'Delivered' ? 'bg-emerald-500' :
+                          'bg-amber-500'
+                        }`}></span>
+                        {order.status}
+                      </span>
+                    </td>
+                    <td className="px-8 py-6 text-right">
+                      <button className="text-blue-600 text-sm font-bold hover:underline">
+                        View Details
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- SETTINGS VIEW ---
+  if (activeTab === 'settings') {
+    return (
+      <div className="p-8 md:p-12 max-w-6xl mx-auto space-y-8">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-2xl font-bold text-slate-900">Account Settings</h2>
+          <p className="text-slate-500">Manage your account preferences and profile information.</p>
+        </div>
+
+        {/* Profile Information */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
+          <h3 className="text-lg font-bold text-slate-900 mb-6">Profile Information</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Full Name</label>
+              <input
+                type="text"
+                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                defaultValue="John Client"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
+              <input
+                type="email"
+                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                defaultValue="john.client@example.com"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Company Name</label>
+              <input
+                type="text"
+                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                defaultValue="Client Corp"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Phone Number</label>
+              <input
+                type="tel"
+                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                defaultValue="+1 (555) 123-4567"
+              />
+            </div>
+          </div>
+          <div className="mt-6 pt-6 border-t border-slate-200 flex justify-end gap-3">
+            <button className="px-5 py-2.5 text-sm font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors">
+              Cancel
+            </button>
+            <button className="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+              Save Changes
+            </button>
+          </div>
+        </div>
+
+        {/* Notification Preferences */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
+          <h3 className="text-lg font-bold text-slate-900 mb-6">Notification Preferences</h3>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+              <div>
+                <p className="font-medium text-slate-900">Email Notifications</p>
+                <p className="text-sm text-slate-500">Receive email updates about your RFQs and orders</p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" defaultChecked />
+                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+              <div>
+                <p className="font-medium text-slate-900">Quote Alerts</p>
+                <p className="text-sm text-slate-500">Get notified when you receive new quotes</p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" defaultChecked />
+                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+              <div>
+                <p className="font-medium text-slate-900">Order Updates</p>
+                <p className="text-sm text-slate-500">Tracking and delivery status notifications</p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" defaultChecked />
+                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* Security Settings */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
+          <h3 className="text-lg font-bold text-slate-900 mb-6">Security Settings</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Current Password</label>
+              <input
+                type="password"
+                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter current password"
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">New Password</label>
+                <input
+                  type="password"
+                  className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter new password"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Confirm New Password</label>
+                <input
+                  type="password"
+                  className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Confirm new password"
+                />
+              </div>
+            </div>
+            <div className="mt-6 pt-6 border-t border-slate-200 flex justify-end gap-3">
+              <button className="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                Update Password
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-8 md:p-12 flex items-center justify-center h-96 flex-col text-center rounded-2xl">
       <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm border border-slate-100">
          <span className="material-symbols-outlined text-4xl text-slate-300">construction</span>
       </div>
       <h3 className="text-xl font-bold text-slate-900">Feature Coming Soon</h3>
-      <p className="text-slate-500 max-w-md mt-2 leading-relaxed">We are currently building this module. Please check back later for updates on Order Tracking and Settings.</p>
+      <p className="text-slate-500 max-w-md mt-2 leading-relaxed">We are currently building this module. Please check back later for updates.</p>
     </div>
   );
 };
