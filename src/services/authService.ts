@@ -5,6 +5,12 @@ import { supabase, auth } from '../lib/supabase';
 import { User, UserRole } from '../types/types';
 import type { AuthError, Session } from '@supabase/supabase-js';
 
+// Check if Supabase is properly configured
+const isSupabaseConfigured = Boolean(
+  import.meta.env.VITE_SUPABASE_URL &&
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
+
 export interface AuthResponse {
   success: boolean;
   user?: User;
@@ -90,6 +96,12 @@ class AuthService {
 
   // Sign in existing user
   async signIn(email: string, password: string): Promise<AuthResponse> {
+    // If Supabase is not configured, don't attempt authentication
+    if (!isSupabaseConfigured) {
+      console.warn('⚠️ Supabase not configured. Use mock mode for authentication.');
+      return { success: false, error: 'Supabase not configured' };
+    }
+
     try {
       const { data: authData, error: authError } = await auth.signIn(email, password);
 
@@ -144,6 +156,11 @@ class AuthService {
 
   // Get current session
   async getSession(): Promise<{ session: Session | null; user: User | null }> {
+    // If Supabase is not configured, return null session
+    if (!isSupabaseConfigured) {
+      return { session: null, user: null };
+    }
+
     try {
       const { data } = await auth.getSession();
 

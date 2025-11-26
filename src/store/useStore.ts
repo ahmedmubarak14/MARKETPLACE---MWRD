@@ -12,6 +12,12 @@ const USE_SUPABASE = Boolean(
   import.meta.env.VITE_SUPABASE_ANON_KEY
 );
 
+// Log the mode for debugging
+console.log(`🔧 App Mode: ${USE_SUPABASE ? 'SUPABASE (Database)' : 'MOCK (Local Demo Data)'}`);
+if (!USE_SUPABASE) {
+  console.log('💡 Tip: To enable Supabase, set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env.local');
+}
+
 interface StoreState {
   // Auth
   currentUser: User | null;
