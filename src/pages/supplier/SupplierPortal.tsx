@@ -316,6 +316,369 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
       )
   }
 
+  const BrowseRFQsView = () => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const allRFQs = RFQS; // In production, this would fetch from API
+    const filteredRFQs = allRFQs.filter(rfq =>
+      rfq.id.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    return (
+      <div className="w-full max-w-screen-2xl mx-auto px-6 md:px-10 lg:px-20 py-8 font-display text-[#0d141b] animate-in fade-in duration-300">
+        <div className="flex flex-col gap-6">
+          {/* Header */}
+          <div className="flex flex-wrap justify-between gap-3 items-center">
+            <div className="flex flex-col gap-1">
+              <h1 className="text-4xl font-black tracking-[-0.033em]">Browse RFQs/RFPs</h1>
+              <p className="text-[#4c739a] text-base">Discover new opportunities and submit your quotes</p>
+            </div>
+          </div>
+
+          {/* Search and Filters */}
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-grow">
+              <label className="flex flex-col h-12 w-full">
+                <div className="flex w-full flex-1 items-stretch rounded-lg h-full bg-white border border-[#e7edf3] focus-within:ring-2 focus-within:ring-[#137fec]/50">
+                  <div className="text-[#4c739a] flex items-center justify-center pl-4">
+                    <span className="material-symbols-outlined">search</span>
+                  </div>
+                  <input
+                    className="flex w-full min-w-0 flex-1 resize-none overflow-hidden text-[#0d141b] focus:outline-none border-none bg-transparent h-full placeholder:text-[#4c739a] px-2 text-base font-normal leading-normal"
+                    placeholder="Search RFQs by ID or keywords..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+              </label>
+            </div>
+            <button className="flex h-12 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white border border-[#e7edf3] px-4 hover:border-[#4c739a] transition-colors">
+              <span className="material-symbols-outlined text-xl">filter_list</span>
+              <p className="text-sm font-medium">Filters</p>
+            </button>
+          </div>
+
+          {/* RFQ Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-4">
+            {filteredRFQs.map(rfq => {
+              const firstItem = PRODUCTS.find(p => p.id === rfq.items[0]?.productId);
+              return (
+                <div key={rfq.id} className="group flex flex-col rounded-xl border border-[#e7edf3] bg-white overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                  <div className="p-6 flex flex-col gap-4 flex-grow">
+                    <div className="flex items-start justify-between">
+                      <div className="flex flex-col gap-1">
+                        <h3 className="font-bold text-lg text-[#0d141b]">RFQ-{rfq.id.toUpperCase()}</h3>
+                        <p className="text-sm text-[#4c739a]">{firstItem?.name || 'Multiple Items'}</p>
+                      </div>
+                      <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                        rfq.status === 'OPEN' ? 'bg-green-100 text-green-800' :
+                        rfq.status === 'QUOTED' ? 'bg-blue-100 text-blue-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {rfq.status}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="flex flex-col gap-1">
+                        <p className="text-[#4c739a]">Posted Date</p>
+                        <p className="font-medium text-[#0d141b]">{rfq.date}</p>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <p className="text-[#4c739a]">Items</p>
+                        <p className="font-medium text-[#0d141b]">{rfq.items.length} items</p>
+                      </div>
+                    </div>
+
+                    <div className="border-t border-[#e7edf3] pt-4 mt-auto">
+                      <p className="text-xs text-[#4c739a] line-clamp-2">
+                        {rfq.items.map((item, idx) => {
+                          const prod = PRODUCTS.find(p => p.id === item.productId);
+                          return prod ? `${prod.name} (${item.quantity}x)` : '';
+                        }).filter(Boolean).join(', ')}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-[#f6f7f8] border-t border-[#e7edf3]">
+                    <button
+                      onClick={() => handleDraftQuote(rfq.id)}
+                      className="w-full flex items-center justify-center rounded-lg h-10 px-4 text-sm font-bold bg-[#137fec] text-white hover:bg-[#137fec]/90 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-base mr-2">rate_review</span>
+                      Submit Quote
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {filteredRFQs.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="w-20 h-20 bg-[#f6f7f8] rounded-full flex items-center justify-center mb-4">
+                <span className="material-symbols-outlined text-4xl text-[#4c739a]">search_off</span>
+              </div>
+              <h3 className="text-xl font-bold text-[#0d141b]">No RFQs Found</h3>
+              <p className="text-[#4c739a] max-w-md mt-2">Try adjusting your search criteria or check back later for new opportunities.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const QuotesView = () => {
+    const [selectedRFQ, setSelectedRFQ] = useState<string | null>(null);
+    const [quoteDetails, setQuoteDetails] = useState({
+      unitPrice: '',
+      shippingCost: '',
+      tax: '',
+      leadTime: '',
+      notes: ''
+    });
+
+    const pendingRFQs = RFQS.filter(rfq => rfq.status === 'OPEN');
+    const rfq = selectedRFQ ? RFQS.find(r => r.id === selectedRFQ) : null;
+
+    const calculateTotal = () => {
+      if (!rfq) return 0;
+      const totalItems = rfq.items.reduce((sum, item) => sum + item.quantity, 0);
+      const subtotal = parseFloat(quoteDetails.unitPrice || '0') * totalItems;
+      const shipping = parseFloat(quoteDetails.shippingCost || '0');
+      const tax = parseFloat(quoteDetails.tax || '0');
+      return subtotal + shipping + tax;
+    };
+
+    const handleSubmitQuote = () => {
+      alert('Quote submitted successfully!');
+      setSelectedRFQ(null);
+      setQuoteDetails({
+        unitPrice: '',
+        shippingCost: '',
+        tax: '',
+        leadTime: '',
+        notes: ''
+      });
+    };
+
+    if (!selectedRFQ) {
+      return (
+        <div className="w-full max-w-screen-xl mx-auto px-6 md:px-10 py-8 animate-in fade-in duration-300">
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-2">
+              <h1 className="text-3xl font-bold text-neutral-800">Create Quote</h1>
+              <p className="text-neutral-500">Select an RFQ to start building your quote</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {pendingRFQs.map(rfq => {
+                const firstItem = PRODUCTS.find(p => p.id === rfq.items[0]?.productId);
+                return (
+                  <div key={rfq.id} className="bg-white rounded-xl border border-neutral-200 p-6 hover:shadow-md transition-all cursor-pointer" onClick={() => setSelectedRFQ(rfq.id)}>
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h3 className="font-bold text-lg text-neutral-800">RFQ-{rfq.id.toUpperCase()}</h3>
+                        <p className="text-sm text-neutral-500">{rfq.date}</p>
+                      </div>
+                      <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-amber-100 text-amber-800">OPEN</span>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm text-neutral-600">
+                        <span className="font-medium">{rfq.items.length}</span> items requested
+                      </p>
+                      <p className="text-xs text-neutral-400 line-clamp-2">
+                        {firstItem?.name || 'Multiple products'}
+                      </p>
+                    </div>
+                    <button className="mt-4 w-full py-2 px-4 bg-[#137fec] text-white rounded-lg font-semibold hover:bg-[#137fec]/90 transition-colors">
+                      Create Quote
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            {pendingRFQs.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="w-20 h-20 bg-neutral-100 rounded-full flex items-center justify-center mb-4">
+                  <span className="material-symbols-outlined text-4xl text-neutral-400">request_quote</span>
+                </div>
+                <h3 className="text-xl font-bold text-neutral-800">No Open RFQs</h3>
+                <p className="text-neutral-500 max-w-md mt-2">There are currently no open RFQs available for quoting. Check back later or browse the RFQs section.</p>
+                <button onClick={() => onNavigate('browse')} className="mt-4 px-6 py-2 bg-[#137fec] text-white rounded-lg font-semibold hover:bg-[#137fec]/90">
+                  Browse RFQs
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="w-full max-w-screen-xl mx-auto px-6 md:px-10 py-8 animate-in fade-in duration-300">
+        <div className="flex flex-col gap-6">
+          {/* Breadcrumbs */}
+          <div className="flex items-center gap-2">
+            <button onClick={() => setSelectedRFQ(null)} className="text-sm font-medium text-neutral-500 hover:text-[#137fec]">Quotes</button>
+            <span className="text-sm text-neutral-400">/</span>
+            <span className="text-sm font-medium text-neutral-800">RFQ-{rfq?.id.toUpperCase()}</span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left: Quote Form */}
+            <div className="lg:col-span-2 space-y-6">
+              <div className="bg-white rounded-xl border border-neutral-200 p-6">
+                <h2 className="text-xl font-bold text-neutral-800 mb-4">Quote Details</h2>
+
+                {/* RFQ Items */}
+                <div className="mb-6">
+                  <h3 className="text-sm font-bold text-neutral-600 uppercase mb-3">Requested Items</h3>
+                  <div className="space-y-2">
+                    {rfq?.items.map((item, idx) => {
+                      const product = PRODUCTS.find(p => p.id === item.productId);
+                      return (
+                        <div key={idx} className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <img src={product?.image} alt={product?.name} className="w-12 h-12 object-cover rounded" />
+                            <div>
+                              <p className="font-medium text-neutral-800">{product?.name}</p>
+                              <p className="text-sm text-neutral-500">Quantity: {item.quantity}</p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Pricing Form */}
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-600 mb-2">Unit Price (USD)</label>
+                      <div className="relative">
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-neutral-400">$</span>
+                        <input
+                          type="number"
+                          className="w-full pl-8 pr-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-[#137fec] focus:border-[#137fec]"
+                          placeholder="0.00"
+                          value={quoteDetails.unitPrice}
+                          onChange={(e) => setQuoteDetails({...quoteDetails, unitPrice: e.target.value})}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-600 mb-2">Lead Time</label>
+                      <input
+                        type="text"
+                        className="w-full px-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-[#137fec] focus:border-[#137fec]"
+                        placeholder="e.g., 3-5 business days"
+                        value={quoteDetails.leadTime}
+                        onChange={(e) => setQuoteDetails({...quoteDetails, leadTime: e.target.value})}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-600 mb-2">Shipping Cost (USD)</label>
+                      <div className="relative">
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-neutral-400">$</span>
+                        <input
+                          type="number"
+                          className="w-full pl-8 pr-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-[#137fec] focus:border-[#137fec]"
+                          placeholder="0.00"
+                          value={quoteDetails.shippingCost}
+                          onChange={(e) => setQuoteDetails({...quoteDetails, shippingCost: e.target.value})}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-600 mb-2">Tax (USD)</label>
+                      <div className="relative">
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-neutral-400">$</span>
+                        <input
+                          type="number"
+                          className="w-full pl-8 pr-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-[#137fec] focus:border-[#137fec]"
+                          placeholder="0.00"
+                          value={quoteDetails.tax}
+                          onChange={(e) => setQuoteDetails({...quoteDetails, tax: e.target.value})}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-600 mb-2">Additional Notes</label>
+                    <textarea
+                      className="w-full px-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-[#137fec] focus:border-[#137fec]"
+                      rows={4}
+                      placeholder="Any special conditions, warranties, or additional information..."
+                      value={quoteDetails.notes}
+                      onChange={(e) => setQuoteDetails({...quoteDetails, notes: e.target.value})}
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Summary */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-28 bg-white rounded-xl border border-neutral-200 p-6">
+                <h3 className="text-lg font-bold text-neutral-800 mb-4">Quote Summary</h3>
+
+                <div className="space-y-3 mb-6">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-neutral-600">Subtotal</span>
+                    <span className="font-medium text-neutral-800">
+                      ${(parseFloat(quoteDetails.unitPrice || '0') * (rfq?.items.reduce((sum, item) => sum + item.quantity, 0) || 0)).toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-neutral-600">Shipping</span>
+                    <span className="font-medium text-neutral-800">${parseFloat(quoteDetails.shippingCost || '0').toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-neutral-600">Tax</span>
+                    <span className="font-medium text-neutral-800">${parseFloat(quoteDetails.tax || '0').toFixed(2)}</span>
+                  </div>
+                  <div className="border-t border-neutral-200 pt-3 flex justify-between">
+                    <span className="font-bold text-neutral-800">Total</span>
+                    <span className="font-bold text-xl text-neutral-800">${calculateTotal().toFixed(2)}</span>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <button
+                    onClick={handleSubmitQuote}
+                    disabled={!quoteDetails.unitPrice || !quoteDetails.leadTime}
+                    className="w-full py-3 px-4 bg-[#137fec] text-white rounded-lg font-bold hover:bg-[#137fec]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Submit Quote
+                  </button>
+                  <button
+                    onClick={() => setSelectedRFQ(null)}
+                    className="w-full py-3 px-4 bg-white text-neutral-600 border border-neutral-300 rounded-lg font-semibold hover:bg-neutral-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+
+                <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <span className="material-symbols-outlined text-blue-600 text-lg">info</span>
+                    <p className="text-xs text-blue-700">Your quote will be reviewed by the admin before being sent to the client.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const OrdersView = () => {
     const [activeOrderTab, setActiveOrderTab] = useState<'pending' | 'completed' | 'won'>('won');
 
@@ -733,6 +1096,8 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
       return <ProductsView />;
   }
   if (activeTab === 'requests') return <RequestsView />;
+  if (activeTab === 'browse') return <BrowseRFQsView />;
+  if (activeTab === 'quotes') return <QuotesView />;
   if (activeTab === 'orders') return <OrdersView />;
 
   // Default / Fallback
