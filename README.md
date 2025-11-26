@@ -50,17 +50,28 @@ A fully functional and scalable B2B marketplace platform connecting clients and 
 npm install
 ```
 
-2. Start development server:
+2. Set up environment variables:
+```bash
+# Copy the example environment file
+cp .env.example .env.local
+
+# For mock mode (no database required), leave all variables commented out
+# For production mode with Supabase, uncomment and fill in your credentials
+```
+
+3. Start development server:
 ```bash
 npm run dev
 ```
 
-3. Build for production:
+The app will be available at `http://localhost:3000/`
+
+4. Build for production:
 ```bash
 npm run build
 ```
 
-4. Preview production build:
+5. Preview production build:
 ```bash
 npm run preview
 ```
