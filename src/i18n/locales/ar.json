@@ -212,7 +212,20 @@
       "client": "العميل",
       "value": "القيمة",
       "shipped": "تم الشحن",
-      "processing": "قيد المعالجة"
+      "processing": "قيد المعالجة",
+      "searchPlaceholder": "البحث عن العملاء والموردين والطلبات...",
+      "last30Days": "آخر 30 يوماً",
+      "customRange": "نطاق مخصص",
+      "sales": "المبيعات",
+      "margin": "الهامش",
+      "view": "عرض",
+      "date": "التاريخ",
+      "delivered": "تم التسليم",
+      "cancelled": "ملغي",
+      "awaitsVerification": "في انتظار التحقق",
+      "needsApproval": "يحتاج موافقة",
+      "verification": "التحقق",
+      "onboard": "الانضمام"
     },
     "approvals": {
       "title": "الموافقات",
@@ -249,13 +262,21 @@
     },
     "payments": {
       "title": "إدارة المدفوعات",
+      "subtitle": "إدارة مدفوعات التحويل البنكي",
       "pendingPayments": "المدفوعات المعلقة",
       "confirmedPayments": "المدفوعات المؤكدة",
       "confirmPayment": "تأكيد الدفع",
       "paymentReference": "مرجع الدفع",
       "bankDetails": "تفاصيل البنك",
       "paymentDate": "تاريخ الدفع",
-      "markAsPaid": "تحديد كمدفوع"
+      "markAsPaid": "تحديد كمدفوع",
+      "noPendingPayments": "لا توجد مدفوعات معلقة للتأكيد",
+      "noConfirmedPayments": "لا توجد مدفوعات مؤكدة بعد",
+      "confirmedAt": "تم التأكيد في",
+      "rejectPayment": "رفض الدفع",
+      "rejectPaymentDesc": "يرجى تقديم سبب لرفض الدفع للطلب",
+      "rejectionReason": "سبب الرفض...",
+      "searchPlaceholder": "البحث برقم الطلب أو العميل..."
     }
   },
   "payment": {

@@ -47,7 +47,7 @@ export const AdminPaymentManagement: React.FC<AdminPaymentManagementProps> = ({
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('admin.payments.title')}</h1>
-          <p className="text-gray-500 mt-1">Manage bank transfer payments</p>
+          <p className="text-gray-500 mt-1">{t('admin.payments.subtitle')}</p>
         </div>
       </div>
 
@@ -60,7 +60,7 @@ export const AdminPaymentManagement: React.FC<AdminPaymentManagementProps> = ({
         {pendingPayments.length === 0 ? (
           <div className="bg-gray-50 rounded-xl p-8 text-center">
             <span className="material-symbols-outlined text-gray-300 text-4xl mb-2">payments</span>
-            <p className="text-gray-500">No pending payments to confirm</p>
+            <p className="text-gray-500">{t('admin.payments.noPendingPayments')}</p>
           </div>
         ) : (
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -118,7 +118,7 @@ export const AdminPaymentManagement: React.FC<AdminPaymentManagementProps> = ({
         
         {confirmedPayments.length === 0 ? (
           <div className="bg-gray-50 rounded-xl p-8 text-center">
-            <p className="text-gray-500">No confirmed payments yet</p>
+            <p className="text-gray-500">{t('admin.payments.noConfirmedPayments')}</p>
           </div>
         ) : (
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -128,7 +128,7 @@ export const AdminPaymentManagement: React.FC<AdminPaymentManagementProps> = ({
                   <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">{t('admin.overview.orderId')}</th>
                   <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">{t('admin.payments.paymentReference')}</th>
                   <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">{t('common.amount')}</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Confirmed At</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">{t('admin.payments.confirmedAt')}</th>
                   <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">{t('common.status')}</th>
                 </tr>
               </thead>
@@ -156,14 +156,14 @@ export const AdminPaymentManagement: React.FC<AdminPaymentManagementProps> = ({
       {showRejectModal && selectedOrder && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl max-w-md w-full p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Reject Payment</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-4">{t('admin.payments.rejectPayment')}</h3>
             <p className="text-gray-600 mb-4">
-              Please provide a reason for rejecting the payment for order {selectedOrder.id}
+              {t('admin.payments.rejectPaymentDesc')} {selectedOrder.id}
             </p>
             <textarea
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
-              placeholder="Rejection reason..."
+              placeholder={t('admin.payments.rejectionReason')}
               className="w-full border border-gray-300 rounded-lg p-3 mb-4 focus:ring-2 focus:ring-red-500 focus:border-transparent"
               rows={3}
             />
@@ -183,7 +183,7 @@ export const AdminPaymentManagement: React.FC<AdminPaymentManagementProps> = ({
                 disabled={!rejectReason}
                 className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 disabled:opacity-50"
               >
-                Reject Payment
+                {t('admin.payments.rejectPayment')}
               </button>
             </div>
           </div>

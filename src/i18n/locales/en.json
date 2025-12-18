@@ -212,7 +212,20 @@
       "client": "Client",
       "value": "Value",
       "shipped": "Shipped",
-      "processing": "Processing"
+      "processing": "Processing",
+      "searchPlaceholder": "Search clients, suppliers, orders...",
+      "last30Days": "Last 30 Days",
+      "customRange": "Custom Range",
+      "sales": "Sales",
+      "margin": "Margin",
+      "view": "View",
+      "date": "Date",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled",
+      "awaitsVerification": "awaits verification",
+      "needsApproval": "needs approval",
+      "verification": "verification",
+      "onboard": "onboard"
     },
     "approvals": {
       "title": "Approvals",
@@ -249,13 +262,21 @@
     },
     "payments": {
       "title": "Payment Management",
+      "subtitle": "Manage bank transfer payments",
       "pendingPayments": "Pending Payments",
       "confirmedPayments": "Confirmed Payments",
       "confirmPayment": "Confirm Payment",
       "paymentReference": "Payment Reference",
       "bankDetails": "Bank Details",
       "paymentDate": "Payment Date",
-      "markAsPaid": "Mark as Paid"
+      "markAsPaid": "Mark as Paid",
+      "noPendingPayments": "No pending payments to confirm",
+      "noConfirmedPayments": "No confirmed payments yet",
+      "confirmedAt": "Confirmed At",
+      "rejectPayment": "Reject Payment",
+      "rejectPaymentDesc": "Please provide a reason for rejecting the payment for order",
+      "rejectionReason": "Rejection reason...",
+      "searchPlaceholder": "Search by order ID or client..."
     }
   },
   "payment": {

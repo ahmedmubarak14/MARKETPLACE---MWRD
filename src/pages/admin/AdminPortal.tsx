@@ -276,7 +276,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                 </div>
                 <input 
                   className="flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-neutral-800 dark:text-white focus:outline-none border-none bg-neutral-100 dark:bg-neutral-600/30 h-full placeholder:text-neutral-600 dark:placeholder:text-neutral-200 px-4 rounded-l-none border-l-0 pl-2 text-sm font-normal leading-normal" 
-                  placeholder="Search clients, suppliers, orders..." 
+                  placeholder={t('admin.overview.searchPlaceholder')} 
                 />
               </div>
             </label>
@@ -298,11 +298,11 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
               <p className="text-neutral-800 dark:text-white text-3xl font-bold leading-tight tracking-tight min-w-72">{t('admin.overview.title')}</p>
               <div className="flex gap-2">
                 <button className="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white dark:bg-neutral-800 dark:border dark:border-neutral-600/50 pl-3 pr-2 shadow-sm hover:bg-neutral-50">
-                  <p className="text-neutral-800 dark:text-white text-sm font-medium leading-normal">Last 30 Days</p>
+                  <p className="text-neutral-800 dark:text-white text-sm font-medium leading-normal">{t('admin.overview.last30Days')}</p>
                   <span className="material-symbols-outlined text-neutral-800 dark:text-white text-base">expand_more</span>
                 </button>
                 <button className="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white dark:bg-neutral-800 dark:border dark:border-neutral-600/50 pl-3 pr-2 shadow-sm hover:bg-neutral-50">
-                  <p className="text-neutral-800 dark:text-white text-sm font-medium leading-normal">Custom Range</p>
+                  <p className="text-neutral-800 dark:text-white text-sm font-medium leading-normal">{t('admin.overview.customRange')}</p>
                   <span className="material-symbols-outlined text-neutral-800 dark:text-white text-base">expand_more</span>
                 </button>
               </div>
@@ -365,11 +365,11 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                   <div className="flex items-center gap-4 text-sm">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-chart-blue"></div>
-                      <span className="text-neutral-600 dark:text-neutral-200">Sales</span>
+                      <span className="text-neutral-600 dark:text-neutral-200">{t('admin.overview.sales')}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-chart-green"></div>
-                      <span className="text-neutral-600 dark:text-neutral-200">Margin</span>
+                      <span className="text-neutral-600 dark:text-neutral-200">{t('admin.overview.margin')}</span>
                     </div>
                   </div>
                 </div>
@@ -381,17 +381,17 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                 <h3 className="text-neutral-800 dark:text-white text-lg font-bold">{t('admin.overview.pendingActions')}</h3>
                 <div className="flex flex-col gap-2">
                   {[
-                    { type: 'New Supplier', desc: 'ABC Corp awaits verification' },
-                    { type: 'Product Approval', desc: 'SKU-123 needs approval' },
-                    { type: 'New Supplier', desc: 'Innovate Inc. verification' },
-                    { type: 'New Client', desc: 'Tech Solutions LLC onboard' },
+                    { type: t('admin.overview.newSupplier'), desc: `ABC Corp ${t('admin.overview.awaitsVerification')}` },
+                    { type: t('admin.overview.productApproval'), desc: `SKU-123 ${t('admin.overview.needsApproval')}` },
+                    { type: t('admin.overview.newSupplier'), desc: `Innovate Inc. ${t('admin.overview.verification')}` },
+                    { type: t('admin.overview.newClient'), desc: `Tech Solutions LLC ${t('admin.overview.onboard')}` },
                   ].map((action, i) => (
                     <div key={i} className="flex justify-between items-center p-3 rounded-lg hover:bg-neutral-100/50 dark:hover:bg-neutral-600/20 transition-colors">
                       <div className="flex flex-col">
                         <p className="text-xs text-neutral-600 dark:text-neutral-200">{action.type}</p>
                         <p className="text-sm font-medium text-neutral-800 dark:text-white">{action.desc}</p>
                       </div>
-                      <a className="text-primary text-sm font-bold hover:underline" href="#">View</a>
+                      <a className="text-primary text-sm font-bold hover:underline" href="#">{t('admin.overview.view')}</a>
                     </div>
                   ))}
                 </div>
@@ -405,27 +405,27 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                 <table className="w-full text-left text-sm">
                   <thead className="text-xs text-neutral-600 dark:text-neutral-200 uppercase bg-neutral-100/50 dark:bg-neutral-600/20">
                     <tr>
-                      <th className="px-6 py-3" scope="col">Order ID</th>
-                      <th className="px-6 py-3" scope="col">Client</th>
-                      <th className="px-6 py-3" scope="col">Status</th>
-                      <th className="px-6 py-3" scope="col">Value</th>
-                      <th className="px-6 py-3" scope="col">Date</th>
+                      <th className="px-6 py-3" scope="col">{t('admin.overview.orderId')}</th>
+                      <th className="px-6 py-3" scope="col">{t('admin.overview.client')}</th>
+                      <th className="px-6 py-3" scope="col">{t('common.status')}</th>
+                      <th className="px-6 py-3" scope="col">{t('admin.overview.value')}</th>
+                      <th className="px-6 py-3" scope="col">{t('admin.overview.date')}</th>
                     </tr>
                   </thead>
                   <tbody className="text-neutral-800 dark:text-white">
                     {[
-                      { id: '#ORD-00876', client: 'Quantum Industries', status: 'Shipped', color: 'green', value: '$12,450.00', date: '2023-10-26' },
-                      { id: '#ORD-00875', client: 'Apex Solutions', status: 'Processing', color: 'yellow', value: '$8,200.50', date: '2023-10-26' },
-                      { id: '#ORD-00874', client: 'Pioneer Logistics', status: 'Delivered', color: 'blue', value: '$25,000.00', date: '2023-10-25' },
-                      { id: '#ORD-00873', client: 'Starlight Corp', status: 'Cancelled', color: 'red', value: '$5,600.00', date: '2023-10-25' },
-                      { id: '#ORD-00872', client: 'Nexus Enterprises', status: 'Delivered', color: 'blue', value: '$18,990.00', date: '2023-10-24' },
+                      { id: '#ORD-00876', client: 'Quantum Industries', statusKey: 'shipped', color: 'green', value: '$12,450.00', date: '2023-10-26' },
+                      { id: '#ORD-00875', client: 'Apex Solutions', statusKey: 'processing', color: 'yellow', value: '$8,200.50', date: '2023-10-26' },
+                      { id: '#ORD-00874', client: 'Pioneer Logistics', statusKey: 'delivered', color: 'blue', value: '$25,000.00', date: '2023-10-25' },
+                      { id: '#ORD-00873', client: 'Starlight Corp', statusKey: 'cancelled', color: 'red', value: '$5,600.00', date: '2023-10-25' },
+                      { id: '#ORD-00872', client: 'Nexus Enterprises', statusKey: 'delivered', color: 'blue', value: '$18,990.00', date: '2023-10-24' },
                     ].map((order, i) => (
                       <tr key={i} className="border-b last:border-0 dark:border-neutral-600/50 hover:bg-neutral-50 dark:hover:bg-neutral-700/30 transition-colors">
                         <td className="px-6 py-4 font-medium">{order.id}</td>
                         <td className="px-6 py-4">{order.client}</td>
                         <td className="px-6 py-4">
                           <span className={`bg-${order.color}-100 dark:bg-${order.color}-900/50 text-${order.color}-800 dark:text-${order.color}-300 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full`}>
-                            {order.status}
+                            {t(`admin.overview.${order.statusKey}`)}
                           </span>
                         </td>
                         <td className="px-6 py-4">{order.value}</td>
