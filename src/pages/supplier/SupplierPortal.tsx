@@ -1,5 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PRODUCTS, RFQS, QUOTES } from '../../services/mockData';
 import { Product } from '../../types/types';
 
@@ -9,6 +9,7 @@ interface SupplierPortalProps {
 }
 
 export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNavigate }) => {
+  const { t } = useTranslation();
   const [products, setProducts] = useState(PRODUCTS.filter(p => p.supplierId === 'u2'));
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
@@ -25,7 +26,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
 
   const handleSaveProduct = () => {
     setTimeout(() => {
-        alert("Product changes saved successfully!");
+        alert(t('supplier.products.changesSaved'));
         setEditingProduct(null);
     }, 500);
   };
@@ -35,9 +36,9 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
   const DashboardView = () => {
     const pendingRFQs = RFQS.slice(0, 4);
     const getStatusBadge = (status: string) => {
-        if (status === 'OPEN') return <span className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800 ring-1 ring-inset ring-amber-600/20">Awaiting Quote</span>;
-        if (status === 'QUOTED') return <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">Quote Submitted</span>;
-        return <span className="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Quote Accepted</span>;
+        if (status === 'OPEN') return <span className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800 ring-1 ring-inset ring-amber-600/20">{t('supplier.dashboard.awaitingQuote')}</span>;
+        if (status === 'QUOTED') return <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">{t('supplier.dashboard.quoteSubmitted')}</span>;
+        return <span className="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">{t('supplier.dashboard.quoteAccepted')}</span>;
     };
 
     return (
@@ -45,8 +46,8 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             {/* Header Section */}
             <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex flex-col gap-1">
-                <h1 className="text-neutral-800 text-3xl font-bold tracking-tight">Dashboard</h1>
-                <p className="text-neutral-500 text-base font-normal">Welcome back, here's a summary of your activity.</p>
+                <h1 className="text-neutral-800 text-3xl font-bold tracking-tight">{t('supplier.dashboard.title')}</h1>
+                <p className="text-neutral-500 text-base font-normal">{t('supplier.dashboard.welcomeMessage')}</p>
                 </div>
             </div>
 
@@ -54,41 +55,41 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 <div className="flex flex-col gap-2 rounded-xl p-6 border border-neutral-200 bg-white shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between">
-                        <p className="text-neutral-700 text-base font-medium leading-normal">New Anonymous RFQs</p>
+                        <p className="text-neutral-700 text-base font-medium leading-normal">{t('supplier.dashboard.newRfqs')}</p>
                         <span className="material-symbols-outlined text-amber-500">new_releases</span>
                     </div>
                     <p className="text-amber-500 tracking-tight text-4xl font-bold leading-tight">5</p>
-                    <button onClick={() => onNavigate('requests')} className="text-sm font-medium text-[#137fec] hover:underline mt-2 text-left">View RFQs</button>
+                    <button onClick={() => onNavigate('requests')} className="text-sm font-medium text-[#137fec] hover:underline mt-2 text-left">{t('supplier.dashboard.viewRfqs')}</button>
                 </div>
                 <div className="flex flex-col gap-2 rounded-xl p-6 border border-neutral-200 bg-white shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between">
-                        <p className="text-neutral-700 text-base font-medium leading-normal">Quotes Submitted</p>
+                        <p className="text-neutral-700 text-base font-medium leading-normal">{t('supplier.dashboard.quotesSubmitted')}</p>
                         <span className="material-symbols-outlined text-neutral-500">receipt_long</span>
                     </div>
                     <p className="text-neutral-800 tracking-tight text-4xl font-bold leading-tight">12</p>
-                    <button onClick={() => onNavigate('orders')} className="text-sm font-medium text-[#137fec] hover:underline mt-2 text-left">View Quotes</button>
+                    <button onClick={() => onNavigate('orders')} className="text-sm font-medium text-[#137fec] hover:underline mt-2 text-left">{t('supplier.dashboard.viewQuotes')}</button>
                 </div>
                 <div className="flex flex-col gap-2 rounded-xl p-6 border border-neutral-200 bg-white shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between">
-                        <p className="text-neutral-700 text-base font-medium leading-normal">Manage Products</p>
+                        <p className="text-neutral-700 text-base font-medium leading-normal">{t('supplier.dashboard.manageProducts')}</p>
                         <span className="material-symbols-outlined text-neutral-500">inventory_2</span>
                     </div>
                     <p className="text-neutral-800 tracking-tight text-4xl font-bold leading-tight">154</p>
-                    <button onClick={() => onNavigate('products')} className="text-sm font-medium text-[#137fec] hover:underline mt-2 text-left">View Catalog</button>
+                    <button onClick={() => onNavigate('products')} className="text-sm font-medium text-[#137fec] hover:underline mt-2 text-left">{t('supplier.dashboard.viewCatalog')}</button>
                 </div>
             </div>
 
             {/* Pending Actions Table */}
             <div className="space-y-6">
-                <h2 className="text-neutral-800 text-xl font-bold leading-tight tracking-tight">Pending Actions</h2>
+                <h2 className="text-neutral-800 text-xl font-bold leading-tight tracking-tight">{t('supplier.dashboard.pendingActions')}</h2>
                 <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
                     <table className="w-full text-left">
                         <thead className="bg-neutral-50 border-b border-neutral-200">
                             <tr>
-                            <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-neutral-500">RFQ ID</th>
-                            <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-neutral-500">Due Date</th>
-                            <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-neutral-500">Status</th>
-                            <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-neutral-500">Action</th>
+                            <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-neutral-500">{t('supplier.dashboard.rfqId')}</th>
+                            <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-neutral-500">{t('supplier.dashboard.dueDate')}</th>
+                            <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-neutral-500">{t('supplier.dashboard.status')}</th>
+                            <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-neutral-500">{t('supplier.dashboard.action')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-neutral-200">
@@ -101,7 +102,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <button onClick={() => handleDraftQuote(rfq.id)} className="text-[#137fec] font-semibold hover:underline flex items-center gap-1">
-                                            View & Quote <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                                            {t('supplier.dashboard.viewAndQuote')} <span className="material-symbols-outlined text-sm">arrow_forward</span>
                                         </button>
                                     </td>
                                 </tr>
@@ -119,22 +120,22 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
         <div className="w-full mx-auto animate-in fade-in zoom-in-95 duration-300 p-6 lg:p-8">
             {/* Breadcrumbs */}
             <div className="flex flex-wrap items-center gap-2 mb-6">
-                <button onClick={onBack} className="text-neutral-400 text-sm font-medium hover:text-[#137fec]">Products</button>
+                <button onClick={onBack} className="text-neutral-400 text-sm font-medium hover:text-[#137fec]">{t('sidebar.products')}</button>
                 <span className="text-neutral-400 text-sm font-medium">/</span>
                 <button className="text-neutral-400 text-sm font-medium hover:text-[#137fec]">{product.name}</button>
                 <span className="text-neutral-400 text-sm font-medium">/</span>
-                <span className="text-neutral-500 text-sm font-medium">Edit</span>
+                <span className="text-neutral-500 text-sm font-medium">{t('common.edit')}</span>
             </div>
 
             {/* PageHeading */}
             <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                 <div className="flex flex-col gap-1">
-                    <p className="text-neutral-500 text-2xl lg:text-3xl font-bold tracking-tight">Edit Product Details</p>
-                    <p className="text-neutral-400 text-sm">Update product information and manage images.</p>
+                    <p className="text-neutral-500 text-2xl lg:text-3xl font-bold tracking-tight">{t('supplier.products.editProduct')}</p>
+                    <p className="text-neutral-400 text-sm">{t('supplier.products.uploadHint')}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">Pending Approval</span>
-                    <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">Live</span>
+                    <span className="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">{t('supplier.products.pendingApproval')}</span>
+                    <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">{t('supplier.products.live')}</span>
                 </div>
             </div>
 
@@ -143,8 +144,8 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                 <div className="flex items-start gap-3">
                     <span className="material-symbols-outlined !text-xl text-yellow-600 mt-0.5">warning</span>
                     <div className="flex flex-col gap-1">
-                        <p className="text-yellow-900 text-sm font-semibold">Pending Approval</p>
-                        <p className="text-yellow-700 text-sm">Changes submitted will require admin approval before going live.</p>
+                        <p className="text-yellow-900 text-sm font-semibold">{t('supplier.products.pendingApproval')}</p>
+                        <p className="text-yellow-700 text-sm">{t('supplier.products.uploadHintEdit')}</p>
                     </div>
                 </div>
             </div>
@@ -156,35 +157,35 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                     <div className="rounded-lg border border-neutral-300 bg-white p-6">
                         <div className="flex flex-col gap-6">
                             <div>
-                                <label className="block text-sm font-medium text-neutral-500 mb-1.5">Item Name</label>
+                                <label className="block text-sm font-medium text-neutral-500 mb-1.5">{t('supplier.products.itemName')}</label>
                                 <input className="form-input w-full rounded-lg border-neutral-300 bg-neutral-100/50 focus:border-[#137fec] focus:ring-[#137fec] text-sm py-2.5" type="text" defaultValue={product.name} />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-neutral-500 mb-1.5">Product ID / SKU</label>
+                                <label className="block text-sm font-medium text-neutral-500 mb-1.5">{t('supplier.products.productId')}</label>
                                 <input className="form-input w-full rounded-lg border-neutral-300 bg-neutral-200/50 text-neutral-400 text-sm py-2.5" disabled readOnly type="text" defaultValue={product.sku || `SKU-${product.id}`} />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-neutral-500 mb-1.5">Description</label>
+                                <label className="block text-sm font-medium text-neutral-500 mb-1.5">{t('supplier.products.description')}</label>
                                 <textarea className="form-textarea w-full rounded-lg border-neutral-300 bg-neutral-100/50 focus:border-[#137fec] focus:ring-[#137fec] text-sm" rows={5} defaultValue={product.description}></textarea>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-neutral-500 mb-1.5">Cost Price</label>
+                                    <label className="block text-sm font-medium text-neutral-500 mb-1.5">{t('supplier.products.costPrice')}</label>
                                     <div className="relative">
                                         <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-neutral-400 text-sm">USD</span>
                                         <input className="form-input w-full rounded-lg border-neutral-300 bg-neutral-100/50 focus:border-[#137fec] focus:ring-[#137fec] text-sm pl-12 py-2.5" type="text" defaultValue={product.costPrice} />
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-neutral-500 mb-1.5">Category</label>
+                                    <label className="block text-sm font-medium text-neutral-500 mb-1.5">{t('supplier.products.category')}</label>
                                     <select className="form-select w-full rounded-lg border-neutral-300 bg-neutral-100/50 focus:border-[#137fec] focus:ring-[#137fec] text-sm py-2.5" defaultValue={product.category}>
-                                        <option>Office Furniture</option>
-                                        <option>Electronics</option>
-                                        <option>Industrial</option>
-                                        <option>Safety Gear</option>
-                                        <option>Footwear</option>
-                                        <option>Accessories</option>
-                                        <option>Kitchenware</option>
+                                        <option>{t('supplier.products.officeFurniture')}</option>
+                                        <option>{t('supplier.products.electronics')}</option>
+                                        <option>{t('supplier.products.industrial')}</option>
+                                        <option>{t('supplier.products.safetyGear')}</option>
+                                        <option>{t('supplier.products.footwear')}</option>
+                                        <option>{t('supplier.products.accessories')}</option>
+                                        <option>{t('supplier.products.kitchenware')}</option>
                                     </select>
                                 </div>
                             </div>
@@ -197,8 +198,8 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                     <div className="rounded-lg border border-neutral-300 bg-white p-6">
                         <div className="flex flex-col gap-4">
                             <div>
-                                <h3 className="text-base font-semibold text-neutral-500">Product Images</h3>
-                                <p className="text-sm text-neutral-400 mt-1">Upload high-quality images. The first image is primary.</p>
+                                <h3 className="text-base font-semibold text-neutral-500">{t('supplier.products.productImages')}</h3>
+                                <p className="text-sm text-neutral-400 mt-1">{t('supplier.products.uploadHint')}</p>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="relative group aspect-square">
@@ -215,8 +216,8 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                                 <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-neutral-300 border-dashed rounded-lg cursor-pointer bg-neutral-100 hover:bg-neutral-200/50">
                                     <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
                                         <span className="material-symbols-outlined text-neutral-400 !text-3xl">upload_file</span>
-                                        <p className="mb-2 text-sm text-neutral-400"><span className="font-semibold">Click to upload</span></p>
-                                        <p className="text-xs text-neutral-400">PNG, JPG or GIF (MAX. 800x400px)</p>
+                                        <p className="mb-2 text-sm text-neutral-400"><span className="font-semibold">{t('supplier.products.clickToUpload')}</span></p>
+                                        <p className="text-xs text-neutral-400">{t('supplier.products.imageSize')}</p>
                                     </div>
                                     <input className="hidden" type="file"/>
                                 </label>
@@ -228,8 +229,8 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
 
             {/* Action Buttons */}
             <div className="flex items-center justify-end gap-3 pt-4 mt-6 border-t border-neutral-300">
-                <button onClick={onBack} className="flex items-center justify-center rounded-lg h-10 bg-neutral-200 text-neutral-500 text-sm font-semibold px-4 hover:bg-neutral-300">Cancel</button>
-                <button onClick={handleSaveProduct} className="flex items-center justify-center rounded-lg h-10 bg-[#137fec] text-white text-sm font-semibold px-4 hover:bg-[#137fec]/90">Save Changes</button>
+                <button onClick={onBack} className="flex items-center justify-center rounded-lg h-10 bg-neutral-200 text-neutral-500 text-sm font-semibold px-4 hover:bg-neutral-300">{t('common.cancel')}</button>
+                <button onClick={handleSaveProduct} className="flex items-center justify-center rounded-lg h-10 bg-[#137fec] text-white text-sm font-semibold px-4 hover:bg-[#137fec]/90">{t('supplier.products.saveChanges')}</button>
             </div>
         </div>
     );
@@ -240,12 +241,12 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
         <div className="p-8 mx-auto max-w-7xl animate-in fade-in duration-300">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
                 <div className="flex flex-col gap-1">
-                    <h1 className="text-2xl font-bold text-neutral-800">Product Catalog</h1>
-                    <p className="text-neutral-500">Manage your product listings and availability.</p>
+                    <h1 className="text-2xl font-bold text-neutral-800">{t('supplier.products.title')}</h1>
+                    <p className="text-neutral-500">{t('supplier.products.subtitle')}</p>
                 </div>
                 <button onClick={() => alert("Add Product Demo")} className="bg-[#137fec] text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-[#137fec]/90">
                     <span className="material-symbols-outlined">add</span>
-                    Add New Product
+                    {t('supplier.products.addNewProduct')}
                 </button>
             </div>
 
@@ -269,7 +270,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                                     onClick={() => setEditingProduct(product)}
                                     className="text-[#137fec] text-sm font-bold hover:underline flex items-center gap-1"
                                 >
-                                    <span className="material-symbols-outlined text-base">edit</span> Edit
+                                    <span className="material-symbols-outlined text-base">edit</span> {t('supplier.products.edit')}
                                 </button>
                             </div>
                         </div>
@@ -283,16 +284,16 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
   const RequestsView = () => {
       return (
           <div className="p-8 mx-auto max-w-7xl animate-in fade-in duration-300">
-            <h1 className="text-2xl font-bold text-neutral-800 mb-6">Received RFQs</h1>
+            <h1 className="text-2xl font-bold text-neutral-800 mb-6">{t('supplier.rfqs.title')}</h1>
             <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden shadow-sm">
                  <table className="w-full text-left">
                     <thead className="bg-neutral-50 border-b border-neutral-200">
                         <tr>
-                            <th className="px-6 py-3 text-xs font-bold text-neutral-500 uppercase">RFQ ID</th>
-                            <th className="px-6 py-3 text-xs font-bold text-neutral-500 uppercase">Date</th>
-                            <th className="px-6 py-3 text-xs font-bold text-neutral-500 uppercase">Items</th>
-                            <th className="px-6 py-3 text-xs font-bold text-neutral-500 uppercase">Status</th>
-                            <th className="px-6 py-3 text-xs font-bold text-neutral-500 uppercase">Action</th>
+                            <th className="px-6 py-3 text-xs font-bold text-neutral-500 uppercase">{t('supplier.dashboard.rfqId')}</th>
+                            <th className="px-6 py-3 text-xs font-bold text-neutral-500 uppercase">{t('supplier.rfqs.date')}</th>
+                            <th className="px-6 py-3 text-xs font-bold text-neutral-500 uppercase">{t('supplier.rfqs.items')}</th>
+                            <th className="px-6 py-3 text-xs font-bold text-neutral-500 uppercase">{t('supplier.dashboard.status')}</th>
+                            <th className="px-6 py-3 text-xs font-bold text-neutral-500 uppercase">{t('supplier.dashboard.action')}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-neutral-200">
@@ -300,12 +301,12 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                             <tr key={rfq.id} className="hover:bg-neutral-50">
                                 <td className="px-6 py-4 font-medium text-neutral-800">#{rfq.id.toUpperCase()}</td>
                                 <td className="px-6 py-4 text-neutral-500">{rfq.date}</td>
-                                <td className="px-6 py-4 text-neutral-500">{rfq.items.length} Items</td>
+                                <td className="px-6 py-4 text-neutral-500">{rfq.items.length} {t('supplier.rfqs.items')}</td>
                                 <td className="px-6 py-4">
-                                    <span className={`px-2 py-1 text-xs font-bold rounded-full ${rfq.status === 'OPEN' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>{rfq.status}</span>
+                                    <span className={`px-2 py-1 text-xs font-bold rounded-full ${rfq.status === 'OPEN' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>{rfq.status === 'OPEN' ? t('supplier.rfqs.open') : t('supplier.rfqs.quoted')}</span>
                                 </td>
                                 <td className="px-6 py-4">
-                                    <button onClick={() => onNavigate('quotes')} className="text-[#137fec] font-bold text-sm hover:underline">Submit Quote</button>
+                                    <button onClick={() => onNavigate('quotes')} className="text-[#137fec] font-bold text-sm hover:underline">{t('supplier.rfqs.submitQuote')}</button>
                                 </td>
                             </tr>
                         ))}
@@ -329,8 +330,8 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
           {/* Header */}
           <div className="flex flex-wrap justify-between gap-3 items-center">
             <div className="flex flex-col gap-1">
-              <h1 className="text-4xl font-black tracking-[-0.033em]">Browse RFQs/RFPs</h1>
-              <p className="text-[#4c739a] text-base">Discover new opportunities and submit your quotes</p>
+              <h1 className="text-4xl font-black tracking-[-0.033em]">{t('supplier.rfqs.browseTitle')}</h1>
+              <p className="text-[#4c739a] text-base">{t('supplier.rfqs.browseSubtitle')}</p>
             </div>
           </div>
 
@@ -344,7 +345,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                   </div>
                   <input
                     className="flex w-full min-w-0 flex-1 resize-none overflow-hidden text-[#0d141b] focus:outline-none border-none bg-transparent h-full placeholder:text-[#4c739a] px-2 text-base font-normal leading-normal"
-                    placeholder="Search RFQs by ID or keywords..."
+                    placeholder={t('supplier.rfqs.searchPlaceholder')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -353,7 +354,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             </div>
             <button className="flex h-12 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white border border-[#e7edf3] px-4 hover:border-[#4c739a] transition-colors">
               <span className="material-symbols-outlined text-xl">filter_list</span>
-              <p className="text-sm font-medium">Filters</p>
+              <p className="text-sm font-medium">{t('supplier.rfqs.filters')}</p>
             </button>
           </div>
 
@@ -367,7 +368,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                     <div className="flex items-start justify-between">
                       <div className="flex flex-col gap-1">
                         <h3 className="font-bold text-lg text-[#0d141b]">RFQ-{rfq.id.toUpperCase()}</h3>
-                        <p className="text-sm text-[#4c739a]">{firstItem?.name || 'Multiple Items'}</p>
+                        <p className="text-sm text-[#4c739a]">{firstItem?.name || t('supplier.rfqs.multipleItems')}</p>
                       </div>
                       <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
                         rfq.status === 'OPEN' ? 'bg-green-100 text-green-800' :
@@ -380,12 +381,12 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
 
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div className="flex flex-col gap-1">
-                        <p className="text-[#4c739a]">Posted Date</p>
+                        <p className="text-[#4c739a]">{t('supplier.rfqs.postedDate')}</p>
                         <p className="font-medium text-[#0d141b]">{rfq.date}</p>
                       </div>
                       <div className="flex flex-col gap-1">
-                        <p className="text-[#4c739a]">Items</p>
-                        <p className="font-medium text-[#0d141b]">{rfq.items.length} items</p>
+                        <p className="text-[#4c739a]">{t('supplier.rfqs.items')}</p>
+                        <p className="font-medium text-[#0d141b]">{rfq.items.length} {t('supplier.rfqs.items')}</p>
                       </div>
                     </div>
 
@@ -405,7 +406,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                       className="w-full flex items-center justify-center rounded-lg h-10 px-4 text-sm font-bold bg-[#137fec] text-white hover:bg-[#137fec]/90 transition-colors"
                     >
                       <span className="material-symbols-outlined text-base mr-2">rate_review</span>
-                      Submit Quote
+                      {t('supplier.rfqs.submitQuote')}
                     </button>
                   </div>
                 </div>
@@ -418,8 +419,8 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
               <div className="w-20 h-20 bg-[#f6f7f8] rounded-full flex items-center justify-center mb-4">
                 <span className="material-symbols-outlined text-4xl text-[#4c739a]">search_off</span>
               </div>
-              <h3 className="text-xl font-bold text-[#0d141b]">No RFQs Found</h3>
-              <p className="text-[#4c739a] max-w-md mt-2">Try adjusting your search criteria or check back later for new opportunities.</p>
+              <h3 className="text-xl font-bold text-[#0d141b]">{t('supplier.rfqs.noRfqsFound')}</h3>
+              <p className="text-[#4c739a] max-w-md mt-2">{t('supplier.rfqs.noRfqsHint')}</p>
             </div>
           )}
         </div>
@@ -450,7 +451,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
     };
 
     const handleSubmitQuote = () => {
-      alert('Quote submitted successfully!');
+      alert(t('supplier.quotes.quoteSubmitted'));
       setSelectedRFQ(null);
       setQuoteDetails({
         unitPrice: '',
@@ -466,8 +467,8 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
         <div className="w-full max-w-screen-xl mx-auto px-6 md:px-10 py-8 animate-in fade-in duration-300">
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
-              <h1 className="text-3xl font-bold text-neutral-800">Create Quote</h1>
-              <p className="text-neutral-500">Select an RFQ to start building your quote</p>
+              <h1 className="text-3xl font-bold text-neutral-800">{t('supplier.quotes.createQuote')}</h1>
+              <p className="text-neutral-500">{t('supplier.quotes.selectRfq')}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -484,14 +485,14 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                     </div>
                     <div className="space-y-2">
                       <p className="text-sm text-neutral-600">
-                        <span className="font-medium">{rfq.items.length}</span> items requested
+                        <span className="font-medium">{rfq.items.length}</span> {t('supplier.rfqs.itemsRequested')}
                       </p>
                       <p className="text-xs text-neutral-400 line-clamp-2">
-                        {firstItem?.name || 'Multiple products'}
+                        {firstItem?.name || t('supplier.rfqs.multipleProducts')}
                       </p>
                     </div>
                     <button className="mt-4 w-full py-2 px-4 bg-[#137fec] text-white rounded-lg font-semibold hover:bg-[#137fec]/90 transition-colors">
-                      Create Quote
+                      {t('supplier.quotes.createQuote')}
                     </button>
                   </div>
                 );
@@ -503,10 +504,10 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                 <div className="w-20 h-20 bg-neutral-100 rounded-full flex items-center justify-center mb-4">
                   <span className="material-symbols-outlined text-4xl text-neutral-400">request_quote</span>
                 </div>
-                <h3 className="text-xl font-bold text-neutral-800">No Open RFQs</h3>
-                <p className="text-neutral-500 max-w-md mt-2">There are currently no open RFQs available for quoting. Check back later or browse the RFQs section.</p>
+                <h3 className="text-xl font-bold text-neutral-800">{t('supplier.quotes.noOpenRfqs')}</h3>
+                <p className="text-neutral-500 max-w-md mt-2">{t('supplier.quotes.noOpenRfqsHint')}</p>
                 <button onClick={() => onNavigate('browse')} className="mt-4 px-6 py-2 bg-[#137fec] text-white rounded-lg font-semibold hover:bg-[#137fec]/90">
-                  Browse RFQs
+                  {t('supplier.quotes.browseRfqs')}
                 </button>
               </div>
             )}
@@ -520,7 +521,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
         <div className="flex flex-col gap-6">
           {/* Breadcrumbs */}
           <div className="flex items-center gap-2">
-            <button onClick={() => setSelectedRFQ(null)} className="text-sm font-medium text-neutral-500 hover:text-[#137fec]">Quotes</button>
+            <button onClick={() => setSelectedRFQ(null)} className="text-sm font-medium text-neutral-500 hover:text-[#137fec]">{t('sidebar.quotes')}</button>
             <span className="text-sm text-neutral-400">/</span>
             <span className="text-sm font-medium text-neutral-800">RFQ-{rfq?.id.toUpperCase()}</span>
           </div>
@@ -529,11 +530,11 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             {/* Left: Quote Form */}
             <div className="lg:col-span-2 space-y-6">
               <div className="bg-white rounded-xl border border-neutral-200 p-6">
-                <h2 className="text-xl font-bold text-neutral-800 mb-4">Quote Details</h2>
+                <h2 className="text-xl font-bold text-neutral-800 mb-4">{t('supplier.quotes.quoteDetails')}</h2>
 
                 {/* RFQ Items */}
                 <div className="mb-6">
-                  <h3 className="text-sm font-bold text-neutral-600 uppercase mb-3">Requested Items</h3>
+                  <h3 className="text-sm font-bold text-neutral-600 uppercase mb-3">{t('supplier.quotes.requestedItems')}</h3>
                   <div className="space-y-2">
                     {rfq?.items.map((item, idx) => {
                       const product = PRODUCTS.find(p => p.id === item.productId);
@@ -543,7 +544,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                             <img src={product?.image} alt={product?.name} className="w-12 h-12 object-cover rounded" />
                             <div>
                               <p className="font-medium text-neutral-800">{product?.name}</p>
-                              <p className="text-sm text-neutral-500">Quantity: {item.quantity}</p>
+                              <p className="text-sm text-neutral-500">{t('supplier.quotes.quantity')}: {item.quantity}</p>
                             </div>
                           </div>
                         </div>
@@ -556,7 +557,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-neutral-600 mb-2">Unit Price (USD)</label>
+                      <label className="block text-sm font-medium text-neutral-600 mb-2">{t('supplier.quotes.unitPrice')}</label>
                       <div className="relative">
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-neutral-400">$</span>
                         <input
@@ -569,11 +570,11 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-600 mb-2">Lead Time</label>
+                      <label className="block text-sm font-medium text-neutral-600 mb-2">{t('supplier.quotes.leadTime')}</label>
                       <input
                         type="text"
                         className="w-full px-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-[#137fec] focus:border-[#137fec]"
-                        placeholder="e.g., 3-5 business days"
+                        placeholder={t('supplier.quotes.leadTimePlaceholder')}
                         value={quoteDetails.leadTime}
                         onChange={(e) => setQuoteDetails({...quoteDetails, leadTime: e.target.value})}
                       />
@@ -582,7 +583,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-neutral-600 mb-2">Shipping Cost (USD)</label>
+                      <label className="block text-sm font-medium text-neutral-600 mb-2">{t('supplier.quotes.shippingCost')}</label>
                       <div className="relative">
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-neutral-400">$</span>
                         <input
@@ -595,7 +596,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-600 mb-2">Tax (USD)</label>
+                      <label className="block text-sm font-medium text-neutral-600 mb-2">{t('supplier.quotes.tax')}</label>
                       <div className="relative">
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-neutral-400">$</span>
                         <input
@@ -610,11 +611,11 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-neutral-600 mb-2">Additional Notes</label>
+                    <label className="block text-sm font-medium text-neutral-600 mb-2">{t('supplier.quotes.additionalNotes')}</label>
                     <textarea
                       className="w-full px-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-[#137fec] focus:border-[#137fec]"
                       rows={4}
-                      placeholder="Any special conditions, warranties, or additional information..."
+                      placeholder={t('supplier.quotes.notesPlaceholder')}
                       value={quoteDetails.notes}
                       onChange={(e) => setQuoteDetails({...quoteDetails, notes: e.target.value})}
                     ></textarea>
@@ -626,25 +627,25 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             {/* Right: Summary */}
             <div className="lg:col-span-1">
               <div className="sticky top-28 bg-white rounded-xl border border-neutral-200 p-6">
-                <h3 className="text-lg font-bold text-neutral-800 mb-4">Quote Summary</h3>
+                <h3 className="text-lg font-bold text-neutral-800 mb-4">{t('supplier.quotes.quoteSummary')}</h3>
 
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-sm">
-                    <span className="text-neutral-600">Subtotal</span>
+                    <span className="text-neutral-600">{t('supplier.quotes.subtotal')}</span>
                     <span className="font-medium text-neutral-800">
                       ${(parseFloat(quoteDetails.unitPrice || '0') * (rfq?.items.reduce((sum, item) => sum + item.quantity, 0) || 0)).toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-neutral-600">Shipping</span>
+                    <span className="text-neutral-600">{t('supplier.quotes.shipping')}</span>
                     <span className="font-medium text-neutral-800">${parseFloat(quoteDetails.shippingCost || '0').toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-neutral-600">Tax</span>
+                    <span className="text-neutral-600">{t('supplier.quotes.tax')}</span>
                     <span className="font-medium text-neutral-800">${parseFloat(quoteDetails.tax || '0').toFixed(2)}</span>
                   </div>
                   <div className="border-t border-neutral-200 pt-3 flex justify-between">
-                    <span className="font-bold text-neutral-800">Total</span>
+                    <span className="font-bold text-neutral-800">{t('supplier.quotes.total')}</span>
                     <span className="font-bold text-xl text-neutral-800">${calculateTotal().toFixed(2)}</span>
                   </div>
                 </div>
@@ -655,20 +656,20 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                     disabled={!quoteDetails.unitPrice || !quoteDetails.leadTime}
                     className="w-full py-3 px-4 bg-[#137fec] text-white rounded-lg font-bold hover:bg-[#137fec]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    Submit Quote
+                    {t('supplier.quotes.submitQuote')}
                   </button>
                   <button
                     onClick={() => setSelectedRFQ(null)}
                     className="w-full py-3 px-4 bg-white text-neutral-600 border border-neutral-300 rounded-lg font-semibold hover:bg-neutral-50 transition-colors"
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                 </div>
 
                 <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                   <div className="flex items-start gap-2">
                     <span className="material-symbols-outlined text-blue-600 text-lg">info</span>
-                    <p className="text-xs text-blue-700">Your quote will be reviewed by the admin before being sent to the client.</p>
+                    <p className="text-xs text-blue-700">{t('supplier.quotes.quoteReviewNote')}</p>
                   </div>
                 </div>
               </div>
@@ -706,10 +707,10 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
 
         <main className="flex-1 p-8">
         <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
-        <p className="text-slate-900 dark:text-white text-3xl font-bold leading-tight tracking-tight">Orders Management</p>
+        <p className="text-slate-900 dark:text-white text-3xl font-bold leading-tight tracking-tight">{t('supplier.orders.title')}</p>
         <button className="flex items-center justify-center gap-2 h-10 px-4 text-sm font-medium rounded-lg bg-[#137fec] text-white hover:bg-[#137fec]/90 transition-colors">
         <span className="material-symbols-outlined" style={{fontSize: '20px'}}>add</span>
-        <span>New Order</span>
+        <span>{t('supplier.orders.newOrder')}</span>
         </button>
         </div>
         <div className="border-b border-slate-200 dark:border-slate-800 mb-6">
@@ -718,19 +719,19 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                 onClick={() => setActiveOrderTab('won')}
                 className={`shrink-0 border-b-2 px-1 pb-3 text-sm font-semibold ${activeOrderTab === 'won' ? 'border-[#137fec] text-[#137fec]' : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-400 dark:hover:border-slate-700 dark:hover:text-slate-300'}`}
             >
-                Won Purchase Orders
+                {t('supplier.orders.wonPurchaseOrders')}
             </button>
             <button 
                 onClick={() => setActiveOrderTab('completed')}
                 className={`shrink-0 border-b-2 px-1 pb-3 text-sm font-medium ${activeOrderTab === 'completed' ? 'border-[#137fec] text-[#137fec]' : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-400 dark:hover:border-slate-700 dark:hover:text-slate-300'}`}
             >
-                Completed Orders
+                {t('supplier.orders.completedOrders')}
             </button>
             <button 
                 onClick={() => setActiveOrderTab('pending')}
                 className={`shrink-0 border-b-2 px-1 pb-3 text-sm font-medium ${activeOrderTab === 'pending' ? 'border-[#137fec] text-[#137fec]' : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-400 dark:hover:border-slate-700 dark:hover:text-slate-300'}`}
             >
-                Pending Orders
+                {t('supplier.orders.pendingOrders')}
             </button>
         </nav>
         </div>
@@ -1103,8 +1104,8 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
   // Default / Fallback
   return (
     <div className="p-12 text-center">
-      <h2 className="text-xl font-bold text-neutral-700">Section Coming Soon</h2>
-      <p className="text-neutral-500 mt-2">We are working on the {activeTab} view.</p>
+      <h2 className="text-xl font-bold text-neutral-700">{t('supplier.fallback.comingSoon')}</h2>
+      <p className="text-neutral-500 mt-2">{t('supplier.fallback.workingOn', { section: activeTab })}</p>
     </div>
   );
 };
