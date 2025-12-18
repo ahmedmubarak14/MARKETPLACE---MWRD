@@ -18,6 +18,10 @@ Preferred communication style: Simple, everyday language.
 - **Form Handling**: React Hook Form with Zod validation
 - **Routing**: Currently implemented as view-state switching in App.tsx (not React Router despite being installed)
 - **Internationalization**: i18next with browser language detection, supporting English and Arabic (RTL)
+  - Automatic RTL direction switching on language change
+  - Centralized status translation utility in `src/i18n/index.ts`
+  - 500+ translation keys covering all user-facing strings
+  - Toast messages, error messages, and form validation all translated
 
 ### Backend Architecture
 - **Database**: Supabase (PostgreSQL) with optional mock data fallback
@@ -42,6 +46,8 @@ src/
 ├── components/            # Reusable UI components
 ├── types/                 # TypeScript type definitions
 └── i18n/                  # Internationalization files
+    ├── index.ts           # i18n initialization with RTL support and status translation utility
+    └── locales/           # Translation files (en.json, ar.json)
 ```
 
 ### Authentication Flow

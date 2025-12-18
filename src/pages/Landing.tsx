@@ -127,13 +127,13 @@ export const Landing: React.FC<LandingProps> = ({ onNavigateToLogin }) => {
                 <p className="text-sm text-gray-300">{t('landing.subtitle')}</p>
               </div>
               <div className="flex flex-col gap-4">
-                <h4 className="font-bold text-white">Platform</h4>
+                <h4 className="font-bold text-white">{t('footer.platform')}</h4>
                 <a className="text-sm text-gray-300 hover:text-white" href="#">{t('landing.forClients')}</a>
                 <a className="text-sm text-gray-300 hover:text-white" href="#">{t('landing.forSuppliers')}</a>
               </div>
             </div>
             <div className="mt-12 border-t border-gray-100/20 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-300">
-              <p>© 2024 mwrd. All rights reserved.</p>
+              <p>{t('footer.copyright')}</p>
             </div>
           </div>
         </footer>

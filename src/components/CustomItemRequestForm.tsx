@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../hooks/useToast';
 import { LoadingSpinner } from './ui/LoadingSpinner';
 import customItemRequestService from '../services/customItemRequestService';
@@ -15,6 +16,7 @@ export const CustomItemRequestForm: React.FC<CustomItemRequestFormProps> = ({
   onSuccess,
   onCancel,
 }) => {
+  const { t } = useTranslation();
   const toast = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -39,7 +41,7 @@ export const CustomItemRequestForm: React.FC<CustomItemRequestFormProps> = ({
     e.preventDefault();
 
     if (!formData.itemName.trim() || !formData.description.trim()) {
-      toast.error('Please fill in all required fields');
+      toast.error(t('errors.requiredFields'));
       return;
     }
 
@@ -60,11 +62,11 @@ export const CustomItemRequestForm: React.FC<CustomItemRequestFormProps> = ({
         attachmentUrls: [],
       });
 
-      toast.success('Custom item request submitted successfully');
+      toast.success(t('toast.customRequestSubmitted'));
       onSuccess?.();
     } catch (error) {
       console.error('Error submitting request:', error);
-      toast.error('Failed to submit request');
+      toast.error(t('toast.failedToSubmitRequest'));
     } finally {
       setIsSubmitting(false);
     }
@@ -73,17 +75,16 @@ export const CustomItemRequestForm: React.FC<CustomItemRequestFormProps> = ({
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Request Custom Item</h2>
+        <h2 className="text-2xl font-bold text-gray-900">{t('customRequest.title')}</h2>
         <p className="text-gray-600 mt-1">
-          Can't find what you're looking for? Request a custom item and we'll source it for you.
+          {t('customRequest.subtitle')}
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Item Name */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Item Name *
+            {t('customRequest.itemName')} *
           </label>
           <input
             type="text"
@@ -91,15 +92,14 @@ export const CustomItemRequestForm: React.FC<CustomItemRequestFormProps> = ({
             value={formData.itemName}
             onChange={handleInputChange}
             required
-            placeholder="e.g., Industrial Grade Safety Gloves"
+            placeholder={t('customRequest.itemNamePlaceholder')}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0A2540] focus:border-transparent outline-none"
           />
         </div>
 
-        {/* Description */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Description *
+            {t('customRequest.description')} *
           </label>
           <textarea
             name="description"
@@ -107,46 +107,43 @@ export const CustomItemRequestForm: React.FC<CustomItemRequestFormProps> = ({
             onChange={handleInputChange}
             required
             rows={4}
-            placeholder="Describe the item you need in detail..."
+            placeholder={t('customRequest.descriptionPlaceholder')}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0A2540] focus:border-transparent outline-none"
           />
         </div>
 
-        {/* Specifications */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Specifications (Optional)
+            {t('customRequest.specifications')}
           </label>
           <textarea
             name="specifications"
             value={formData.specifications}
             onChange={handleInputChange}
             rows={3}
-            placeholder="Material, dimensions, standards, certifications, etc."
+            placeholder={t('customRequest.specificationsPlaceholder')}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0A2540] focus:border-transparent outline-none"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          {/* Category */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Category
+              {t('customRequest.category')}
             </label>
             <input
               type="text"
               name="category"
               value={formData.category}
               onChange={handleInputChange}
-              placeholder="e.g., Safety Equipment"
+              placeholder={t('customRequest.categoryPlaceholder')}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0A2540] focus:border-transparent outline-none"
             />
           </div>
 
-          {/* Quantity */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Quantity *
+              {t('customRequest.quantity')} *
             </label>
             <input
               type="number"
@@ -161,10 +158,9 @@ export const CustomItemRequestForm: React.FC<CustomItemRequestFormProps> = ({
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          {/* Target Price */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Target Price per Unit (SAR)
+              {t('customRequest.targetPrice')}
             </label>
             <input
               type="number"
@@ -176,13 +172,12 @@ export const CustomItemRequestForm: React.FC<CustomItemRequestFormProps> = ({
               placeholder="0.00"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0A2540] focus:border-transparent outline-none"
             />
-            <p className="text-xs text-gray-500 mt-1">Optional: Your budget per unit</p>
+            <p className="text-xs text-gray-500 mt-1">{t('customRequest.targetPriceHint')}</p>
           </div>
 
-          {/* Priority */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Priority
+              {t('customRequest.priority')}
             </label>
             <select
               name="priority"
@@ -190,18 +185,17 @@ export const CustomItemRequestForm: React.FC<CustomItemRequestFormProps> = ({
               onChange={handleInputChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0A2540] focus:border-transparent outline-none"
             >
-              <option value={RequestPriority.LOW}>Low</option>
-              <option value={RequestPriority.MEDIUM}>Medium</option>
-              <option value={RequestPriority.HIGH}>High</option>
-              <option value={RequestPriority.URGENT}>Urgent</option>
+              <option value={RequestPriority.LOW}>{t('customRequest.priorityLow')}</option>
+              <option value={RequestPriority.MEDIUM}>{t('customRequest.priorityMedium')}</option>
+              <option value={RequestPriority.HIGH}>{t('customRequest.priorityHigh')}</option>
+              <option value={RequestPriority.URGENT}>{t('customRequest.priorityUrgent')}</option>
             </select>
           </div>
         </div>
 
-        {/* Deadline */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Needed By (Optional)
+            {t('customRequest.neededBy')}
           </label>
           <input
             type="date"
@@ -213,23 +207,21 @@ export const CustomItemRequestForm: React.FC<CustomItemRequestFormProps> = ({
           />
         </div>
 
-        {/* Info Box */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-start gap-3">
             <span className="material-symbols-outlined text-blue-600 text-xl">info</span>
             <div>
-              <p className="text-sm font-medium text-blue-900">What happens next?</p>
+              <p className="text-sm font-medium text-blue-900">{t('customRequest.whatHappensNext')}</p>
               <ul className="text-sm text-blue-700 mt-2 space-y-1">
-                <li>• Our team will review your request within 24-48 hours</li>
-                <li>• We'll source the item from verified suppliers</li>
-                <li>• You'll receive a quote with pricing and delivery time</li>
-                <li>• Approve the quote to proceed with your order</li>
+                <li>• {t('customRequest.step1')}</li>
+                <li>• {t('customRequest.step2')}</li>
+                <li>• {t('customRequest.step3')}</li>
+                <li>• {t('customRequest.step4')}</li>
               </ul>
             </div>
           </div>
         </div>
 
-        {/* Actions */}
         <div className="flex gap-3 pt-4">
           {onCancel && (
             <button
@@ -238,7 +230,7 @@ export const CustomItemRequestForm: React.FC<CustomItemRequestFormProps> = ({
               disabled={isSubmitting}
               className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
           )}
           <button
@@ -249,12 +241,12 @@ export const CustomItemRequestForm: React.FC<CustomItemRequestFormProps> = ({
             {isSubmitting ? (
               <>
                 <LoadingSpinner size="sm" />
-                <span>Submitting...</span>
+                <span>{t('customRequest.submitting')}</span>
               </>
             ) : (
               <>
                 <span className="material-symbols-outlined">send</span>
-                <span>Submit Request</span>
+                <span>{t('customRequest.submitRequest')}</span>
               </>
             )}
           </button>

@@ -110,13 +110,13 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
           </div>
 
           <div className="mt-12 p-4 bg-slate-50 rounded-xl border border-slate-100">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 text-center">Demo Credentials</p>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 text-center">{t('login.demoCredentials')}</p>
             <div className="flex flex-wrap justify-center gap-2 text-xs text-slate-500">
-              <button onClick={() => fillDemoCredentials('client')} className="hover:text-[#0A2540] underline">Client</button>
+              <button onClick={() => fillDemoCredentials('client')} className="hover:text-[#0A2540] underline">{t('login.client')}</button>
               <span>•</span>
-              <button onClick={() => fillDemoCredentials('supplier')} className="hover:text-[#0A2540] underline">Supplier</button>
+              <button onClick={() => fillDemoCredentials('supplier')} className="hover:text-[#0A2540] underline">{t('login.supplier')}</button>
               <span>•</span>
-              <button onClick={() => fillDemoCredentials('admin')} className="hover:text-[#0A2540] underline">Admin</button>
+              <button onClick={() => fillDemoCredentials('admin')} className="hover:text-[#0A2540] underline">{t('login.admin')}</button>
             </div>
           </div>
         </div>

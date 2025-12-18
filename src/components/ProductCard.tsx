@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Product } from '../types/types';
 import { UserRole } from '../types/types';
 
@@ -15,18 +16,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onAddToRFQ,
   onViewDetails,
 }) => {
+  const { t } = useTranslation();
   const isSupplierOrAdmin = userRole === UserRole.SUPPLIER || userRole === UserRole.ADMIN;
   const showCostPrice = isSupplierOrAdmin;
   const showRetailPrice = product.retailPrice && product.retailPrice > 0;
 
-  // Calculate profit margin for display (admin/supplier only)
   const profitAmount = product.costPrice && product.retailPrice
     ? product.retailPrice - product.costPrice
     : 0;
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-      {/* Product Image */}
       <div className="relative h-48 bg-gray-100 overflow-hidden">
         <img
           src={product.image}
@@ -38,7 +38,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         />
         {product.status === 'PENDING' && (
           <span className="absolute top-3 right-3 px-3 py-1 bg-yellow-500 text-white text-xs font-medium rounded-full">
-            Pending Approval
+            {t('status.pendingApproval')}
           </span>
         )}
         {product.sku && (
@@ -48,29 +48,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         )}
       </div>
 
-      {/* Product Info */}
       <div className="p-4">
-        {/* Category */}
         <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
           {product.category}
         </p>
 
-        {/* Product Name */}
         <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
           {product.name}
         </h3>
 
-        {/* Description */}
         <p className="text-sm text-gray-600 line-clamp-2 mb-4">
           {product.description}
         </p>
 
-        {/* Pricing Section */}
         <div className="border-t border-gray-200 pt-4 space-y-2">
-          {/* Retail Price (Client View) */}
           {showRetailPrice && (
             <div className="flex items-baseline justify-between">
-              <span className="text-sm text-gray-600">Price</span>
+              <span className="text-sm text-gray-600">{t('products.price')}</span>
               <div className="text-right">
                 <span className="text-2xl font-bold text-[#0A2540]">
                   {product.retailPrice!.toFixed(2)}
@@ -80,18 +74,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             </div>
           )}
 
-          {/* Cost & Margin (Supplier/Admin View) */}
           {showCostPrice && product.costPrice && (
             <div className="space-y-1 text-sm bg-gray-50 rounded-lg p-3 mt-2">
               <div className="flex justify-between">
-                <span className="text-gray-600">Cost Price:</span>
+                <span className="text-gray-600">{t('products.costPrice')}:</span>
                 <span className="font-medium text-gray-900">
                   {product.costPrice.toFixed(2)} SAR
                 </span>
               </div>
               {product.marginPercent && (
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Margin:</span>
+                  <span className="text-gray-600">{t('products.margin')}:</span>
                   <span className="font-medium text-green-600">
                     {product.marginPercent.toFixed(1)}%
                   </span>
@@ -100,13 +93,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               {showRetailPrice && (
                 <>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Retail Price:</span>
+                    <span className="text-gray-600">{t('products.retailPrice')}:</span>
                     <span className="font-medium text-gray-900">
                       {product.retailPrice!.toFixed(2)} SAR
                     </span>
                   </div>
                   <div className="flex justify-between border-t border-gray-200 pt-1">
-                    <span className="text-gray-600">MWRD Profit:</span>
+                    <span className="text-gray-600">{t('products.mwrdProfit')}:</span>
                     <span className="font-bold text-green-600">
                       {profitAmount.toFixed(2)} SAR
                     </span>
@@ -116,20 +109,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             </div>
           )}
 
-          {/* No Price Set */}
           {!showRetailPrice && !showCostPrice && (
-            <p className="text-sm text-gray-500 italic">Request quote for pricing</p>
+            <p className="text-sm text-gray-500 italic">{t('products.requestQuote')}</p>
           )}
         </div>
 
-        {/* Actions */}
         <div className="mt-4 flex gap-2">
           {onViewDetails && (
             <button
               onClick={() => onViewDetails(product)}
               className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
             >
-              View Details
+              {t('products.viewDetails')}
             </button>
           )}
           {onAddToRFQ && userRole === UserRole.CLIENT && (
@@ -138,7 +129,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               className="flex-1 px-4 py-2 bg-[#0A2540] text-white rounded-lg hover:bg-[#0A2540]/90 transition-colors text-sm font-medium flex items-center justify-center gap-2"
             >
               <span className="material-symbols-outlined text-lg">add_shopping_cart</span>
-              Add to RFQ
+              {t('products.addToRfq')}
             </button>
           )}
         </div>
