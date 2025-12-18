@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { paymentService } from '../services/paymentService';
 import moyasarService from '../services/moyasarService';
 import { LoadingSpinner } from './ui/LoadingSpinner';
@@ -10,6 +11,7 @@ interface PaymentHistoryProps {
 }
 
 export const PaymentHistory: React.FC<PaymentHistoryProps> = ({ clientId }) => {
+  const { t } = useTranslation();
   const [payments, setPayments] = useState<Payment[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -59,7 +61,6 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({ clientId }) => {
 
   return (
     <div className="space-y-6">
-      {/* Header with Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
           <div className="flex items-center gap-3">
@@ -67,7 +68,7 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({ clientId }) => {
               <span className="material-symbols-outlined text-green-600 text-2xl">payments</span>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Paid</p>
+              <p className="text-sm text-gray-600">{t('paymentHistory.totalPaid')}</p>
               <p className="text-2xl font-bold text-gray-900">
                 {payments
                   .filter(p => p.status === PaymentStatus.PAID)
@@ -85,7 +86,7 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({ clientId }) => {
               <span className="material-symbols-outlined text-yellow-600 text-2xl">pending</span>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Pending</p>
+              <p className="text-sm text-gray-600">{t('paymentHistory.pending')}</p>
               <p className="text-2xl font-bold text-gray-900">
                 {payments.filter(p => p.status === PaymentStatus.PENDING).length}
               </p>
@@ -99,14 +100,13 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({ clientId }) => {
               <span className="material-symbols-outlined text-blue-600 text-2xl">description</span>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Invoices</p>
+              <p className="text-sm text-gray-600">{t('paymentHistory.invoices')}</p>
               <p className="text-2xl font-bold text-gray-900">{invoices.length}</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
         <div className="border-b border-gray-200">
           <div className="flex gap-8 px-6">
@@ -118,7 +118,7 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({ clientId }) => {
                   : 'border-transparent text-gray-600 hover:text-gray-900'
               }`}
             >
-              Payments ({payments.length})
+              {t('paymentHistory.payments')} ({payments.length})
             </button>
             <button
               onClick={() => setActiveTab('invoices')}
@@ -128,7 +128,7 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({ clientId }) => {
                   : 'border-transparent text-gray-600 hover:text-gray-900'
               }`}
             >
-              Invoices ({invoices.length})
+              {t('paymentHistory.invoices')} ({invoices.length})
             </button>
           </div>
         </div>
@@ -139,7 +139,7 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({ clientId }) => {
               {payments.length === 0 ? (
                 <div className="text-center py-12">
                   <span className="material-symbols-outlined text-gray-400 text-6xl">payments</span>
-                  <p className="mt-4 text-gray-600">No payments yet</p>
+                  <p className="mt-4 text-gray-600">{t('paymentHistory.noPayments')}</p>
                 </div>
               ) : (
                 payments.map(payment => (
@@ -197,7 +197,7 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({ clientId }) => {
               {invoices.length === 0 ? (
                 <div className="text-center py-12">
                   <span className="material-symbols-outlined text-gray-400 text-6xl">description</span>
-                  <p className="mt-4 text-gray-600">No invoices yet</p>
+                  <p className="mt-4 text-gray-600">{t('paymentHistory.noInvoices')}</p>
                 </div>
               ) : (
                 invoices.map(invoice => (
@@ -212,10 +212,10 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({ clientId }) => {
                       <div>
                         <p className="font-medium text-gray-900">{invoice.invoice_number}</p>
                         <p className="text-sm text-gray-600">
-                          Issued: {new Date(invoice.issue_date).toLocaleDateString()}
+                          {t('paymentHistory.issued')}: {new Date(invoice.issue_date).toLocaleDateString()}
                         </p>
                         <p className="text-sm text-gray-600">
-                          Due: {new Date(invoice.due_date).toLocaleDateString()}
+                          {t('paymentHistory.due')}: {new Date(invoice.due_date).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
@@ -238,7 +238,7 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({ clientId }) => {
                           rel="noopener noreferrer"
                           className="px-3 py-1 bg-[#0A2540] text-white rounded-lg hover:bg-[#0A2540]/90 transition-colors text-sm"
                         >
-                          Download
+                          {t('paymentHistory.download')}
                         </a>
                       )}
                     </div>

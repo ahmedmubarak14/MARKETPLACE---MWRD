@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../hooks/useToast';
 import { LoadingSpinner } from './ui/LoadingSpinner';
 import bankTransferService from '../services/bankTransferService';
@@ -13,6 +14,7 @@ export const PaymentInstructions: React.FC<PaymentInstructionsProps> = ({
   order,
   onPaymentReferenceAdded,
 }) => {
+  const { t } = useTranslation();
   const toast = useToast();
   const [bankDetails, setBankDetails] = useState<BankDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,7 +33,7 @@ export const PaymentInstructions: React.FC<PaymentInstructionsProps> = ({
       setBankDetails(data);
     } catch (error) {
       console.error('Error loading bank details:', error);
-      toast.error('Failed to load bank details');
+      toast.error(t('toast.bankDetailsLoadFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -39,7 +41,7 @@ export const PaymentInstructions: React.FC<PaymentInstructionsProps> = ({
 
   const handleSaveReference = async () => {
     if (!paymentReference.trim()) {
-      toast.error('Please enter a payment reference');
+      toast.error(t('errors.paymentReferenceRequired'));
       return;
     }
 
@@ -50,11 +52,11 @@ export const PaymentInstructions: React.FC<PaymentInstructionsProps> = ({
         paymentReference,
         paymentNotes
       );
-      toast.success('Payment reference saved successfully');
+      toast.success(t('toast.paymentReferenceSaved'));
       onPaymentReferenceAdded?.();
     } catch (error) {
       console.error('Error saving reference:', error);
-      toast.error('Failed to save payment reference');
+      toast.error(t('toast.failedToSaveReference'));
     } finally {
       setIsSaving(false);
     }
@@ -62,7 +64,7 @@ export const PaymentInstructions: React.FC<PaymentInstructionsProps> = ({
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
-    toast.success(`${label} copied to clipboard`);
+    toast.success(`${label} ${t('toast.copiedToClipboard')}`);
   };
 
   if (isLoading) {
@@ -79,9 +81,9 @@ export const PaymentInstructions: React.FC<PaymentInstructionsProps> = ({
         <div className="flex items-start gap-3">
           <span className="material-symbols-outlined text-yellow-600 text-2xl">warning</span>
           <div>
-            <p className="font-medium text-yellow-900">Bank details not configured</p>
+            <p className="font-medium text-yellow-900">{t('paymentInstructions.bankNotConfigured')}</p>
             <p className="text-sm text-yellow-700 mt-1">
-              Please contact support for payment instructions.
+              {t('paymentInstructions.contactSupport')}
             </p>
           </div>
         </div>
@@ -91,7 +93,6 @@ export const PaymentInstructions: React.FC<PaymentInstructionsProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Payment Status Header */}
       <div className={`rounded-xl p-6 ${
         order.paymentConfirmedAt
           ? 'bg-green-50 border border-green-200'
@@ -107,78 +108,73 @@ export const PaymentInstructions: React.FC<PaymentInstructionsProps> = ({
             <p className={`font-medium ${
               order.paymentConfirmedAt ? 'text-green-900' : 'text-blue-900'
             }`}>
-              {order.paymentConfirmedAt ? 'Payment Confirmed' : 'Awaiting Payment'}
+              {order.paymentConfirmedAt ? t('paymentInstructions.paymentConfirmed') : t('paymentInstructions.awaitingPayment')}
             </p>
             <p className={`text-sm mt-1 ${
               order.paymentConfirmedAt ? 'text-green-700' : 'text-blue-700'
             }`}>
               {order.paymentConfirmedAt
-                ? `Your payment was confirmed on ${new Date(order.paymentConfirmedAt).toLocaleDateString()}`
-                : 'Please transfer the payment to the bank account below'}
+                ? `${t('paymentInstructions.paymentConfirmedOn')} ${new Date(order.paymentConfirmedAt).toLocaleDateString()}`
+                : t('paymentInstructions.transferInstructions')}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Bank Details Card */}
       <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
         <div className="bg-[#0A2540] text-white px-6 py-4">
-          <h3 className="text-lg font-semibold">MWRD Bank Account Details</h3>
-          <p className="text-sm text-gray-300 mt-1">Transfer payment to this account</p>
+          <h3 className="text-lg font-semibold">{t('paymentInstructions.bankAccountTitle')}</h3>
+          <p className="text-sm text-gray-300 mt-1">{t('paymentInstructions.transferToAccount')}</p>
         </div>
 
         <div className="p-6 space-y-4">
-          {/* Bank Name */}
           <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
             <div>
-              <p className="text-sm text-gray-500">Bank Name</p>
+              <p className="text-sm text-gray-500">{t('payment.bankTransfer.bankName')}</p>
               <p className="font-semibold text-gray-900 text-lg">{bankDetails.bankName}</p>
             </div>
             <button
-              onClick={() => copyToClipboard(bankDetails.bankName, 'Bank name')}
+              onClick={() => copyToClipboard(bankDetails.bankName, t('payment.bankTransfer.bankName'))}
               className="p-2 text-gray-600 hover:text-[#0A2540] transition-colors"
             >
               <span className="material-symbols-outlined">content_copy</span>
             </button>
           </div>
 
-          {/* Account Name */}
           <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
             <div>
-              <p className="text-sm text-gray-500">Account Name</p>
+              <p className="text-sm text-gray-500">{t('payment.bankTransfer.accountName')}</p>
               <p className="font-semibold text-gray-900 text-lg">{bankDetails.accountName}</p>
             </div>
             <button
-              onClick={() => copyToClipboard(bankDetails.accountName, 'Account name')}
+              onClick={() => copyToClipboard(bankDetails.accountName, t('payment.bankTransfer.accountName'))}
               className="p-2 text-gray-600 hover:text-[#0A2540] transition-colors"
             >
               <span className="material-symbols-outlined">content_copy</span>
             </button>
           </div>
 
-          {/* Account Number */}
           <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
             <div>
-              <p className="text-sm text-gray-500">Account Number</p>
+              <p className="text-sm text-gray-500">{t('payment.bankTransfer.accountNumber')}</p>
               <p className="font-semibold text-gray-900 text-lg font-mono">{bankDetails.accountNumber}</p>
             </div>
             <button
-              onClick={() => copyToClipboard(bankDetails.accountNumber, 'Account number')}
+              onClick={() => copyToClipboard(bankDetails.accountNumber, t('payment.bankTransfer.accountNumber'))}
               className="p-2 text-gray-600 hover:text-[#0A2540] transition-colors"
             >
               <span className="material-symbols-outlined">content_copy</span>
             </button>
           </div>
 
-          {/* IBAN */}
           {bankDetails.iban && (
             <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
               <div>
-                <p className="text-sm text-gray-500">IBAN</p>
+                <p className="text-sm text-gray-500">{t('payment.bankTransfer.iban')}</p>
                 <p className="font-semibold text-gray-900 text-lg font-mono">{bankDetails.iban}</p>
               </div>
               <button
-                onClick={() => copyToClipboard(bankDetails.iban!, 'IBAN')}
+                onClick={() => copyToClipboard(bankDetails.iban!, t('payment.bankTransfer.iban'))}
                 className="p-2 text-gray-600 hover:text-[#0A2540] transition-colors"
               >
                 <span className="material-symbols-outlined">content_copy</span>
@@ -186,15 +182,14 @@ export const PaymentInstructions: React.FC<PaymentInstructionsProps> = ({
             </div>
           )}
 
-          {/* SWIFT Code */}
           {bankDetails.swiftCode && (
             <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
               <div>
-                <p className="text-sm text-gray-500">SWIFT Code</p>
+                <p className="text-sm text-gray-500">{t('payment.bankTransfer.swiftCode')}</p>
                 <p className="font-semibold text-gray-900 text-lg font-mono">{bankDetails.swiftCode}</p>
               </div>
               <button
-                onClick={() => copyToClipboard(bankDetails.swiftCode!, 'SWIFT code')}
+                onClick={() => copyToClipboard(bankDetails.swiftCode!, t('payment.bankTransfer.swiftCode'))}
                 className="p-2 text-gray-600 hover:text-[#0A2540] transition-colors"
               >
                 <span className="material-symbols-outlined">content_copy</span>
@@ -202,53 +197,50 @@ export const PaymentInstructions: React.FC<PaymentInstructionsProps> = ({
             </div>
           )}
 
-          {/* Amount */}
           <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="text-sm text-green-700">Amount to Transfer</p>
+            <p className="text-sm text-green-700">{t('paymentInstructions.amountToTransfer')}</p>
             <p className="font-bold text-green-900 text-2xl">{order.amount.toFixed(2)} {bankDetails.currency}</p>
           </div>
 
-          {/* Notes */}
           {bankDetails.notes && (
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm font-medium text-blue-900 mb-1">Important</p>
+              <p className="text-sm font-medium text-blue-900 mb-1">{t('paymentInstructions.important')}</p>
               <p className="text-sm text-blue-700">{bankDetails.notes}</p>
             </div>
           )}
         </div>
       </div>
 
-      {/* Payment Reference Form */}
       {!order.paymentConfirmedAt && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h4 className="font-semibold text-gray-900 mb-4">After Making the Transfer</h4>
+          <h4 className="font-semibold text-gray-900 mb-4">{t('paymentInstructions.afterTransfer')}</h4>
           <p className="text-sm text-gray-600 mb-4">
-            Please provide your payment reference number so we can confirm your payment quickly.
+            {t('paymentInstructions.referenceInstructions')}
           </p>
 
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Payment Reference / Transaction ID *
+                {t('paymentInstructions.paymentReference')} *
               </label>
               <input
                 type="text"
                 value={paymentReference}
                 onChange={(e) => setPaymentReference(e.target.value)}
-                placeholder="Enter your bank transfer reference number"
+                placeholder={t('paymentInstructions.referencePlaceholder')}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0A2540] focus:border-transparent outline-none"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Additional Notes (Optional)
+                {t('paymentInstructions.additionalNotes')}
               </label>
               <textarea
                 value={paymentNotes}
                 onChange={(e) => setPaymentNotes(e.target.value)}
                 rows={3}
-                placeholder="Any additional information about your payment"
+                placeholder={t('paymentInstructions.notesPlaceholder')}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0A2540] focus:border-transparent outline-none"
               />
             </div>
@@ -261,12 +253,12 @@ export const PaymentInstructions: React.FC<PaymentInstructionsProps> = ({
               {isSaving ? (
                 <>
                   <LoadingSpinner size="sm" />
-                  <span>Saving...</span>
+                  <span>{t('paymentInstructions.saving')}</span>
                 </>
               ) : (
                 <>
                   <span className="material-symbols-outlined">save</span>
-                  <span>Submit Payment Reference</span>
+                  <span>{t('paymentInstructions.submitReference')}</span>
                 </>
               )}
             </button>
@@ -274,14 +266,13 @@ export const PaymentInstructions: React.FC<PaymentInstructionsProps> = ({
         </div>
       )}
 
-      {/* Help Section */}
       <div className="bg-gray-50 rounded-xl p-6">
-        <h4 className="font-semibold text-gray-900 mb-3">Need Help?</h4>
+        <h4 className="font-semibold text-gray-900 mb-3">{t('paymentInstructions.helpTitle')}</h4>
         <div className="space-y-2 text-sm text-gray-600">
-          <p>• Payment confirmation typically takes 1-2 business days</p>
-          <p>• Make sure to include the order number in your transfer reference</p>
-          <p>• Contact support@mwrd.com if you have any questions</p>
-          <p>• Keep your transaction receipt for your records</p>
+          <p>• {t('paymentInstructions.helpTip1')}</p>
+          <p>• {t('paymentInstructions.helpTip2')}</p>
+          <p>• {t('paymentInstructions.helpTip3')}</p>
+          <p>• {t('paymentInstructions.helpTip4')}</p>
         </div>
       </div>
     </div>
