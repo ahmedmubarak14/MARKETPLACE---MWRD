@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../../hooks/useToast';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 import bankTransferService from '../../services/bankTransferService';
 import type { BankDetails } from '../../types/types';
 
 export const BankDetailsConfig: React.FC = () => {
+  const { t } = useTranslation();
   const toast = useToast();
   const [bankDetails, setBankDetails] = useState<BankDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -33,7 +35,7 @@ export const BankDetailsConfig: React.FC = () => {
       setBankDetails(data);
     } catch (error) {
       console.error('Error loading bank details:', error);
-      toast.error('Failed to load bank details');
+      toast.error(t('toast.bankDetailsLoadFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -49,16 +51,14 @@ export const BankDetailsConfig: React.FC = () => {
 
     try {
       if (editingId) {
-        // Update existing
         await bankTransferService.updateBankDetails(editingId, formData);
-        toast.success('Bank details updated successfully');
+        toast.success(t('toast.bankDetailsUpdated'));
       } else {
-        // Create new
         await bankTransferService.createBankDetails({
           ...formData,
-          isActive: bankDetails.length === 0, // First one is active by default
+          isActive: bankDetails.length === 0,
         });
-        toast.success('Bank details created successfully');
+        toast.success(t('toast.bankDetailsCreated'));
       }
 
       setIsEditing(false);
@@ -67,7 +67,7 @@ export const BankDetailsConfig: React.FC = () => {
       loadBankDetails();
     } catch (error) {
       console.error('Error saving bank details:', error);
-      toast.error('Failed to save bank details');
+      toast.error(t('toast.failedToSaveBankDetails'));
     }
   };
 
@@ -90,24 +90,24 @@ export const BankDetailsConfig: React.FC = () => {
   const handleSetActive = async (id: string) => {
     try {
       await bankTransferService.setActiveBankDetails(id);
-      toast.success('Active bank details updated');
+      toast.success(t('toast.activeBankUpdated'));
       loadBankDetails();
     } catch (error) {
       console.error('Error setting active:', error);
-      toast.error('Failed to update active bank details');
+      toast.error(t('toast.failedToSetActive'));
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete these bank details?')) return;
+    if (!confirm(t('bankConfig.deleteConfirm'))) return;
 
     try {
       await bankTransferService.deleteBankDetails(id);
-      toast.success('Bank details deleted');
+      toast.success(t('toast.bankDetailsDeleted'));
       loadBankDetails();
     } catch (error) {
       console.error('Error deleting:', error);
-      toast.error('Failed to delete bank details');
+      toast.error(t('toast.failedToDeleteBank'));
     }
   };
 
@@ -137,11 +137,10 @@ export const BankDetailsConfig: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Bank Details Configuration</h2>
-          <p className="text-gray-600 mt-1">Manage MWRD's bank account details for client payments</p>
+          <h2 className="text-2xl font-bold text-gray-900">{t('bankConfig.title')}</h2>
+          <p className="text-gray-600 mt-1">{t('bankConfig.subtitle')}</p>
         </div>
         {!isEditing && (
           <button
@@ -149,23 +148,22 @@ export const BankDetailsConfig: React.FC = () => {
             className="px-4 py-2 bg-[#0A2540] text-white rounded-lg hover:bg-[#0A2540]/90 transition-colors flex items-center gap-2"
           >
             <span className="material-symbols-outlined">add</span>
-            Add Bank Account
+            {t('bankConfig.addBankAccount')}
           </button>
         )}
       </div>
 
-      {/* Form */}
       {isEditing && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            {editingId ? 'Edit Bank Details' : 'Add New Bank Account'}
+            {editingId ? t('bankConfig.editBankDetails') : t('bankConfig.addNewBank')}
           </h3>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Bank Name *
+                  {t('bankConfig.bankName')} *
                 </label>
                 <input
                   type="text"
@@ -180,7 +178,7 @@ export const BankDetailsConfig: React.FC = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Account Name *
+                  {t('bankConfig.accountName')} *
                 </label>
                 <input
                   type="text"
@@ -195,7 +193,7 @@ export const BankDetailsConfig: React.FC = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Account Number *
+                  {t('bankConfig.accountNumber')} *
                 </label>
                 <input
                   type="text"
@@ -210,7 +208,7 @@ export const BankDetailsConfig: React.FC = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  IBAN
+                  {t('bankConfig.iban')}
                 </label>
                 <input
                   type="text"
@@ -224,7 +222,7 @@ export const BankDetailsConfig: React.FC = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  SWIFT Code
+                  {t('bankConfig.swiftCode')}
                 </label>
                 <input
                   type="text"
@@ -238,7 +236,7 @@ export const BankDetailsConfig: React.FC = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Currency
+                  {t('bankConfig.currency')}
                 </label>
                 <input
                   type="text"
@@ -252,7 +250,7 @@ export const BankDetailsConfig: React.FC = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Branch Name
+                  {t('bankConfig.branchName')}
                 </label>
                 <input
                   type="text"
@@ -266,7 +264,7 @@ export const BankDetailsConfig: React.FC = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Branch Code
+                  {t('bankConfig.branchCode')}
                 </label>
                 <input
                   type="text"
@@ -281,14 +279,14 @@ export const BankDetailsConfig: React.FC = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Notes
+                {t('bankConfig.notes')}
               </label>
               <textarea
                 name="notes"
                 value={formData.notes}
                 onChange={handleInputChange}
                 rows={3}
-                placeholder="Please include order number in transfer reference"
+                placeholder={t('bankConfig.notesPlaceholder')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0A2540] focus:border-transparent outline-none"
               />
             </div>
@@ -299,26 +297,25 @@ export const BankDetailsConfig: React.FC = () => {
                 onClick={resetForm}
                 className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 type="submit"
                 className="px-4 py-2 bg-[#0A2540] text-white rounded-lg hover:bg-[#0A2540]/90 transition-colors"
               >
-                {editingId ? 'Update' : 'Create'}
+                {editingId ? t('bankConfig.update') : t('bankConfig.create')}
               </button>
             </div>
           </form>
         </div>
       )}
 
-      {/* Bank Details List */}
       <div className="space-y-4">
         {bankDetails.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
             <span className="material-symbols-outlined text-gray-400 text-6xl">account_balance</span>
-            <p className="mt-4 text-gray-600">No bank details configured yet</p>
-            <p className="text-sm text-gray-500 mt-2">Add your first bank account to start receiving payments</p>
+            <p className="mt-4 text-gray-600">{t('bankConfig.noBankDetails')}</p>
+            <p className="text-sm text-gray-500 mt-2">{t('bankConfig.addFirstAccount')}</p>
           </div>
         ) : (
           bankDetails.map(details => (
@@ -340,30 +337,30 @@ export const BankDetailsConfig: React.FC = () => {
                     </div>
                     {details.isActive && (
                       <span className="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
-                        Active
+                        {t('bankConfig.active')}
                       </span>
                     )}
                   </div>
 
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                     <div>
-                      <p className="text-gray-500">Account Number</p>
+                      <p className="text-gray-500">{t('bankConfig.accountNumber')}</p>
                       <p className="font-medium text-gray-900">{details.accountNumber}</p>
                     </div>
                     {details.iban && (
                       <div>
-                        <p className="text-gray-500">IBAN</p>
+                        <p className="text-gray-500">{t('bankConfig.iban')}</p>
                         <p className="font-medium text-gray-900">{details.iban}</p>
                       </div>
                     )}
                     {details.swiftCode && (
                       <div>
-                        <p className="text-gray-500">SWIFT Code</p>
+                        <p className="text-gray-500">{t('bankConfig.swiftCode')}</p>
                         <p className="font-medium text-gray-900">{details.swiftCode}</p>
                       </div>
                     )}
                     <div>
-                      <p className="text-gray-500">Currency</p>
+                      <p className="text-gray-500">{t('bankConfig.currency')}</p>
                       <p className="font-medium text-gray-900">{details.currency}</p>
                     </div>
                   </div>
@@ -381,7 +378,7 @@ export const BankDetailsConfig: React.FC = () => {
                       onClick={() => handleSetActive(details.id)}
                       className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors"
                     >
-                      Set Active
+                      {t('bankConfig.setActive')}
                     </button>
                   )}
                   <button

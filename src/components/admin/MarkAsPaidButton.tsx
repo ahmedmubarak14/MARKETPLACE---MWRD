@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../../hooks/useToast';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 import bankTransferService from '../../services/bankTransferService';
@@ -15,6 +16,7 @@ export const MarkAsPaidButton: React.FC<MarkAsPaidButtonProps> = ({
   adminId,
   onSuccess,
 }) => {
+  const { t } = useTranslation();
   const toast = useToast();
   const [showModal, setShowModal] = useState(false);
   const [paymentReference, setPaymentReference] = useState(order.paymentReference || '');
@@ -23,7 +25,7 @@ export const MarkAsPaidButton: React.FC<MarkAsPaidButtonProps> = ({
 
   const handleConfirmPayment = async () => {
     if (!paymentReference.trim()) {
-      toast.error('Please enter a payment reference');
+      toast.error(t('errors.paymentReferenceRequired'));
       return;
     }
 
@@ -35,23 +37,22 @@ export const MarkAsPaidButton: React.FC<MarkAsPaidButtonProps> = ({
         paymentReference,
         paymentNotes
       );
-      toast.success('Payment confirmed successfully');
+      toast.success(t('toast.paymentConfirmed'));
       setShowModal(false);
       onSuccess?.();
     } catch (error) {
       console.error('Error confirming payment:', error);
-      toast.error('Failed to confirm payment');
+      toast.error(t('toast.failedToConfirmPayment'));
     } finally {
       setIsProcessing(false);
     }
   };
 
-  // Don't show button if already paid
   if (order.paymentConfirmedAt) {
     return (
       <div className="flex items-center gap-2 text-green-600">
         <span className="material-symbols-outlined">check_circle</span>
-        <span className="text-sm font-medium">Payment Confirmed</span>
+        <span className="text-sm font-medium">{t('markAsPaid.paymentConfirmed')}</span>
       </div>
     );
   }
@@ -63,40 +64,36 @@ export const MarkAsPaidButton: React.FC<MarkAsPaidButtonProps> = ({
         className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
       >
         <span className="material-symbols-outlined">payments</span>
-        Mark as Paid
+        {t('markAsPaid.markAsPaid')}
       </button>
 
-      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
-            {/* Header */}
             <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Confirm Payment Received</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t('markAsPaid.confirmTitle')}</h3>
               <p className="text-sm text-gray-600 mt-1">
-                Verify that payment has been received in the bank account
+                {t('markAsPaid.confirmSubtitle')}
               </p>
             </div>
 
-            {/* Content */}
             <div className="p-6 space-y-4">
-              {/* Order Info */}
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-gray-600">Order ID</span>
+                  <span className="text-sm text-gray-600">{t('markAsPaid.orderId')}</span>
                   <span className="font-mono text-sm font-medium text-gray-900">
                     {order.id.slice(0, 8)}...
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Amount</span>
+                  <span className="text-sm text-gray-600">{t('markAsPaid.amount')}</span>
                   <span className="font-bold text-lg text-gray-900">
                     {order.amount.toFixed(2)} SAR
                   </span>
                 </div>
                 {order.paymentReference && (
                   <div className="flex justify-between items-center mt-2">
-                    <span className="text-sm text-gray-600">Client Reference</span>
+                    <span className="text-sm text-gray-600">{t('markAsPaid.clientReference')}</span>
                     <span className="font-mono text-sm text-gray-900">
                       {order.paymentReference}
                     </span>
@@ -104,56 +101,52 @@ export const MarkAsPaidButton: React.FC<MarkAsPaidButtonProps> = ({
                 )}
               </div>
 
-              {/* Payment Reference Input */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Bank Transfer Reference *
+                  {t('markAsPaid.bankTransferRef')} *
                 </label>
                 <input
                   type="text"
                   value={paymentReference}
                   onChange={(e) => setPaymentReference(e.target.value)}
-                  placeholder="Enter verified transaction reference"
+                  placeholder={t('markAsPaid.refPlaceholder')}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Reference number from your bank statement
+                  {t('markAsPaid.refHint')}
                 </p>
               </div>
 
-              {/* Notes */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Admin Notes (Optional)
+                  {t('markAsPaid.adminNotes')}
                 </label>
                 <textarea
                   value={paymentNotes}
                   onChange={(e) => setPaymentNotes(e.target.value)}
                   rows={3}
-                  placeholder="Any additional notes about this payment"
+                  placeholder={t('markAsPaid.notesPlaceholder')}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
                 />
               </div>
 
-              {/* Warning */}
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                 <div className="flex items-start gap-2">
                   <span className="material-symbols-outlined text-yellow-600 text-lg">warning</span>
                   <p className="text-xs text-yellow-800">
-                    Only confirm after verifying the payment in your bank account. This action will update the order status to "In Transit".
+                    {t('markAsPaid.warning')}
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Footer */}
             <div className="px-6 py-4 bg-gray-50 rounded-b-2xl flex gap-3">
               <button
                 onClick={() => setShowModal(false)}
                 disabled={isProcessing}
                 className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-white transition-colors disabled:opacity-50"
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 onClick={handleConfirmPayment}
@@ -163,12 +156,12 @@ export const MarkAsPaidButton: React.FC<MarkAsPaidButtonProps> = ({
                 {isProcessing ? (
                   <>
                     <LoadingSpinner size="sm" />
-                    <span>Confirming...</span>
+                    <span>{t('markAsPaid.confirming')}</span>
                   </>
                 ) : (
                   <>
                     <span className="material-symbols-outlined">check_circle</span>
-                    <span>Confirm Payment</span>
+                    <span>{t('markAsPaid.confirmPayment')}</span>
                   </>
                 )}
               </button>
