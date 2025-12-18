@@ -166,7 +166,21 @@
       "addToQuote": "إضافة للعرض",
       "remove": "إزالة",
       "next": "التالي",
-      "previous": "السابق"
+      "previous": "السابق",
+      "searchPlaceholder": "ابحث عن منتجات أو SKU...",
+      "sortBy": "ترتيب حسب",
+      "newest": "الأحدث",
+      "availableNow": "متاح الآن",
+      "sku": "رمز المنتج",
+      "notAvailable": "غير متوفر",
+      "footwear": "أحذية",
+      "electronics": "إلكترونيات",
+      "machinery": "آلات",
+      "brandAlpha": "العلامة ألفا",
+      "brandBeta": "العلامة بيتا",
+      "brandGamma": "العلامة غاما",
+      "iso9001": "ISO 9001",
+      "ecoCertified": "شهادة بيئية"
     },
     "rfqs": {
       "title": "سجل الطلبات",

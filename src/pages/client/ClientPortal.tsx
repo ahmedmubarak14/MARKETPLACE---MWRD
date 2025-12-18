@@ -590,9 +590,9 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 <h4 className="text-sm font-bold uppercase tracking-wider text-[#4c739a]">{t('client.browse.category')}</h4>
                 <ul className="space-y-2">
                   <li><a className="font-bold text-[#137fec]" href="#">{t('client.browse.allCategories')}</a></li>
-                  <li><a className="text-[#0d141b] hover:text-[#137fec] transition-colors" href="#">Footwear</a></li>
-                  <li><a className="text-[#0d141b] hover:text-[#137fec] transition-colors" href="#">Electronics</a></li>
-                  <li><a className="text-[#0d141b] hover:text-[#137fec] transition-colors" href="#">Machinery</a></li>
+                  <li><a className="text-[#0d141b] hover:text-[#137fec] transition-colors" href="#">{t('client.browse.footwear')}</a></li>
+                  <li><a className="text-[#0d141b] hover:text-[#137fec] transition-colors" href="#">{t('client.browse.electronics')}</a></li>
+                  <li><a className="text-[#0d141b] hover:text-[#137fec] transition-colors" href="#">{t('client.browse.machinery')}</a></li>
                 </ul>
               </div>
               {/* Brand Filter */}
@@ -601,15 +601,15 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 <div className="space-y-3">
                   <label className="flex items-center gap-3">
                     <input defaultChecked className="h-4 w-4 rounded border-[#e7edf3] bg-[#f6f7f8] text-[#137fec] focus:ring-[#137fec]/50" type="checkbox"/>
-                    <span className="text-sm">Brand Alpha</span>
+                    <span className="text-sm">{t('client.browse.brandAlpha')}</span>
                   </label>
                   <label className="flex items-center gap-3">
                     <input className="h-4 w-4 rounded border-[#e7edf3] bg-[#f6f7f8] text-[#137fec] focus:ring-[#137fec]/50" type="checkbox"/>
-                    <span className="text-sm">Brand Beta</span>
+                    <span className="text-sm">{t('client.browse.brandBeta')}</span>
                   </label>
                   <label className="flex items-center gap-3">
                     <input className="h-4 w-4 rounded border-[#e7edf3] bg-[#f6f7f8] text-[#137fec] focus:ring-[#137fec]/50" type="checkbox"/>
-                    <span className="text-sm">Brand Gamma</span>
+                    <span className="text-sm">{t('client.browse.brandGamma')}</span>
                   </label>
                 </div>
               </div>
@@ -619,11 +619,11 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 <div className="space-y-3">
                   <label className="flex items-center gap-3">
                     <input className="h-4 w-4 rounded border-[#e7edf3] bg-[#f6f7f8] text-[#137fec] focus:ring-[#137fec]/50" type="checkbox"/>
-                    <span className="text-sm">ISO 9001</span>
+                    <span className="text-sm">{t('client.browse.iso9001')}</span>
                   </label>
                   <label className="flex items-center gap-3">
                     <input defaultChecked className="h-4 w-4 rounded border-[#e7edf3] bg-[#f6f7f8] text-[#137fec] focus:ring-[#137fec]/50" type="checkbox"/>
-                    <span className="text-sm">Eco Certified</span>
+                    <span className="text-sm">{t('client.browse.ecoCertified')}</span>
                   </label>
                 </div>
               </div>
@@ -642,7 +642,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                     </div>
                     <input 
                       className="flex w-full min-w-0 flex-1 resize-none overflow-hidden text-[#0d141b] focus:outline-none border-none bg-transparent h-full placeholder:text-[#4c739a] px-2 text-base font-normal leading-normal" 
-                      placeholder="Search for items or SKUs..." 
+                      placeholder={t('client.browse.searchPlaceholder')}
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -651,7 +651,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
               </div>
               <button className="flex h-12 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white border border-[#e7edf3] px-4 hover:border-[#4c739a] transition-colors">
                 <span className="material-symbols-outlined text-xl">swap_vert</span>
-                <p className="text-sm font-medium">Sort by: Newest</p>
+                <p className="text-sm font-medium">{t('client.browse.sortBy')}: {t('client.browse.newest')}</p>
                 <span className="material-symbols-outlined text-xl">expand_more</span>
               </button>
             </div>
@@ -659,7 +659,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
             {/* Applied Filters Chips */}
             <div className="flex gap-3 overflow-x-auto pb-2">
               <button className="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-[#137fec]/20 text-[#137fec] pl-3 pr-2">
-                <p className="text-sm font-medium">Available Now</p>
+                <p className="text-sm font-medium">{t('client.browse.availableNow')}</p>
                 <span className="material-symbols-outlined text-base">close</span>
               </button>
             </div>
@@ -680,7 +680,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                     <div className="flex flex-col p-4 flex-grow">
                       <h3 className="font-bold text-lg text-[#0d141b] leading-tight">{product.name}</h3>
                       <p className="text-sm text-[#4c739a] mt-1 flex-grow line-clamp-2">{product.description}</p>
-                      <p className="text-xs text-[#4c739a] mt-3 font-mono">SKU: {product.sku || 'N/A'}</p>
+                      <p className="text-xs text-[#4c739a] mt-3 font-mono">{t('client.browse.sku')}: {product.sku || t('client.browse.notAvailable')}</p>
                     </div>
                     <div className="p-4 pt-0">
                       <button 

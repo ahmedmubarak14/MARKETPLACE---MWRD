@@ -166,7 +166,21 @@
       "addToQuote": "Add to Quote",
       "remove": "Remove",
       "next": "Next",
-      "previous": "Previous"
+      "previous": "Previous",
+      "searchPlaceholder": "Search for items or SKUs...",
+      "sortBy": "Sort by",
+      "newest": "Newest",
+      "availableNow": "Available Now",
+      "sku": "SKU",
+      "notAvailable": "N/A",
+      "footwear": "Footwear",
+      "electronics": "Electronics",
+      "machinery": "Machinery",
+      "brandAlpha": "Brand Alpha",
+      "brandBeta": "Brand Beta",
+      "brandGamma": "Brand Gamma",
+      "iso9001": "ISO 9001",
+      "ecoCertified": "Eco Certified"
     },
     "rfqs": {
       "title": "Request History",
