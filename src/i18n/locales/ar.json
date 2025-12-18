@@ -265,7 +265,20 @@
       "applyMargin": "تطبيق الهامش",
       "resetToDefault": "إعادة التعيين للافتراضي",
       "orders": "الطلبات",
-      "day": "يوم"
+      "day": "يوم",
+      "quote": "عرض السعر",
+      "refRfq": "مرجع: طلب عرض أسعار",
+      "fromSupplier": "من المورد",
+      "toClient": "إلى العميل",
+      "costPrice": "سعر التكلفة",
+      "lead": "المدة",
+      "margin": "الهامش",
+      "finalClientPrice": "السعر النهائي للعميل",
+      "profit": "الربح",
+      "reset": "إعادة تعيين",
+      "sourceGlobal": "عام",
+      "sourceCategory": "الفئة",
+      "sourceManual": "تجاوز يدوي"
     },
     "users": {
       "title": "إدارة المستخدمين",

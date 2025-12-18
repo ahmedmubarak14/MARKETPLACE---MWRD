@@ -269,7 +269,20 @@
       "applyMargin": "Apply Margin",
       "resetToDefault": "Reset to Default",
       "orders": "Orders",
-      "day": "Day"
+      "day": "Day",
+      "quote": "Quote",
+      "refRfq": "Ref: RFQ",
+      "fromSupplier": "From Supplier",
+      "toClient": "To Client",
+      "costPrice": "Cost Price",
+      "lead": "Lead",
+      "margin": "Margin",
+      "finalClientPrice": "Final Client Price",
+      "profit": "Profit",
+      "reset": "Reset",
+      "sourceGlobal": "Global",
+      "sourceCategory": "Category",
+      "sourceManual": "Manual Override"
     },
     "users": {
       "title": "User Management",

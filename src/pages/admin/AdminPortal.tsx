@@ -648,16 +648,19 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
             <div key={quote.id} className={`bg-white rounded-2xl border shadow-sm overflow-hidden hover:shadow-lg transition-all ${type === 'manual' ? 'border-blue-200 ring-1 ring-blue-100' : 'border-slate-200'}`}>
               <div className="border-b border-slate-100 bg-slate-50/50 px-8 py-4 flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                      <span className="font-bold text-slate-900">Quote #{quote.id}</span>
+                      <span className="font-bold text-slate-900">{t('admin.margins.quote')} #{quote.id}</span>
                       <span className="text-slate-300">|</span>
-                      <span className="text-sm text-slate-500">Ref: RFQ #{quote.rfqId.toUpperCase()}</span>
+                      <span className="text-sm text-slate-500">{t('admin.margins.refRfq')} #{quote.rfqId.toUpperCase()}</span>
                       <span className="px-2 py-0.5 rounded bg-gray-200 text-gray-600 text-xs font-bold">{category}</span>
                   </div>
                   <div className="flex gap-2">
                       <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${
                           quote.status === 'ACCEPTED' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-blue-50 text-blue-700 border-blue-100'
                       }`}>
-                          {quote.status.replace(/_/g, ' ')}
+                          {quote.status === 'ACCEPTED' ? t('status.accepted') : 
+                           quote.status === 'REJECTED' ? t('status.rejected') : 
+                           quote.status === 'PENDING_ADMIN' ? t('status.pendingAdmin') : 
+                           t('status.sentToClient')}
                       </span>
                   </div>
               </div>
@@ -669,7 +672,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                           <div className="flex items-center gap-3">
                               <div className="w-8 h-8 rounded bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-xs">S</div>
                               <div>
-                                  <p className="text-xs font-bold text-slate-400 uppercase">From Supplier</p>
+                                  <p className="text-xs font-bold text-slate-400 uppercase">{t('admin.margins.fromSupplier')}</p>
                                   <p className="text-sm font-bold text-slate-900">Global Parts Inc</p>
                               </div>
                           </div>
@@ -681,7 +684,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                           <div className="flex items-center gap-3">
                               <div className="w-8 h-8 rounded bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs">C</div>
                               <div>
-                                  <p className="text-xs font-bold text-slate-400 uppercase">To Client</p>
+                                  <p className="text-xs font-bold text-slate-400 uppercase">{t('admin.margins.toClient')}</p>
                                   <p className="text-sm font-bold text-slate-900">Tech Solutions Ltd</p>
                               </div>
                           </div>
@@ -692,9 +695,9 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                   <div className="col-span-2 flex flex-col md:flex-row items-center gap-6 justify-between">
                       
                       <div className="text-center p-4">
-                          <p className="text-xs font-bold text-slate-400 uppercase mb-2">Cost Price</p>
+                          <p className="text-xs font-bold text-slate-400 uppercase mb-2">{t('admin.margins.costPrice')}</p>
                           <p className="text-2xl font-mono font-bold text-slate-700">${quote.supplierPrice.toLocaleString()}</p>
-                          <p className="text-xs text-slate-400 mt-1">Lead: {quote.leadTime}</p>
+                          <p className="text-xs text-slate-400 mt-1">{t('admin.margins.lead')}: {quote.leadTime}</p>
                       </div>
 
                       <div className="flex flex-col items-center gap-2">
@@ -704,7 +707,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                                 className="w-8 h-8 flex items-center justify-center bg-white rounded-lg shadow-sm border border-slate-200 text-slate-600 hover:text-blue-600"
                               >-</button>
                               <div className="text-center w-24">
-                                  <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Margin</p>
+                                  <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">{t('admin.margins.margin')}</p>
                                   <p className={`text-xl font-bold ${type === 'manual' ? 'text-blue-600' : 'text-slate-700'}`}>{currentMargin}%</p>
                               </div>
                               <button 
@@ -718,24 +721,26 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                                 type === 'manual' ? 'bg-blue-100 text-blue-700' : 
                                 type === 'category' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-500'
                             }`}>
-                                {source}
+                                {type === 'manual' ? t('admin.margins.sourceManual') : 
+                                 type === 'category' ? t('admin.margins.sourceCategory') : 
+                                 t('admin.margins.sourceGlobal')}
                             </span>
                             {type === 'manual' && (
                                 <button 
                                     onClick={() => resetQuoteMargin(quote.id)} 
                                     className="text-[10px] text-slate-400 hover:text-red-500 underline"
-                                    title="Reset to default"
+                                    title={t('admin.margins.resetToDefault')}
                                 >
-                                    Reset
+                                    {t('admin.margins.reset')}
                                 </button>
                             )}
                           </div>
                       </div>
 
                       <div className="text-center bg-emerald-50 p-6 rounded-2xl border border-emerald-100 min-w-[180px]">
-                          <p className="text-xs font-bold text-emerald-600/70 uppercase mb-2">Final Client Price</p>
+                          <p className="text-xs font-bold text-emerald-600/70 uppercase mb-2">{t('admin.margins.finalClientPrice')}</p>
                           <p className="text-3xl font-mono font-bold text-emerald-700">${calculatedPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}</p>
-                          <p className="text-xs font-bold text-emerald-600 mt-2">+ ${profit.toLocaleString(undefined, {maximumFractionDigits: 0})} Profit</p>
+                          <p className="text-xs font-bold text-emerald-600 mt-2">+ ${profit.toLocaleString(undefined, {maximumFractionDigits: 0})} {t('admin.margins.profit')}</p>
                       </div>
                       
                       <button className="w-12 h-12 bg-slate-900 text-white rounded-full shadow-xl flex items-center justify-center hover:scale-105 transition-transform">
