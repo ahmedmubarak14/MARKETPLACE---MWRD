@@ -54,16 +54,16 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
     
     // 1. Check for Manual Override
     if (editingQuotes[quote.id] !== undefined) {
-      return { value: editingQuotes[quote.id], source: 'Manual Override', type: 'manual' };
+      return { value: editingQuotes[quote.id], source: t('admin.margins.manualOverride'), type: 'manual' };
     }
     
     // 2. Check for Category Margin
     if (categoryMargins[category] !== undefined) {
-      return { value: categoryMargins[category], source: `Category: ${category}`, type: 'category' };
+      return { value: categoryMargins[category], source: `${t('admin.margins.categoryPrefix')} ${category}`, type: 'category' };
     }
 
     // 3. Default to Global Margin
-    return { value: globalMargin, source: 'Universal Margin', type: 'global' };
+    return { value: globalMargin, source: t('admin.margins.universalMargin'), type: 'global' };
   };
 
   const handleManualMarginChange = (quoteId: string, val: number) => {
@@ -144,9 +144,9 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
             const chart = new window.Chart(ctx, {
             type: 'line',
             data: {
-              labels: Array.from({length: 30}, (_, i) => `Day ${i + 1}`),
+              labels: Array.from({length: 30}, (_, i) => `${t('admin.margins.day')} ${i + 1}`),
               datasets: [{
-                label: 'Sales',
+                label: t('admin.overview.sales'),
                 data: [35, 45, 55, 50, 60, 75, 80, 70, 85, 95, 100, 110, 120, 115, 130, 140, 150, 145, 160, 170, 165, 180, 190, 200, 195, 210, 220, 230, 225, 240].map(v => v * 1000),
                 borderColor: colors['chart-blue'],
                 borderWidth: 2,
@@ -171,9 +171,9 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
             const chart = new window.Chart(ctx, {
             type: 'line',
             data: {
-              labels: Array.from({length: 30}, (_, i) => `Day ${i + 1}`),
+              labels: Array.from({length: 30}, (_, i) => `${t('admin.margins.day')} ${i + 1}`),
               datasets: [{
-                label: 'Margin',
+                label: t('admin.overview.margin'),
                 data: [20, 19.5, 19, 19.2, 18.8, 19, 18.5, 18.6, 18.2, 18.4, 18, 18.1, 17.8, 17.9, 18.2, 18.5, 18.3, 18, 17.5, 17.8, 18, 18.2, 18.5, 18.4, 18.6, 18.3, 18.1, 18.4, 18.2, 18.4],
                 borderColor: colors['chart-purple'],
                 borderWidth: 2,
@@ -181,7 +181,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                 backgroundColor: gradient,
               }]
             },
-            options: { ...commonChartOptions, plugins: { ...commonChartOptions.plugins, tooltip: { ...commonTooltipOptions, callbacks: { label: (context: any) => `Margin: ${context.parsed.y.toFixed(1)}%` } } } }
+            options: { ...commonChartOptions, plugins: { ...commonChartOptions.plugins, tooltip: { ...commonTooltipOptions, callbacks: { label: (context: any) => `${t('admin.overview.margin')}: ${context.parsed.y.toFixed(1)}%` } } } }
           });
           chartInstances.current.push(chart);
         }
@@ -192,16 +192,16 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
         const chart = new window.Chart(ordersChartRef.current, {
           type: 'bar',
           data: {
-            labels: Array.from({length: 30}, (_, i) => `Day ${i + 1}`),
+            labels: Array.from({length: 30}, (_, i) => `${t('admin.margins.day')} ${i + 1}`),
             datasets: [{
-              label: 'Orders',
+              label: t('admin.margins.orders'),
               data: [80, 90, 100, 95, 110, 120, 115, 130, 140, 135, 150, 160, 155, 170, 180, 175, 190, 200, 195, 210, 220, 215, 230, 240, 235, 250, 260, 255, 270, 280],
               backgroundColor: colors['chart-green'],
               borderRadius: 2,
               barThickness: 4,
             }]
           },
-          options: { ...commonChartOptions, plugins: { ...commonChartOptions.plugins, tooltip: { ...commonTooltipOptions, callbacks: { label: (context: any) => `Orders: ${context.parsed.y}` } } } }
+          options: { ...commonChartOptions, plugins: { ...commonChartOptions.plugins, tooltip: { ...commonTooltipOptions, callbacks: { label: (context: any) => `${t('admin.margins.orders')}: ${context.parsed.y}` } } } }
         });
         chartInstances.current.push(chart);
       }
@@ -214,7 +214,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             datasets: [
               {
-                label: 'Sales',
+                label: t('admin.overview.sales'),
                 data: [65000, 59000, 80000, 81000, 56000, 55000, 40000, 72000, 95000, 105000, 115000, 128000],
                 backgroundColor: colors['chart-blue'],
                 borderColor: colors['chart-blue'],
@@ -223,7 +223,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                 yAxisID: 'ySales',
               },
               {
-                label: 'Margin',
+                label: t('admin.overview.margin'),
                 data: [18, 19, 20, 19, 21, 22, 19, 18, 18.5, 19, 18.2, 18.4],
                 backgroundColor: colors['chart-green'],
                 borderColor: colors['chart-green'],
@@ -455,7 +455,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
             <div className="flex items-center justify-center rounded-l-lg border-r-0 bg-background-light pl-4 text-[#616f89] dark:bg-gray-700">
             <span className="material-symbols-outlined text-xl"> search </span>
             </div>
-            <input className="form-input flex h-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg rounded-l-none border-l-0 border-none bg-background-light px-4 pl-2 text-base font-normal leading-normal text-[#111318] placeholder:text-[#616f89] focus:outline-0 focus:ring-0 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400" placeholder="Search" value=""/>
+            <input className="form-input flex h-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg rounded-l-none border-l-0 border-none bg-background-light px-4 pl-2 text-base font-normal leading-normal text-[#111318] placeholder:text-[#616f89] focus:outline-0 focus:ring-0 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400" placeholder={t('common.search')} value=""/>
             </div>
             </label>
             </div>
@@ -477,27 +477,27 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                {/* PageHeading */}
                <div className="flex flex-wrap items-center justify-between gap-4">
                   <div className="flex min-w-72 flex-col gap-2">
-                  <h1 className="text-3xl font-bold leading-tight tracking-tight text-[#111318] dark:text-white">Product Approval Queue</h1>
-                  <p className="text-base font-normal leading-normal text-[#616f89] dark:text-gray-400">{pendingProducts.length} items awaiting review</p>
+                  <h1 className="text-3xl font-bold leading-tight tracking-tight text-[#111318] dark:text-white">{t('admin.approvals.productApprovalQueue')}</h1>
+                  <p className="text-base font-normal leading-normal text-[#616f89] dark:text-gray-400">{pendingProducts.length} {t('admin.approvals.itemsAwaitingReview')}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                  <button className="flex h-10 shrink-0 cursor-pointer items-center justify-center gap-x-2 overflow-hidden rounded-lg bg-white px-4 text-sm font-medium leading-normal text-red-600 ring-1 ring-inset ring-red-300 hover:bg-red-50 dark:bg-transparent dark:text-red-500 dark:ring-red-500 dark:hover:bg-red-500/10">Reject Selected</button>
-                  <button className="flex h-10 shrink-0 cursor-pointer items-center justify-center gap-x-2 overflow-hidden rounded-lg bg-[#135bec] px-4 text-sm font-medium leading-normal text-white hover:bg-[#135bec]/90">Approve Selected</button>
+                  <button className="flex h-10 shrink-0 cursor-pointer items-center justify-center gap-x-2 overflow-hidden rounded-lg bg-white px-4 text-sm font-medium leading-normal text-red-600 ring-1 ring-inset ring-red-300 hover:bg-red-50 dark:bg-transparent dark:text-red-500 dark:ring-red-500 dark:hover:bg-red-500/10">{t('admin.approvals.rejectSelected')}</button>
+                  <button className="flex h-10 shrink-0 cursor-pointer items-center justify-center gap-x-2 overflow-hidden rounded-lg bg-[#135bec] px-4 text-sm font-medium leading-normal text-white hover:bg-[#135bec]/90">{t('admin.approvals.approveSelected')}</button>
                   </div>
                </div>
 
                {/* Chips/Filters */}
                <div className="mt-6 flex flex-wrap gap-3 border-b border-b-gray-200 pb-4 dark:border-b-gray-700">
                   <button className="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white pl-4 pr-2 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:ring-gray-600 dark:hover:bg-gray-700">
-                  <p className="text-sm font-medium leading-normal text-[#111318] dark:text-white">Supplier</p>
+                  <p className="text-sm font-medium leading-normal text-[#111318] dark:text-white">{t('admin.approvals.supplier')}</p>
                   <span className="material-symbols-outlined text-lg text-[#111318] dark:text-white"> expand_more </span>
                   </button>
                   <button className="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white pl-4 pr-2 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:ring-gray-600 dark:hover:bg-gray-700">
-                  <p className="text-sm font-medium leading-normal text-[#111318] dark:text-white">Category</p>
+                  <p className="text-sm font-medium leading-normal text-[#111318] dark:text-white">{t('admin.approvals.category')}</p>
                   <span className="material-symbols-outlined text-lg text-[#111318] dark:text-white"> expand_more </span>
                   </button>
                   <button className="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white pl-4 pr-2 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:ring-gray-600 dark:hover:bg-gray-700">
-                  <p className="text-sm font-medium leading-normal text-[#111318] dark:text-white">Date Submitted</p>
+                  <p className="text-sm font-medium leading-normal text-[#111318] dark:text-white">{t('admin.approvals.dateSubmitted')}</p>
                   <span className="material-symbols-outlined text-lg text-[#111318] dark:text-white"> expand_more </span>
                   </button>
                </div>
@@ -510,11 +510,11 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                   <th className="w-12 px-6 py-3">
                   <input className="h-4 w-4 rounded border-gray-300 text-[#135bec] focus:ring-[#135bec] dark:border-gray-600 dark:bg-gray-700" type="checkbox"/>
                   </th>
-                  <th className="px-6 py-3">Product</th>
-                  <th className="px-6 py-3">Supplier</th>
-                  <th className="px-6 py-3">Cost Price</th>
-                  <th className="px-6 py-3">Submitted</th>
-                  <th className="relative px-6 py-3"><span className="sr-only">Actions</span></th>
+                  <th className="px-6 py-3">{t('admin.approvals.product')}</th>
+                  <th className="px-6 py-3">{t('admin.approvals.supplier')}</th>
+                  <th className="px-6 py-3">{t('admin.approvals.costPrice')}</th>
+                  <th className="px-6 py-3">{t('admin.approvals.submitted')}</th>
+                  <th className="relative px-6 py-3"><span className="sr-only">{t('common.actions')}</span></th>
                   </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -540,14 +540,14 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                               </div>
                               </div>
                               </td>
-                              <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-300">{supplier?.companyName || 'Unknown Supplier'}</td>
+                              <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-300">{supplier?.companyName || t('admin.approvals.unknownSupplier')}</td>
                               <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-300">${product.costPrice?.toFixed(2)}</td>
                               <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-300">{displayDate}</td>
                               <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                               <div className="flex items-center justify-end gap-2">
-                              <button className="flex h-8 items-center justify-center gap-1 rounded-md bg-yellow-100 px-3 text-xs font-semibold text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-500/20 dark:text-yellow-400 dark:hover:bg-yellow-500/30 transition-colors">Info</button>
-                              <button className="flex h-8 items-center justify-center gap-1 rounded-md bg-red-100 px-3 text-xs font-semibold text-red-800 hover:bg-red-200 dark:bg-red-500/20 dark:text-red-400 dark:hover:bg-red-500/30 transition-colors">Reject</button>
-                              <button className="flex h-8 items-center justify-center gap-1 rounded-md bg-green-100 px-3 text-xs font-semibold text-green-800 hover:bg-green-200 dark:bg-green-500/20 dark:text-green-400 dark:hover:bg-green-500/30 transition-colors">Approve</button>
+                              <button className="flex h-8 items-center justify-center gap-1 rounded-md bg-yellow-100 px-3 text-xs font-semibold text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-500/20 dark:text-yellow-400 dark:hover:bg-yellow-500/30 transition-colors">{t('admin.approvals.info')}</button>
+                              <button className="flex h-8 items-center justify-center gap-1 rounded-md bg-red-100 px-3 text-xs font-semibold text-red-800 hover:bg-red-200 dark:bg-red-500/20 dark:text-red-400 dark:hover:bg-red-500/30 transition-colors">{t('admin.approvals.reject')}</button>
+                              <button className="flex h-8 items-center justify-center gap-1 rounded-md bg-green-100 px-3 text-xs font-semibold text-green-800 hover:bg-green-200 dark:bg-green-500/20 dark:text-green-400 dark:hover:bg-green-500/30 transition-colors">{t('admin.approvals.approve')}</button>
                               </div>
                               </td>
                            </tr>
@@ -560,7 +560,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                               <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
                                  <span className="material-symbols-outlined text-gray-300 text-3xl">check_circle</span>
                               </div>
-                              <p className="text-gray-500 font-medium">All caught up! No pending approvals.</p>
+                              <p className="text-gray-500 font-medium">{t('admin.approvals.allCaughtUp')}</p>
                            </td>
                         </tr>
                      )}
@@ -583,14 +583,14 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
            <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
              <span className="material-symbols-outlined text-blue-600">settings_applications</span>
-             Global Margin Configuration
+             {t('admin.margins.globalMarginConfig')}
            </h2>
            <div className="grid lg:grid-cols-3 gap-12">
               
               {/* Universal Margin */}
               <div className="lg:col-span-1 space-y-4 border-r border-slate-100 pr-8">
-                 <h3 className="text-sm font-bold uppercase tracking-wide text-slate-500">Universal Margin</h3>
-                 <p className="text-sm text-slate-400 mb-4">Default margin applied to all quotes unless overridden by category or manual settings.</p>
+                 <h3 className="text-sm font-bold uppercase tracking-wide text-slate-500">{t('admin.margins.universalMargin')}</h3>
+                 <p className="text-sm text-slate-400 mb-4">{t('admin.margins.universalMarginDesc')}</p>
                  <div className="flex items-center gap-4">
                     <div className="relative w-full">
                        <input 
@@ -607,8 +607,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
               {/* Category Margins */}
               <div className="lg:col-span-2 space-y-4">
                  <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-bold uppercase tracking-wide text-slate-500">Category Margins</h3>
-                    <button className="text-xs font-bold text-blue-600 hover:underline">+ Add Category</button>
+                    <h3 className="text-sm font-bold uppercase tracking-wide text-slate-500">{t('admin.margins.categoryMargins')}</h3>
+                    <button className="text-xs font-bold text-blue-600 hover:underline">{t('admin.margins.addCategory')}</button>
                  </div>
                  <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {categories.map(cat => (
@@ -632,8 +632,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
 
         <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-end">
             <div>
-               <h2 className="text-2xl font-bold text-slate-900">Quote Manager</h2>
-               <p className="text-slate-500 mt-1">Review specific quotes. Manual overrides take precedence over global configuration.</p>
+               <h2 className="text-2xl font-bold text-slate-900">{t('admin.margins.quoteManager')}</h2>
+               <p className="text-slate-500 mt-1">{t('admin.margins.quoteManagerDesc')}</p>
             </div>
         </div>
         
