@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Product, RFQ, Quote } from '../../types/types';
+import { useTranslation } from 'react-i18next';
+import { Product, RFQ, Quote, OrderStatus } from '../../types/types';
 import { PRODUCTS, RFQS, QUOTES, ORDERS, USERS } from '../../services/mockData';
 
 interface ClientPortalProps {
@@ -14,6 +15,7 @@ interface SelectedItem {
 }
 
 export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigate }) => {
+  const { t } = useTranslation();
   const [rfqItems, setRfqItems] = useState<string[]>([]);
   const [selectedItemsMap, setSelectedItemsMap] = useState<Record<string, SelectedItem>>({});
   const [submitted, setSubmitted] = useState(false);
@@ -74,8 +76,8 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
         {/* Header */}
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-200 pb-8">
           <div className="flex min-w-72 flex-col gap-1">
-            <p className="text-[#111827] text-3xl font-bold leading-tight tracking-tight">Dashboard</p>
-            <p className="text-[#6b7280] text-base font-normal leading-normal">Welcome back, John Client</p>
+            <p className="text-[#111827] text-3xl font-bold leading-tight tracking-tight">{t('client.dashboard.title')}</p>
+            <p className="text-[#6b7280] text-base font-normal leading-normal">{t('client.dashboard.welcomeBack')}, John Client</p>
           </div>
           <div className="flex items-center gap-4">
             <button 
@@ -83,14 +85,14 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
               className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-white border border-gray-300 text-[#111827] text-sm font-medium leading-normal tracking-[0.015em] gap-2 hover:bg-gray-50 transition-colors"
             >
               <span className="material-symbols-outlined text-base">search</span>
-              <span className="truncate">Browse Items</span>
+              <span className="truncate">{t('client.dashboard.browseItems')}</span>
             </button>
             <button 
               onClick={() => onNavigate('create-rfq')}
               className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#137fec] text-white text-sm font-medium leading-normal tracking-[0.015em] gap-2 hover:bg-[#137fec]/90 transition-colors"
             >
               <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 1" }}>add</span>
-              <span className="truncate">Submit New RFQ</span>
+              <span className="truncate">{t('client.dashboard.submitNewRfq')}</span>
             </button>
           </div>
         </div>
@@ -100,8 +102,8 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
           <div className="lg:col-span-1 flex flex-col gap-6">
             <div className="rounded-lg border border-gray-200 bg-white p-6">
               <div className="flex justify-between items-center">
-                <h3 className="text-[#111827] text-lg font-semibold">Recent RFQs</h3>
-                <button onClick={() => onNavigate('rfqs')} className="text-[#137fec] text-sm font-medium hover:underline">View All</button>
+                <h3 className="text-[#111827] text-lg font-semibold">{t('client.dashboard.recentRfqs')}</h3>
+                <button onClick={() => onNavigate('rfqs')} className="text-[#137fec] text-sm font-medium hover:underline">{t('common.viewAll')}</button>
               </div>
               <div className="flex flex-col mt-4">
                 {RFQS.slice(0, 3).map(rfq => (
@@ -127,8 +129,8 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
           <div className="lg:col-span-2 flex flex-col gap-6">
             <div className="rounded-lg border border-gray-200 bg-white p-6">
               <div className="flex justify-between items-center">
-                <h3 className="text-[#111827] text-lg font-semibold">Quotes Received</h3>
-                <button onClick={() => onNavigate('rfqs')} className="text-[#137fec] text-sm font-medium hover:underline">View All</button>
+                <h3 className="text-[#111827] text-lg font-semibold">{t('client.dashboard.quotesReceived')}</h3>
+                <button onClick={() => onNavigate('rfqs')} className="text-[#137fec] text-sm font-medium hover:underline">{t('common.viewAll')}</button>
               </div>
               <div className="flex flex-col mt-4">
                 {QUOTES.slice(0, 5).map(quote => (
@@ -143,12 +145,12 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                     </div>
                     <div className="text-right">
                         <p className="text-[#111827] font-medium">${quote.finalPrice.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
-                        <span className="text-xs text-[#137fec] font-medium">View Quote</span>
+                        <span className="text-xs text-[#137fec] font-medium">{t('client.dashboard.viewQuote')}</span>
                     </div>
                   </div>
                 ))}
                 {QUOTES.length === 0 && (
-                  <p className="text-sm text-gray-400 py-4">No active quotes yet.</p>
+                  <p className="text-sm text-gray-400 py-4">{t('client.dashboard.noQuotes')}</p>
                 )}
               </div>
             </div>
@@ -158,8 +160,8 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
         {/* Order History */}
         <div className="mt-8 rounded-lg border border-gray-200 bg-white p-6">
           <div className="flex justify-between items-center">
-            <h3 className="text-[#111827] text-lg font-semibold">Order History</h3>
-            <button onClick={() => onNavigate('orders')} className="text-[#137fec] text-sm font-medium hover:underline">View All</button>
+            <h3 className="text-[#111827] text-lg font-semibold">{t('client.dashboard.orderHistory')}</h3>
+            <button onClick={() => onNavigate('orders')} className="text-[#137fec] text-sm font-medium hover:underline">{t('common.viewAll')}</button>
           </div>
           <div className="flex flex-col mt-4">
             {ORDERS.map(order => (
@@ -169,11 +171,14 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                   <p className="text-sm text-[#6b7280]">${order.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
                 </div>
                 <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${
-                  order.status === 'In Transit' ? 'bg-blue-100 text-blue-800' :
-                  order.status === 'Delivered' ? 'bg-green-100 text-green-800' :
+                  order.status === OrderStatus.IN_TRANSIT ? 'bg-blue-100 text-blue-800' :
+                  order.status === OrderStatus.DELIVERED ? 'bg-green-100 text-green-800' :
+                  order.status === OrderStatus.PENDING_PAYMENT ? 'bg-amber-100 text-amber-800' :
+                  order.status === OrderStatus.AWAITING_CONFIRMATION ? 'bg-yellow-100 text-yellow-800' :
+                  order.status === OrderStatus.PAYMENT_CONFIRMED ? 'bg-green-100 text-green-800' :
                   'bg-red-100 text-red-800'
                 }`}>
-                  {order.status}
+                  {t(`status.${order.status.toLowerCase().replace(/_/g, '')}`)}
                 </span>
               </div>
             ))}
@@ -862,16 +867,22 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                     </td>
                     <td className="px-8 py-6">
                       <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${
-                        order.status === 'In Transit' ? 'bg-blue-50 text-blue-700 border-blue-100' :
-                        order.status === 'Delivered' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
-                        'bg-amber-50 text-amber-700 border-amber-100'
+                        order.status === OrderStatus.IN_TRANSIT ? 'bg-blue-50 text-blue-700 border-blue-100' :
+                        order.status === OrderStatus.DELIVERED ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                        order.status === OrderStatus.PAYMENT_CONFIRMED ? 'bg-green-50 text-green-700 border-green-100' :
+                        order.status === OrderStatus.PENDING_PAYMENT ? 'bg-amber-50 text-amber-700 border-amber-100' :
+                        order.status === OrderStatus.AWAITING_CONFIRMATION ? 'bg-yellow-50 text-yellow-700 border-yellow-100' :
+                        'bg-red-50 text-red-700 border-red-100'
                       }`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${
-                          order.status === 'In Transit' ? 'bg-blue-500' :
-                          order.status === 'Delivered' ? 'bg-emerald-500' :
-                          'bg-amber-500'
+                          order.status === OrderStatus.IN_TRANSIT ? 'bg-blue-500' :
+                          order.status === OrderStatus.DELIVERED ? 'bg-emerald-500' :
+                          order.status === OrderStatus.PAYMENT_CONFIRMED ? 'bg-green-500' :
+                          order.status === OrderStatus.PENDING_PAYMENT ? 'bg-amber-500' :
+                          order.status === OrderStatus.AWAITING_CONFIRMATION ? 'bg-yellow-500' :
+                          'bg-red-500'
                         }`}></span>
-                        {order.status}
+                        {t(`status.${order.status.toLowerCase().replace(/_/g, '')}`)}
                       </span>
                     </td>
                     <td className="px-8 py-6 text-right">

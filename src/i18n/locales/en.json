@@ -292,6 +292,14 @@
     "delivered": "Delivered",
     "cancelled": "Cancelled",
     "pendingPayment": "Pending Payment",
-    "paymentConfirmed": "Payment Confirmed"
+    "paymentConfirmed": "Payment Confirmed",
+    "pending_payment": "Pending Payment",
+    "pendingpayment": "Pending Payment",
+    "awaiting_confirmation": "Awaiting Confirmation",
+    "awaitingconfirmation": "Awaiting Confirmation",
+    "payment_confirmed": "Payment Confirmed",
+    "paymentconfirmed": "Payment Confirmed",
+    "in_transit": "In Transit",
+    "intransit": "In Transit"
   }
 }

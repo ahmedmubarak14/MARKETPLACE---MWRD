@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PRODUCTS, QUOTES, USERS, RFQS } from '../../services/mockData';
 import { Quote, UserRole } from '../../types/types';
 
@@ -13,6 +14,7 @@ declare global {
 }
 
 export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
+  const { t } = useTranslation();
   // State for individual quote overrides (Manual)
   const [editingQuotes, setEditingQuotes] = useState<Record<string, number>>({});
   
@@ -293,7 +295,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
         <div className="flex-1 p-8">
           <div className="flex flex-col gap-6">
             <div className="flex flex-wrap justify-between items-center gap-4">
-              <p className="text-neutral-800 dark:text-white text-3xl font-bold leading-tight tracking-tight min-w-72">Dashboard Overview</p>
+              <p className="text-neutral-800 dark:text-white text-3xl font-bold leading-tight tracking-tight min-w-72">{t('admin.overview.title')}</p>
               <div className="flex gap-2">
                 <button className="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white dark:bg-neutral-800 dark:border dark:border-neutral-600/50 pl-3 pr-2 shadow-sm hover:bg-neutral-50">
                   <p className="text-neutral-800 dark:text-white text-sm font-medium leading-normal">Last 30 Days</p>
@@ -311,7 +313,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
               {/* Sales */}
               <div className="flex flex-col justify-between gap-4 rounded-xl p-6 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-600/50">
                 <div className="flex flex-col gap-2">
-                  <p className="text-neutral-600 dark:text-neutral-200 text-sm font-medium leading-normal">Total Sales</p>
+                  <p className="text-neutral-600 dark:text-neutral-200 text-sm font-medium leading-normal">{t('admin.overview.totalSales')}</p>
                   <div className="flex items-baseline gap-2">
                     <p className="text-neutral-800 dark:text-white tracking-tight text-3xl font-bold leading-tight">$1,284,567</p>
                     <p className="text-positive dark:text-positive text-sm font-medium leading-normal flex items-center gap-1">
@@ -326,7 +328,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
               {/* Margin */}
               <div className="flex flex-col justify-between gap-4 rounded-xl p-6 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-600/50">
                 <div className="flex flex-col gap-2">
-                  <p className="text-neutral-600 dark:text-neutral-200 text-sm font-medium leading-normal">Average Margin</p>
+                  <p className="text-neutral-600 dark:text-neutral-200 text-sm font-medium leading-normal">{t('admin.overview.averageMargin')}</p>
                   <div className="flex items-baseline gap-2">
                     <p className="text-neutral-800 dark:text-white tracking-tight text-3xl font-bold leading-tight">18.4%</p>
                     <p className="text-negative dark:text-negative text-sm font-medium leading-normal flex items-center gap-1">
@@ -341,7 +343,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
               {/* Orders */}
               <div className="flex flex-col justify-between gap-4 rounded-xl p-6 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-600/50">
                 <div className="flex flex-col gap-2">
-                  <p className="text-neutral-600 dark:text-neutral-200 text-sm font-medium leading-normal">Total Orders</p>
+                  <p className="text-neutral-600 dark:text-neutral-200 text-sm font-medium leading-normal">{t('admin.overview.totalOrders')}</p>
                   <div className="flex items-baseline gap-2">
                     <p className="text-neutral-800 dark:text-white tracking-tight text-3xl font-bold leading-tight">3,456</p>
                     <p className="text-positive dark:text-positive text-sm font-medium leading-normal flex items-center gap-1">
@@ -359,7 +361,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
               {/* Revenue Breakdown */}
               <div className="lg:col-span-2 flex flex-col gap-4 rounded-xl p-6 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-600/50">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-neutral-800 dark:text-white text-lg font-bold">Revenue Breakdown</h3>
+                  <h3 className="text-neutral-800 dark:text-white text-lg font-bold">{t('admin.overview.revenueBreakdown')}</h3>
                   <div className="flex items-center gap-4 text-sm">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-chart-blue"></div>
@@ -376,7 +378,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
 
               {/* Pending Actions */}
               <div className="flex flex-col gap-4 rounded-xl p-6 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-600/50">
-                <h3 className="text-neutral-800 dark:text-white text-lg font-bold">Pending Actions</h3>
+                <h3 className="text-neutral-800 dark:text-white text-lg font-bold">{t('admin.overview.pendingActions')}</h3>
                 <div className="flex flex-col gap-2">
                   {[
                     { type: 'New Supplier', desc: 'ABC Corp awaits verification' },
@@ -398,7 +400,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
 
             {/* Recent Orders Table */}
             <div className="flex flex-col gap-4 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-600/50 overflow-hidden">
-              <h3 className="text-neutral-800 dark:text-white text-lg font-bold p-6 pb-2">Recent Orders</h3>
+              <h3 className="text-neutral-800 dark:text-white text-lg font-bold p-6 pb-2">{t('admin.overview.recentOrders')}</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                   <thead className="text-xs text-neutral-600 dark:text-neutral-200 uppercase bg-neutral-100/50 dark:bg-neutral-600/20">

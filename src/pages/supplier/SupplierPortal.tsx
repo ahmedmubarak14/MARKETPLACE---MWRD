@@ -1,5 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PRODUCTS, RFQS, QUOTES } from '../../services/mockData';
 import { Product } from '../../types/types';
 
@@ -9,6 +9,7 @@ interface SupplierPortalProps {
 }
 
 export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNavigate }) => {
+  const { t } = useTranslation();
   const [products, setProducts] = useState(PRODUCTS.filter(p => p.supplierId === 'u2'));
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
@@ -45,8 +46,8 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             {/* Header Section */}
             <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex flex-col gap-1">
-                <h1 className="text-neutral-800 text-3xl font-bold tracking-tight">Dashboard</h1>
-                <p className="text-neutral-500 text-base font-normal">Welcome back, here's a summary of your activity.</p>
+                <h1 className="text-neutral-800 text-3xl font-bold tracking-tight">{t('supplier.dashboard.title')}</h1>
+                <p className="text-neutral-500 text-base font-normal">{t('supplier.dashboard.welcomeMessage')}</p>
                 </div>
             </div>
 
@@ -54,33 +55,33 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 <div className="flex flex-col gap-2 rounded-xl p-6 border border-neutral-200 bg-white shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between">
-                        <p className="text-neutral-700 text-base font-medium leading-normal">New Anonymous RFQs</p>
+                        <p className="text-neutral-700 text-base font-medium leading-normal">{t('supplier.dashboard.newRfqs')}</p>
                         <span className="material-symbols-outlined text-amber-500">new_releases</span>
                     </div>
                     <p className="text-amber-500 tracking-tight text-4xl font-bold leading-tight">5</p>
-                    <button onClick={() => onNavigate('requests')} className="text-sm font-medium text-[#137fec] hover:underline mt-2 text-left">View RFQs</button>
+                    <button onClick={() => onNavigate('requests')} className="text-sm font-medium text-[#137fec] hover:underline mt-2 text-left">{t('supplier.dashboard.viewRfqs')}</button>
                 </div>
                 <div className="flex flex-col gap-2 rounded-xl p-6 border border-neutral-200 bg-white shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between">
-                        <p className="text-neutral-700 text-base font-medium leading-normal">Quotes Submitted</p>
+                        <p className="text-neutral-700 text-base font-medium leading-normal">{t('supplier.dashboard.quotesSubmitted')}</p>
                         <span className="material-symbols-outlined text-neutral-500">receipt_long</span>
                     </div>
                     <p className="text-neutral-800 tracking-tight text-4xl font-bold leading-tight">12</p>
-                    <button onClick={() => onNavigate('orders')} className="text-sm font-medium text-[#137fec] hover:underline mt-2 text-left">View Quotes</button>
+                    <button onClick={() => onNavigate('orders')} className="text-sm font-medium text-[#137fec] hover:underline mt-2 text-left">{t('supplier.dashboard.viewQuotes')}</button>
                 </div>
                 <div className="flex flex-col gap-2 rounded-xl p-6 border border-neutral-200 bg-white shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between">
-                        <p className="text-neutral-700 text-base font-medium leading-normal">Manage Products</p>
+                        <p className="text-neutral-700 text-base font-medium leading-normal">{t('supplier.dashboard.manageProducts')}</p>
                         <span className="material-symbols-outlined text-neutral-500">inventory_2</span>
                     </div>
                     <p className="text-neutral-800 tracking-tight text-4xl font-bold leading-tight">154</p>
-                    <button onClick={() => onNavigate('products')} className="text-sm font-medium text-[#137fec] hover:underline mt-2 text-left">View Catalog</button>
+                    <button onClick={() => onNavigate('products')} className="text-sm font-medium text-[#137fec] hover:underline mt-2 text-left">{t('supplier.dashboard.viewCatalog')}</button>
                 </div>
             </div>
 
             {/* Pending Actions Table */}
             <div className="space-y-6">
-                <h2 className="text-neutral-800 text-xl font-bold leading-tight tracking-tight">Pending Actions</h2>
+                <h2 className="text-neutral-800 text-xl font-bold leading-tight tracking-tight">{t('supplier.dashboard.pendingActions')}</h2>
                 <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
                     <table className="w-full text-left">
                         <thead className="bg-neutral-50 border-b border-neutral-200">
@@ -129,8 +130,8 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
             {/* PageHeading */}
             <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                 <div className="flex flex-col gap-1">
-                    <p className="text-neutral-500 text-2xl lg:text-3xl font-bold tracking-tight">Edit Product Details</p>
-                    <p className="text-neutral-400 text-sm">Update product information and manage images.</p>
+                    <p className="text-neutral-500 text-2xl lg:text-3xl font-bold tracking-tight">{t('supplier.products.editProduct')}</p>
+                    <p className="text-neutral-400 text-sm">{t('supplier.products.uploadHint')}</p>
                 </div>
                 <div className="flex items-center gap-2">
                     <span className="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">Pending Approval</span>
@@ -240,12 +241,12 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
         <div className="p-8 mx-auto max-w-7xl animate-in fade-in duration-300">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
                 <div className="flex flex-col gap-1">
-                    <h1 className="text-2xl font-bold text-neutral-800">Product Catalog</h1>
-                    <p className="text-neutral-500">Manage your product listings and availability.</p>
+                    <h1 className="text-2xl font-bold text-neutral-800">{t('supplier.products.title')}</h1>
+                    <p className="text-neutral-500">{t('supplier.products.subtitle')}</p>
                 </div>
                 <button onClick={() => alert("Add Product Demo")} className="bg-[#137fec] text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-[#137fec]/90">
                     <span className="material-symbols-outlined">add</span>
-                    Add New Product
+                    {t('supplier.products.addNewProduct')}
                 </button>
             </div>
 
@@ -283,7 +284,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
   const RequestsView = () => {
       return (
           <div className="p-8 mx-auto max-w-7xl animate-in fade-in duration-300">
-            <h1 className="text-2xl font-bold text-neutral-800 mb-6">Received RFQs</h1>
+            <h1 className="text-2xl font-bold text-neutral-800 mb-6">{t('supplier.rfqs.title')}</h1>
             <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden shadow-sm">
                  <table className="w-full text-left">
                     <thead className="bg-neutral-50 border-b border-neutral-200">

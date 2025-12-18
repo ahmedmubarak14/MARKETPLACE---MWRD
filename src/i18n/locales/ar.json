@@ -292,6 +292,14 @@
     "delivered": "تم التسليم",
     "cancelled": "ملغي",
     "pendingPayment": "في انتظار الدفع",
-    "paymentConfirmed": "تم تأكيد الدفع"
+    "paymentConfirmed": "تم تأكيد الدفع",
+    "pending_payment": "في انتظار الدفع",
+    "pendingpayment": "في انتظار الدفع",
+    "awaiting_confirmation": "في انتظار التأكيد",
+    "awaitingconfirmation": "في انتظار التأكيد",
+    "payment_confirmed": "تم تأكيد الدفع",
+    "paymentconfirmed": "تم تأكيد الدفع",
+    "in_transit": "قيد الشحن",
+    "intransit": "قيد الشحن"
   }
 }
