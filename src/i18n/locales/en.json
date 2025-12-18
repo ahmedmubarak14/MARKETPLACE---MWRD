@@ -308,7 +308,11 @@
       "showingResults": "Showing {{count}} of {{total}} results",
       "finalClientPrice": "Final Client Price",
       "profit": "Profit",
-      "reset": "Reset"
+      "reset": "Reset",
+      "clientName": "Client Name",
+      "statusAll": "Status: All",
+      "dateRange": "Date Range",
+      "bulkActions": "Bulk Actions"
     },
     "payments": {
       "title": "Payment Management",

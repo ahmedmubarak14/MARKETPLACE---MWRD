@@ -304,7 +304,11 @@
       "showingResults": "عرض {{count}} من {{total}} نتيجة",
       "finalClientPrice": "السعر النهائي للعميل",
       "profit": "الربح",
-      "reset": "إعادة تعيين"
+      "reset": "إعادة تعيين",
+      "clientName": "اسم العميل",
+      "statusAll": "الحالة: الكل",
+      "dateRange": "النطاق الزمني",
+      "bulkActions": "إجراءات جماعية"
     },
     "payments": {
       "title": "إدارة المدفوعات",

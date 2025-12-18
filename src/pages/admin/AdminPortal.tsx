@@ -963,15 +963,15 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                  </div>
                  <div className="flex items-center gap-2">
                    <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-4 bg-transparent text-subtext-light dark:text-subtext-dark text-sm font-medium border border-border-light dark:border-border-dark hover:bg-primary/10">
-                     <span className="truncate">Status: All</span>
+                     <span className="truncate">{t('admin.users.statusAll')}</span>
                      <span className="material-symbols-outlined !text-xl">expand_more</span>
                    </button>
                    <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-4 bg-transparent text-subtext-light dark:text-subtext-dark text-sm font-medium border border-border-light dark:border-border-dark hover:bg-primary/10">
                      <span className="material-symbols-outlined !text-xl">calendar_today</span>
-                     <span className="truncate">Date Range</span>
+                     <span className="truncate">{t('admin.users.dateRange')}</span>
                    </button>
                    <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-4 bg-transparent text-subtext-light dark:text-subtext-dark text-sm font-medium border border-border-light dark:border-border-dark hover:bg-primary/10 opacity-50 cursor-not-allowed">
-                     <span className="truncate">Bulk Actions</span>
+                     <span className="truncate">{t('admin.users.bulkActions')}</span>
                      <span className="material-symbols-outlined !text-xl">expand_more</span>
                    </button>
                  </div>
@@ -986,7 +986,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                          <th className="px-4 py-3 text-center w-12">
                            <input className="h-5 w-5 rounded border-2 border-border-light dark:border-border-dark bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-0 focus:ring-offset-0" type="checkbox"/>
                          </th>
-                         <th className="px-4 py-3 text-sm font-medium text-subtext-light dark:text-subtext-dark">{t('admin.users.clients')}</th>
+                         <th className="px-4 py-3 text-sm font-medium text-subtext-light dark:text-subtext-dark">{t('admin.users.clientName')}</th>
                          <th className="px-4 py-3 text-sm font-medium text-subtext-light dark:text-subtext-dark">{t('admin.users.company')}</th>
                          <th className="px-4 py-3 text-sm font-medium text-subtext-light dark:text-subtext-dark">{t('admin.users.email')}</th>
                          <th className="px-4 py-3 text-sm font-medium text-subtext-light dark:text-subtext-dark">{t('admin.users.status')}</th>
