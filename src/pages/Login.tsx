@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { UserRole } from '../types/types';
+import { LanguageToggle } from '../components/LanguageToggle';
 
 interface LoginProps {
   onLogin: (email: string, password: string) => Promise<UserRole | null>;
@@ -7,6 +9,7 @@ interface LoginProps {
 }
 
 export const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -38,15 +41,19 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
     <div className="min-h-screen flex items-center justify-center bg-gray-200 p-4 font-sans">
       <div className="bg-white rounded-3xl shadow-2xl flex overflow-hidden max-w-5xl w-full min-h-[650px] animate-in zoom-in-95 duration-300">
         
-        {/* Left Side - Form */}
         <div className="w-full md:w-1/2 p-12 lg:p-16 flex flex-col justify-center relative">
-          <button 
-            onClick={onBack}
-            className="absolute top-8 left-8 text-slate-400 hover:text-slate-600 flex items-center gap-1 text-sm font-medium transition-colors"
-          >
-            <span className="material-symbols-outlined text-lg">arrow_back</span>
-            Back
-          </button>
+          <div className="absolute top-8 start-8 flex items-center gap-2">
+            <button 
+              onClick={onBack}
+              className="text-slate-400 hover:text-slate-600 flex items-center gap-1 text-sm font-medium transition-colors"
+            >
+              <span className="material-symbols-outlined text-lg rtl:rotate-180">arrow_back</span>
+              {t('common.back')}
+            </button>
+          </div>
+          <div className="absolute top-8 end-8">
+            <LanguageToggle />
+          </div>
 
           <div className="flex items-center gap-3 mb-12">
             <div className="size-8 bg-[#0A2540] rounded-lg flex items-center justify-center text-white">
@@ -57,14 +64,14 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
             <span className="text-[#0A2540] text-2xl font-bold tracking-tight">mwrd</span>
           </div>
 
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Welcome Back</h1>
-          <p className="text-slate-500 mb-8">Sign in to access your account</p>
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">{t('login.title')}</h1>
+          <p className="text-slate-500 mb-8">{t('login.subtitle')}</p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1">
               <input 
                 type="email" 
-                placeholder="Work Email" 
+                placeholder={t('login.emailPlaceholder')} 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -75,15 +82,12 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
             <div className="space-y-1 relative">
               <input 
                 type="password" 
-                placeholder="Password" 
+                placeholder={t('login.passwordPlaceholder')} 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full pl-4 pr-36 py-3.5 rounded-lg border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-[#0A2540] focus:border-transparent outline-none transition-all"
+                className="w-full px-4 py-3.5 rounded-lg border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-[#0A2540] focus:border-transparent outline-none transition-all"
               />
-              <button type="button" className="absolute right-4 top-3.5 text-sm font-medium text-blue-600 hover:text-blue-700">
-                Forgot Password?
-              </button>
             </div>
 
             <button 
@@ -94,18 +98,17 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
               {isLoading ? (
                 <span className="material-symbols-outlined animate-spin text-xl">progress_activity</span>
               ) : (
-                'Sign In'
+                t('common.login')
               )}
             </button>
           </form>
 
           <div className="mt-8 text-center">
             <p className="text-slate-500 text-sm">
-              Don't have your account? <button className="text-blue-600 font-bold hover:underline">Sign Up</button>
+              {t('login.noAccount')} <button className="text-blue-600 font-bold hover:underline">{t('login.signUp')}</button>
             </p>
           </div>
 
-          {/* Demo Hints */}
           <div className="mt-12 p-4 bg-slate-50 rounded-xl border border-slate-100">
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 text-center">Demo Credentials</p>
             <div className="flex flex-wrap justify-center gap-2 text-xs text-slate-500">
@@ -118,9 +121,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
           </div>
         </div>
 
-        {/* Right Side - Hero */}
         <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-slate-100 to-slate-300 relative flex-col justify-center p-12 lg:p-16 overflow-hidden">
-          {/* Decorative Background Elements */}
           <div className="absolute inset-0 opacity-40">
              <svg className="absolute top-0 right-0 w-full h-full" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M350 50L400 80V140L350 170L300 140V80L350 50Z" stroke="#94a3b8" strokeWidth="1" fill="none" opacity="0.5"/>
@@ -134,10 +135,10 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
 
           <div className="relative z-10 max-w-md">
             <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-6 leading-tight">
-              Unlock Your B2B Potential.
+              {t('landing.heroTitle')}
             </h2>
             <p className="text-slate-600 text-lg leading-relaxed">
-              Streamline procurement, manage supplier relationships, and drive growth in a secure, unified marketplace. mwrd empowers your business with efficiency and control.
+              {t('landing.heroSubtitle')}
             </p>
           </div>
         </div>
