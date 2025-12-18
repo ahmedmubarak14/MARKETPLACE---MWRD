@@ -100,7 +100,9 @@
       "quotesReceived": "العروض المستلمة",
       "orderHistory": "سجل الطلبات",
       "viewQuote": "عرض العرض",
-      "noQuotes": "لا توجد عروض نشطة حتى الآن."
+      "noQuotes": "لا توجد عروض نشطة حتى الآن.",
+      "forRfq": "لـ",
+      "fromSupplier": "من المورد"
     },
     "rfq": {
       "title": "تقديم طلب عرض جديد",
@@ -125,7 +127,12 @@
       "estimatedDelivery": "التسليم المقدر",
       "finalPrice": "السعر النهائي",
       "acceptQuote": "قبول العرض",
-      "awaitingDecision": "في انتظار القرار"
+      "awaitingDecision": "في انتظار القرار",
+      "rfqNotFound": "لم يتم العثور على طلب العرض",
+      "home": "الرئيسية",
+      "orderOf": "طلب",
+      "multipleItems": "منتجات متعددة",
+      "generalInquiry": "استفسار عام"
     },
     "orders": {
       "title": "الطلبات",
@@ -136,7 +143,68 @@
       "pendingPayment": "في انتظار الدفع",
       "paymentConfirmed": "تم تأكيد الدفع",
       "viewDetails": "عرض التفاصيل",
-      "trackOrder": "تتبع الطلب"
+      "trackOrder": "تتبع الطلب",
+      "orderManagement": "إدارة الطلبات",
+      "orderManagementDesc": "تتبع طلبات الشراء وحالة التسليم.",
+      "export": "تصدير",
+      "date": "التاريخ",
+      "items": "المنتجات",
+      "amount": "المبلغ",
+      "actions": "الإجراءات",
+      "purchaseOrder": "طلب شراء"
+    },
+    "browse": {
+      "title": "كتالوج المنتجات",
+      "breadcrumb": "تصفح المنتجات",
+      "requestQuote": "طلب عرض سعر",
+      "filters": "الفلاتر",
+      "clearAll": "مسح الكل",
+      "category": "الفئة",
+      "allCategories": "جميع الفئات",
+      "brand": "العلامة التجارية",
+      "certifications": "الشهادات",
+      "addToQuote": "إضافة للعرض",
+      "remove": "إزالة",
+      "next": "التالي",
+      "previous": "السابق"
+    },
+    "rfqs": {
+      "title": "سجل الطلبات",
+      "subtitle": "تتبع حالة طلبات العروض ومراجعة العروض الواردة.",
+      "exportCsv": "تصدير CSV",
+      "newRequest": "طلب جديد",
+      "rfqDetails": "تفاصيل طلب العرض",
+      "date": "التاريخ",
+      "items": "المنتجات",
+      "status": "الحالة",
+      "action": "الإجراء",
+      "reviewQuotes": "مراجعة العروض",
+      "noQuotes": "لا توجد عروض",
+      "awaitingSuppliers": "في انتظار الموردين",
+      "actionRequired": "إجراء مطلوب"
+    },
+    "settings": {
+      "title": "إعدادات الحساب",
+      "subtitle": "إدارة تفضيلات حسابك ومعلومات ملفك الشخصي.",
+      "profileInfo": "معلومات الملف الشخصي",
+      "fullName": "الاسم الكامل",
+      "emailAddress": "البريد الإلكتروني",
+      "companyName": "اسم الشركة",
+      "phoneNumber": "رقم الهاتف",
+      "cancel": "إلغاء",
+      "saveChanges": "حفظ التغييرات",
+      "notifications": "تفضيلات الإشعارات",
+      "emailNotifications": "إشعارات البريد الإلكتروني",
+      "emailNotificationsDesc": "تلقي تحديثات البريد الإلكتروني حول طلبات العروض والعروض والطلبات.",
+      "smsNotifications": "إشعارات الرسائل النصية",
+      "smsNotificationsDesc": "احصل على رسائل نصية لتحديثات الطلبات المهمة.",
+      "marketingEmails": "رسائل التسويق",
+      "marketingEmailsDesc": "تلقي العروض الترويجية وتحديثات السوق.",
+      "security": "إعدادات الأمان",
+      "currentPassword": "كلمة المرور الحالية",
+      "newPassword": "كلمة المرور الجديدة",
+      "confirmPassword": "تأكيد كلمة المرور الجديدة",
+      "updatePassword": "تحديث كلمة المرور"
     }
   },
   "supplier": {

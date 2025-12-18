@@ -100,7 +100,9 @@
       "quotesReceived": "Quotes Received",
       "orderHistory": "Order History",
       "viewQuote": "View Quote",
-      "noQuotes": "No active quotes yet."
+      "noQuotes": "No active quotes yet.",
+      "forRfq": "For",
+      "fromSupplier": "from Supplier"
     },
     "rfq": {
       "title": "Submit a New RFQ",
@@ -125,7 +127,12 @@
       "estimatedDelivery": "Estimated Delivery",
       "finalPrice": "Final Price",
       "acceptQuote": "Accept Quote",
-      "awaitingDecision": "Awaiting Decision"
+      "awaitingDecision": "Awaiting Decision",
+      "rfqNotFound": "RFQ Not Found",
+      "home": "Home",
+      "orderOf": "Order of",
+      "multipleItems": "Multiple Items",
+      "generalInquiry": "General Inquiry"
     },
     "orders": {
       "title": "Orders",
@@ -136,7 +143,68 @@
       "pendingPayment": "Pending Payment",
       "paymentConfirmed": "Payment Confirmed",
       "viewDetails": "View Details",
-      "trackOrder": "Track Order"
+      "trackOrder": "Track Order",
+      "orderManagement": "Order Management",
+      "orderManagementDesc": "Track your purchase orders and delivery status.",
+      "export": "Export",
+      "date": "Date",
+      "items": "Items",
+      "amount": "Amount",
+      "actions": "Actions",
+      "purchaseOrder": "Purchase Order"
+    },
+    "browse": {
+      "title": "Product Catalog",
+      "breadcrumb": "Browse Items",
+      "requestQuote": "Request Quote",
+      "filters": "Filters",
+      "clearAll": "Clear all",
+      "category": "Category",
+      "allCategories": "All Categories",
+      "brand": "Brand",
+      "certifications": "Certifications",
+      "addToQuote": "Add to Quote",
+      "remove": "Remove",
+      "next": "Next",
+      "previous": "Previous"
+    },
+    "rfqs": {
+      "title": "Request History",
+      "subtitle": "Track the status of your RFQs and review incoming quotes.",
+      "exportCsv": "Export CSV",
+      "newRequest": "New Request",
+      "rfqDetails": "RFQ Details",
+      "date": "Date",
+      "items": "Items",
+      "status": "Status",
+      "action": "Action",
+      "reviewQuotes": "Review Quotes",
+      "noQuotes": "No Quotes",
+      "awaitingSuppliers": "Awaiting Suppliers",
+      "actionRequired": "Action Required"
+    },
+    "settings": {
+      "title": "Account Settings",
+      "subtitle": "Manage your account preferences and profile information.",
+      "profileInfo": "Profile Information",
+      "fullName": "Full Name",
+      "emailAddress": "Email Address",
+      "companyName": "Company Name",
+      "phoneNumber": "Phone Number",
+      "cancel": "Cancel",
+      "saveChanges": "Save Changes",
+      "notifications": "Notification Preferences",
+      "emailNotifications": "Email Notifications",
+      "emailNotificationsDesc": "Receive email updates about your RFQs, quotes, and orders.",
+      "smsNotifications": "SMS Notifications",
+      "smsNotificationsDesc": "Get text messages for important order updates.",
+      "marketingEmails": "Marketing Emails",
+      "marketingEmailsDesc": "Receive promotional offers and marketplace updates.",
+      "security": "Security Settings",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "updatePassword": "Update Password"
     }
   },
   "supplier": {
