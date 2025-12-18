@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../hooks/useToast';
 import { LoadingSpinner } from '../components/ui/LoadingSpinner';
 import { paymentService } from '../services/paymentService';
@@ -20,6 +21,7 @@ export const Checkout: React.FC<CheckoutProps> = ({
   onSuccess,
   onCancel,
 }) => {
+  const { t } = useTranslation();
   const toast = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
   const [formData, setFormData] = useState<CheckoutFormData>({
@@ -31,10 +33,9 @@ export const Checkout: React.FC<CheckoutProps> = ({
     saveCard: false,
   });
 
-  // Calculate payment summary with VAT (15%)
   const paymentSummary: PaymentSummary = {
     subtotal: amount,
-    tax: amount * 0.15, // 15% VAT
+    tax: amount * 0.15,
     discount: 0,
     total: amount + amount * 0.15,
     currency: 'SAR',
@@ -45,27 +46,23 @@ export const Checkout: React.FC<CheckoutProps> = ({
 
     let formattedValue = value;
 
-    // Format card number with spaces
     if (name === 'cardNumber') {
       formattedValue = value
         .replace(/\s/g, '')
         .replace(/(\d{4})/g, '$1 ')
         .trim()
-        .slice(0, 19); // Max 16 digits + 3 spaces
+        .slice(0, 19);
     }
 
-    // Limit expiry month to 2 digits
     if (name === 'expiryMonth') {
       formattedValue = value.slice(0, 2);
       if (parseInt(formattedValue) > 12) formattedValue = '12';
     }
 
-    // Limit expiry year to 2 digits
     if (name === 'expiryYear') {
       formattedValue = value.slice(0, 2);
     }
 
-    // Limit CVC to 3-4 digits
     if (name === 'cvc') {
       formattedValue = value.slice(0, 4);
     }
@@ -78,29 +75,29 @@ export const Checkout: React.FC<CheckoutProps> = ({
 
   const validateForm = (): boolean => {
     if (!formData.cardName.trim()) {
-      toast.error('Please enter cardholder name');
+      toast.error(t('errors.cardholderRequired'));
       return false;
     }
 
     const cardNumber = formData.cardNumber.replace(/\s/g, '');
     if (cardNumber.length < 15 || cardNumber.length > 16) {
-      toast.error('Please enter a valid card number');
+      toast.error(t('errors.invalidCardNumber'));
       return false;
     }
 
     if (!formData.expiryMonth || parseInt(formData.expiryMonth) < 1 || parseInt(formData.expiryMonth) > 12) {
-      toast.error('Please enter a valid expiry month');
+      toast.error(t('errors.invalidExpiryMonth'));
       return false;
     }
 
     const currentYear = new Date().getFullYear() % 100;
     if (!formData.expiryYear || parseInt(formData.expiryYear) < currentYear) {
-      toast.error('Please enter a valid expiry year');
+      toast.error(t('errors.invalidExpiryYear'));
       return false;
     }
 
     if (formData.cvc.length < 3) {
-      toast.error('Please enter a valid CVC');
+      toast.error(t('errors.invalidCvc'));
       return false;
     }
 
@@ -113,7 +110,7 @@ export const Checkout: React.FC<CheckoutProps> = ({
     if (!validateForm()) return;
 
     if (!moyasarService.isConfigured()) {
-      toast.error('Payment gateway is not configured. Please contact support.');
+      toast.error(t('errors.paymentGatewayNotConfigured'));
       return;
     }
 
@@ -131,26 +128,24 @@ export const Checkout: React.FC<CheckoutProps> = ({
       );
 
       if (moyasarService.isPaymentSuccessful(result.payment.status)) {
-        toast.success('Payment successful!');
+        toast.success(t('toast.paymentSuccessful'));
         onSuccess();
       } else if (moyasarService.isPaymentPending(result.payment.status)) {
-        toast.info('Payment is being processed...');
-        // You might want to redirect to a pending page or show a message
+        toast.info(t('toast.paymentProcessing'));
       } else {
-        toast.error(result.payment.failure_reason || 'Payment failed. Please try again.');
+        toast.error(result.payment.failure_reason || t('errors.paymentFailed'));
       }
     } catch (error) {
       console.error('Payment error:', error);
-      toast.error('Payment failed. Please check your card details and try again.');
+      toast.error(t('errors.paymentFailed'));
     } finally {
       setIsProcessing(false);
     }
   };
 
-  // Check if Moyasar is configured
   useEffect(() => {
     if (!moyasarService.isConfigured()) {
-      toast.warning('Payment gateway is not configured');
+      toast.warning(t('toast.paymentGatewayWarning'));
     }
   }, []);
 
@@ -158,38 +153,34 @@ export const Checkout: React.FC<CheckoutProps> = ({
     <div className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-          {/* Header */}
           <div className="bg-[#0A2540] text-white px-8 py-6">
-            <h1 className="text-2xl font-bold">Secure Checkout</h1>
-            <p className="text-gray-300 mt-1">Complete your payment securely</p>
+            <h1 className="text-2xl font-bold">{t('checkout.title')}</h1>
+            <p className="text-gray-300 mt-1">{t('checkout.subtitle')}</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 p-8">
-            {/* Payment Form */}
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Payment Details</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('checkout.paymentDetails')}</h2>
 
               <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Cardholder Name */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Cardholder Name
+                    {t('checkout.cardholderName')}
                   </label>
                   <input
                     type="text"
                     name="cardName"
                     value={formData.cardName}
                     onChange={handleInputChange}
-                    placeholder="John Doe"
+                    placeholder={t('checkout.cardholderPlaceholder')}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0A2540] focus:border-transparent outline-none"
                   />
                 </div>
 
-                {/* Card Number */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Card Number
+                    {t('checkout.cardNumber')}
                   </label>
                   <div className="relative">
                     <input
@@ -197,7 +188,7 @@ export const Checkout: React.FC<CheckoutProps> = ({
                       name="cardNumber"
                       value={formData.cardNumber}
                       onChange={handleInputChange}
-                      placeholder="1234 5678 9012 3456"
+                      placeholder={t('checkout.cardNumberPlaceholder')}
                       required
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0A2540] focus:border-transparent outline-none"
                     />
@@ -205,21 +196,20 @@ export const Checkout: React.FC<CheckoutProps> = ({
                       <span className="material-symbols-outlined text-blue-600 text-xl">credit_card</span>
                     </div>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Supports MADA, Visa, and Mastercard</p>
+                  <p className="text-xs text-gray-500 mt-1">{t('checkout.cardSupports')}</p>
                 </div>
 
-                {/* Expiry and CVC */}
                 <div className="grid grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Month
+                      {t('checkout.month')}
                     </label>
                     <input
                       type="number"
                       name="expiryMonth"
                       value={formData.expiryMonth}
                       onChange={handleInputChange}
-                      placeholder="MM"
+                      placeholder={t('checkout.monthPlaceholder')}
                       min="1"
                       max="12"
                       required
@@ -229,14 +219,14 @@ export const Checkout: React.FC<CheckoutProps> = ({
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Year
+                      {t('checkout.year')}
                     </label>
                     <input
                       type="number"
                       name="expiryYear"
                       value={formData.expiryYear}
                       onChange={handleInputChange}
-                      placeholder="YY"
+                      placeholder={t('checkout.yearPlaceholder')}
                       required
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0A2540] focus:border-transparent outline-none"
                     />
@@ -244,21 +234,20 @@ export const Checkout: React.FC<CheckoutProps> = ({
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      CVC
+                      {t('checkout.cvc')}
                     </label>
                     <input
                       type="number"
                       name="cvc"
                       value={formData.cvc}
                       onChange={handleInputChange}
-                      placeholder="123"
+                      placeholder={t('checkout.cvcPlaceholder')}
                       required
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0A2540] focus:border-transparent outline-none"
                     />
                   </div>
                 </div>
 
-                {/* Save Card Option */}
                 <div className="flex items-center">
                   <input
                     type="checkbox"
@@ -268,11 +257,10 @@ export const Checkout: React.FC<CheckoutProps> = ({
                     className="w-4 h-4 text-[#0A2540] border-gray-300 rounded focus:ring-[#0A2540]"
                   />
                   <label className="ml-2 text-sm text-gray-700">
-                    Save card for future purchases
+                    {t('checkout.saveCard')}
                   </label>
                 </div>
 
-                {/* Action Buttons */}
                 <div className="flex gap-3 mt-8">
                   <button
                     type="button"
@@ -280,7 +268,7 @@ export const Checkout: React.FC<CheckoutProps> = ({
                     disabled={isProcessing}
                     className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                   <button
                     type="submit"
@@ -290,65 +278,62 @@ export const Checkout: React.FC<CheckoutProps> = ({
                     {isProcessing ? (
                       <>
                         <LoadingSpinner size="sm" />
-                        <span>Processing...</span>
+                        <span>{t('checkout.processing')}</span>
                       </>
                     ) : (
                       <>
                         <span className="material-symbols-outlined">lock</span>
-                        <span>Pay {paymentSummary.total.toFixed(2)} {paymentSummary.currency}</span>
+                        <span>{t('checkout.pay')} {paymentSummary.total.toFixed(2)} {paymentSummary.currency}</span>
                       </>
                     )}
                   </button>
                 </div>
               </form>
 
-              {/* Security Notice */}
               <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
                 <div className="flex items-start gap-3">
                   <span className="material-symbols-outlined text-green-600 text-xl">verified_user</span>
                   <div>
-                    <p className="text-sm font-medium text-green-900">Secure Payment</p>
+                    <p className="text-sm font-medium text-green-900">{t('checkout.securePayment')}</p>
                     <p className="text-xs text-green-700 mt-1">
-                      Your payment information is encrypted and secure. We never store your full card details.
+                      {t('checkout.securePaymentDesc')}
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Order Summary */}
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Order Summary</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('checkout.orderSummary')}</h2>
 
               <div className="bg-gray-50 rounded-xl p-6 space-y-4">
                 <div className="flex justify-between text-gray-700">
-                  <span>Subtotal</span>
+                  <span>{t('checkout.subtotal')}</span>
                   <span>{paymentSummary.subtotal.toFixed(2)} {paymentSummary.currency}</span>
                 </div>
 
                 <div className="flex justify-between text-gray-700">
-                  <span>VAT (15%)</span>
+                  <span>{t('checkout.vat')}</span>
                   <span>{paymentSummary.tax.toFixed(2)} {paymentSummary.currency}</span>
                 </div>
 
                 {paymentSummary.discount > 0 && (
                   <div className="flex justify-between text-green-600">
-                    <span>Discount</span>
+                    <span>{t('checkout.discount')}</span>
                     <span>-{paymentSummary.discount.toFixed(2)} {paymentSummary.currency}</span>
                   </div>
                 )}
 
                 <div className="border-t border-gray-300 pt-4">
                   <div className="flex justify-between text-lg font-bold text-gray-900">
-                    <span>Total</span>
+                    <span>{t('common.total')}</span>
                     <span>{paymentSummary.total.toFixed(2)} {paymentSummary.currency}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Accepted Payment Methods */}
               <div className="mt-6">
-                <p className="text-sm font-medium text-gray-700 mb-3">Accepted Payment Methods</p>
+                <p className="text-sm font-medium text-gray-700 mb-3">{t('checkout.acceptedMethods')}</p>
                 <div className="flex gap-3">
                   <div className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium">
                     MADA
@@ -362,20 +347,18 @@ export const Checkout: React.FC<CheckoutProps> = ({
                 </div>
               </div>
 
-              {/* Support Info */}
               <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm font-medium text-blue-900">Need Help?</p>
+                <p className="text-sm font-medium text-blue-900">{t('checkout.needHelp')}</p>
                 <p className="text-xs text-blue-700 mt-1">
-                  Contact our support team at support@mwrd.com or call +966 XX XXX XXXX
+                  {t('checkout.supportContact')}
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Powered by Moyasar */}
         <div className="text-center mt-6 text-sm text-gray-500">
-          <p>Secured by Moyasar Payment Gateway</p>
+          <p>{t('checkout.poweredBy')}</p>
         </div>
       </div>
     </div>
