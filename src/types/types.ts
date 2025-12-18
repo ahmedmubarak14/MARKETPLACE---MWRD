@@ -62,9 +62,18 @@ export interface Quote {
 
 export enum OrderStatus {
   PENDING_PAYMENT = 'PENDING_PAYMENT',
+  AWAITING_CONFIRMATION = 'AWAITING_CONFIRMATION',
+  PAYMENT_CONFIRMED = 'PAYMENT_CONFIRMED',
   IN_TRANSIT = 'IN_TRANSIT',
   DELIVERED = 'DELIVERED',
   CANCELLED = 'CANCELLED',
+}
+
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  AWAITING_CONFIRMATION = 'AWAITING_CONFIRMATION',
+  CONFIRMED = 'CONFIRMED',
+  REJECTED = 'REJECTED',
 }
 
 export interface Order {
@@ -74,13 +83,14 @@ export interface Order {
   supplierId: string;
   amount: number;
   status: OrderStatus;
+  paymentStatus?: PaymentStatus;
   date: string;
-  // Payment tracking (Phase One - Bank Transfer)
   paymentReference?: string;
   paymentConfirmedAt?: string;
   paymentConfirmedBy?: string;
   paymentNotes?: string;
   paymentReceiptUrl?: string;
+  paymentSubmittedAt?: string;
   createdAt?: string;
   updatedAt?: string;
 }
