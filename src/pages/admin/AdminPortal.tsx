@@ -757,13 +757,13 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'APPROVED':
-                return <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium bg-success/10 text-success"><span className="size-1.5 rounded-full bg-success"></span>Approved</span>;
+                return <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium bg-success/10 text-success"><span className="size-1.5 rounded-full bg-success"></span>{t('status.approved')}</span>;
             case 'PENDING':
-                return <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium bg-warning/10 text-warning"><span className="size-1.5 rounded-full bg-warning"></span>Pending Approval</span>;
+                return <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium bg-warning/10 text-warning"><span className="size-1.5 rounded-full bg-warning"></span>{t('admin.users.pendingApproval')}</span>;
             case 'REJECTED':
-                return <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium bg-danger/10 text-danger"><span className="size-1.5 rounded-full bg-danger"></span>Rejected</span>;
+                return <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium bg-danger/10 text-danger"><span className="size-1.5 rounded-full bg-danger"></span>{t('status.rejected')}</span>;
             case 'REQUIRES_ATTENTION':
-                return <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium bg-yellow-500/10 text-yellow-600 dark:text-yellow-400"><span className="size-1.5 rounded-full bg-yellow-500"></span>Requires Attention</span>;
+                return <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium bg-yellow-500/10 text-yellow-600 dark:text-yellow-400"><span className="size-1.5 rounded-full bg-yellow-500"></span>{t('admin.users.requiresAttention')}</span>;
             default:
                 return null;
         }
@@ -771,13 +771,13 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
     const getKycBadge = (status: string) => {
         switch (status) {
             case 'VERIFIED':
-                return <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium bg-success/10 text-success"><span className="size-1.5 rounded-full bg-success"></span>Verified</span>;
+                return <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium bg-success/10 text-success"><span className="size-1.5 rounded-full bg-success"></span>{t('admin.users.verified')}</span>;
             case 'IN_REVIEW':
-                return <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium bg-warning/10 text-warning"><span className="size-1.5 rounded-full bg-warning"></span>In Review</span>;
+                return <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium bg-warning/10 text-warning"><span className="size-1.5 rounded-full bg-warning"></span>{t('admin.users.inReview')}</span>;
             case 'REJECTED':
-                return <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium bg-danger/10 text-danger"><span className="size-1.5 rounded-full bg-danger"></span>Rejected</span>;
+                return <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium bg-danger/10 text-danger"><span className="size-1.5 rounded-full bg-danger"></span>{t('status.rejected')}</span>;
             case 'INCOMPLETE':
-                 return <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium bg-yellow-500/10 text-yellow-600 dark:text-yellow-400"><span className="size-1.5 rounded-full bg-yellow-500"></span>Incomplete</span>;
+                 return <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium bg-yellow-500/10 text-yellow-600 dark:text-yellow-400"><span className="size-1.5 rounded-full bg-yellow-500"></span>{t('admin.users.incomplete')}</span>;
             default:
                 return null;
         }
@@ -790,19 +790,19 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
           case 'ACTIVE':
              return (
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-green-100 dark:bg-green-900/50 px-2.5 py-1 text-xs font-medium text-green-800 dark:text-green-300">
-                   <span className="size-2 rounded-full bg-green-500"></span>Active
+                   <span className="size-2 rounded-full bg-green-500"></span>{t('admin.users.active')}
                 </div>
              );
           case 'PENDING':
              return (
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-orange-100 dark:bg-orange-900/50 px-2.5 py-1 text-xs font-medium text-orange-800 dark:text-orange-300">
-                   <span className="size-2 rounded-full bg-orange-500"></span>Pending
+                   <span className="size-2 rounded-full bg-orange-500"></span>{t('status.pending')}
                 </div>
              );
           case 'DEACTIVATED':
              return (
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-red-100 dark:bg-red-900/50 px-2.5 py-1 text-xs font-medium text-red-800 dark:text-red-300">
-                   <span className="size-2 rounded-full bg-red-500"></span>Deactivated
+                   <span className="size-2 rounded-full bg-red-500"></span>{t('admin.users.deactivated')}
                 </div>
              );
           default: return null;
@@ -822,7 +822,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                 </div>
                 <input 
                   className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg text-gray-800 dark:text-gray-200 focus:outline-0 focus:ring-0 border-none bg-gray-100 dark:bg-gray-800 h-full placeholder:text-gray-400 dark:placeholder:text-gray-500 pl-2 text-sm" 
-                  placeholder="Global Search..." 
+                  placeholder={t('admin.users.globalSearch')} 
                 />
               </div>
             </label>
@@ -845,14 +845,14 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                   className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${userViewMode === 'suppliers' ? 'bg-[#135bec] text-white shadow-md' : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                 >
                   <span className="material-symbols-outlined text-lg">storefront</span>
-                  Suppliers
+                  {t('admin.users.suppliers')}
                 </button>
                 <button 
                    onClick={() => setUserViewMode('clients')}
                    className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${userViewMode === 'clients' ? 'bg-[#135bec] text-white shadow-md' : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                 >
                   <span className="material-symbols-outlined text-lg" style={{fontVariationSettings: "'FILL' 1"}}>group</span>
-                  Clients
+                  {t('admin.users.clients')}
                 </button>
             </div>
           </div>
@@ -862,10 +862,10 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
              <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
                 {/* PageHeading */}
                 <div className="flex flex-wrap justify-between items-center gap-3">
-                    <p className="text-gray-900 dark:text-white text-3xl font-bold tracking-tight">Supplier Management</p>
+                    <p className="text-gray-900 dark:text-white text-3xl font-bold tracking-tight">{t('admin.users.supplierManagement')}</p>
                     <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold">
                     <span className="material-symbols-outlined mr-2 text-lg">add</span>
-                    <span>Add Supplier</span>
+                    <span>{t('admin.users.addSupplier')}</span>
                     </button>
                 </div>
 
@@ -879,18 +879,18 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                         </div>
                         <input 
                             className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg text-gray-800 dark:text-gray-200 focus:outline-0 focus:ring-0 border-none bg-gray-100 dark:bg-gray-800 h-full placeholder:text-gray-400 dark:placeholder:text-gray-500 pl-2 text-sm" 
-                            placeholder="Search suppliers..." 
+                            placeholder={t('admin.users.searchSuppliers')} 
                         />
                         </div>
                     </label>
                     <button className="flex items-center justify-center gap-2 rounded-lg h-10 px-4 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium">
                         <span className="material-symbols-outlined text-xl">filter_list</span>
-                        <span>Filter</span>
+                        <span>{t('admin.users.filter')}</span>
                     </button>
                     </div>
                     <button className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 gap-2 text-sm font-bold min-w-0 px-4">
                     <span className="material-symbols-outlined text-lg">download</span>
-                    <span className="truncate">Export</span>
+                    <span className="truncate">{t('admin.users.export')}</span>
                     </button>
                 </div>
 
@@ -903,11 +903,11 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                             <th className="px-4 py-3 w-12 text-center">
                             <input className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 bg-transparent text-primary focus:ring-primary/50" type="checkbox"/>
                             </th>
-                            <th className="px-4 py-3 text-left text-gray-600 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Supplier Name</th>
-                            <th className="px-4 py-3 text-left text-gray-600 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Status</th>
-                            <th className="px-4 py-3 text-left text-gray-600 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">KYC Status</th>
-                            <th className="px-4 py-3 text-left text-gray-600 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Date Joined</th>
-                            <th className="px-4 py-3 text-left text-gray-600 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Actions</th>
+                            <th className="px-4 py-3 text-left text-gray-600 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">{t('admin.users.supplierName')}</th>
+                            <th className="px-4 py-3 text-left text-gray-600 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">{t('admin.users.status')}</th>
+                            <th className="px-4 py-3 text-left text-gray-600 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">{t('admin.users.kycStatus')}</th>
+                            <th className="px-4 py-3 text-left text-gray-600 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">{t('admin.users.dateJoined')}</th>
+                            <th className="px-4 py-3 text-left text-gray-600 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">{t('admin.users.actions')}</th>
                         </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
@@ -924,7 +924,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                                     {getKycBadge(user.kycStatus || 'INCOMPLETE')}
                                 </td>
                                 <td className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">{user.dateJoined}</td>
-                                <td className="px-4 py-2 text-sm font-medium text-primary cursor-pointer hover:underline">Review</td>
+                                <td className="px-4 py-2 text-sm font-medium text-primary cursor-pointer hover:underline">{t('admin.users.review')}</td>
                             </tr>
                         ))}
                         </tbody>
@@ -939,10 +939,10 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
             <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
                {/* PageHeading */}
                <div className="flex flex-wrap items-center justify-between gap-3">
-                 <p className="text-text-light dark:text-text-dark text-3xl font-black tracking-tight">Client Management</p>
+                 <p className="text-text-light dark:text-text-dark text-3xl font-black tracking-tight">{t('admin.users.clientManagement')}</p>
                  <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-colors">
                    <span className="material-symbols-outlined !text-xl">add</span>
-                   <span className="truncate">Add New Client</span>
+                   <span className="truncate">{t('admin.users.addClient')}</span>
                  </button>
                </div>
 
@@ -956,7 +956,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                        </div>
                        <input 
                          className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light dark:text-text-dark focus:outline-0 focus:ring-2 focus:ring-primary/50 border-none bg-background-light dark:bg-background-dark h-full placeholder:text-subtext-light dark:placeholder:text-subtext-dark px-4 rounded-l-none border-l-0 pl-2 text-sm" 
-                         placeholder="Search by name, company, or email..." 
+                         placeholder={t('admin.users.searchClients')} 
                        />
                      </div>
                    </label>
@@ -986,12 +986,12 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                          <th className="px-4 py-3 text-center w-12">
                            <input className="h-5 w-5 rounded border-2 border-border-light dark:border-border-dark bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-0 focus:ring-offset-0" type="checkbox"/>
                          </th>
-                         <th className="px-4 py-3 text-sm font-medium text-subtext-light dark:text-subtext-dark">Client Name</th>
-                         <th className="px-4 py-3 text-sm font-medium text-subtext-light dark:text-subtext-dark">Company</th>
-                         <th className="px-4 py-3 text-sm font-medium text-subtext-light dark:text-subtext-dark">Email</th>
-                         <th className="px-4 py-3 text-sm font-medium text-subtext-light dark:text-subtext-dark">Status</th>
-                         <th className="px-4 py-3 text-sm font-medium text-subtext-light dark:text-subtext-dark">Date Registered</th>
-                         <th className="px-4 py-3 text-sm font-medium text-subtext-light dark:text-subtext-dark text-right">Actions</th>
+                         <th className="px-4 py-3 text-sm font-medium text-subtext-light dark:text-subtext-dark">{t('admin.users.clients')}</th>
+                         <th className="px-4 py-3 text-sm font-medium text-subtext-light dark:text-subtext-dark">{t('admin.users.company')}</th>
+                         <th className="px-4 py-3 text-sm font-medium text-subtext-light dark:text-subtext-dark">{t('admin.users.email')}</th>
+                         <th className="px-4 py-3 text-sm font-medium text-subtext-light dark:text-subtext-dark">{t('admin.users.status')}</th>
+                         <th className="px-4 py-3 text-sm font-medium text-subtext-light dark:text-subtext-dark">{t('admin.users.dateJoined')}</th>
+                         <th className="px-4 py-3 text-sm font-medium text-subtext-light dark:text-subtext-dark text-right">{t('admin.users.actions')}</th>
                        </tr>
                      </thead>
                      <tbody className="text-text-light dark:text-text-dark">
@@ -1018,7 +1018,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                  
                  {/* Pagination */}
                  <div className="flex flex-wrap items-center justify-between gap-4 p-4 border-t border-border-light dark:border-border-dark">
-                   <p className="text-sm text-subtext-light dark:text-subtext-dark">Showing {clientUsers.length} of {clientUsers.length} results</p>
+                   <p className="text-sm text-subtext-light dark:text-subtext-dark">{t('admin.users.showingResults', { count: clientUsers.length, total: clientUsers.length })}</p>
                    <div className="flex items-center gap-2">
                      <button className="flex items-center justify-center rounded-lg size-9 border border-border-light dark:border-border-dark text-subtext-light dark:text-subtext-dark hover:bg-primary/10 hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                        <span className="material-symbols-outlined !text-xl">chevron_left</span>
@@ -1051,17 +1051,17 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
         {/* Header */}
         <div className="flex items-center justify-between bg-white dark:bg-background-dark p-8 rounded-2xl border border-border-light dark:border-border-dark shadow-sm">
           <div>
-            <h2 className="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark">Logistics & Shipping</h2>
-            <p className="text-subtext-light dark:text-subtext-dark mt-1">Track shipments and manage delivery logistics</p>
+            <h2 className="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark">{t('logistics.title')}</h2>
+            <p className="text-subtext-light dark:text-subtext-dark mt-1">{t('logistics.subtitle')}</p>
           </div>
           <div className="flex gap-3">
             <button className="px-4 py-2 text-sm font-medium text-subtext-light dark:text-subtext-dark bg-slate-50 dark:bg-slate-800 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
               <span className="material-symbols-outlined text-base mr-2 inline-block align-middle">download</span>
-              Export
+              {t('logistics.export')}
             </button>
             <button className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors">
               <span className="material-symbols-outlined text-base mr-2 inline-block align-middle">add</span>
-              New Shipment
+              {t('logistics.newShipment')}
             </button>
           </div>
         </div>
@@ -1071,7 +1071,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
           <div className="bg-white dark:bg-background-dark rounded-xl border border-border-light dark:border-border-dark p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-subtext-light dark:text-subtext-dark">In Transit</p>
+                <p className="text-sm text-subtext-light dark:text-subtext-dark">{t('logistics.inTransit')}</p>
                 <p className="text-3xl font-bold text-text-primary-light dark:text-text-primary-dark mt-2">24</p>
               </div>
               <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-full">
@@ -1082,7 +1082,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
           <div className="bg-white dark:bg-background-dark rounded-xl border border-border-light dark:border-border-dark p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-subtext-light dark:text-subtext-dark">Delivered Today</p>
+                <p className="text-sm text-subtext-light dark:text-subtext-dark">{t('logistics.deliveredToday')}</p>
                 <p className="text-3xl font-bold text-text-primary-light dark:text-text-primary-dark mt-2">12</p>
               </div>
               <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-full">
@@ -1093,7 +1093,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
           <div className="bg-white dark:bg-background-dark rounded-xl border border-border-light dark:border-border-dark p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-subtext-light dark:text-subtext-dark">Preparing</p>
+                <p className="text-sm text-subtext-light dark:text-subtext-dark">{t('logistics.preparing')}</p>
                 <p className="text-3xl font-bold text-text-primary-light dark:text-text-primary-dark mt-2">8</p>
               </div>
               <div className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-full">
@@ -1104,7 +1104,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
           <div className="bg-white dark:bg-background-dark rounded-xl border border-border-light dark:border-border-dark p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-subtext-light dark:text-subtext-dark">Delayed</p>
+                <p className="text-sm text-subtext-light dark:text-subtext-dark">{t('logistics.delayed')}</p>
                 <p className="text-3xl font-bold text-text-primary-light dark:text-text-primary-dark mt-2">3</p>
               </div>
               <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-full">
@@ -1117,19 +1117,19 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
         {/* Shipments Table */}
         <div className="bg-white dark:bg-background-dark rounded-2xl border border-border-light dark:border-border-dark shadow-sm overflow-hidden">
           <div className="p-6 border-b border-border-light dark:border-border-dark">
-            <h3 className="text-lg font-bold text-text-primary-light dark:text-text-primary-dark">Active Shipments</h3>
+            <h3 className="text-lg font-bold text-text-primary-light dark:text-text-primary-dark">{t('logistics.activeShipments')}</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead className="bg-slate-50 dark:bg-slate-800 border-b border-border-light dark:border-border-dark">
                 <tr>
-                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider">Shipment ID</th>
-                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider">Order ID</th>
-                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider">Route</th>
-                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider">Status</th>
-                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider">ETA</th>
-                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider">Location</th>
-                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider text-right">Actions</th>
+                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider">{t('logistics.shipmentId')}</th>
+                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider">{t('logistics.orderId')}</th>
+                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider">{t('logistics.route')}</th>
+                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider">{t('logistics.status')}</th>
+                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider">{t('logistics.eta')}</th>
+                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider">{t('logistics.location')}</th>
+                  <th className="px-6 py-4 font-semibold text-subtext-light dark:text-subtext-dark uppercase text-xs tracking-wider text-right">{t('logistics.actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border-light dark:divide-border-dark">
@@ -1158,7 +1158,9 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                           shipment.status === 'Delivered' ? 'bg-green-500' :
                           'bg-amber-500'
                         }`}></span>
-                        {shipment.status}
+                        {shipment.status === 'In Transit' ? t('status.inTransit') : 
+                         shipment.status === 'Delivered' ? t('status.delivered') : 
+                         t('status.preparing')}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -1169,7 +1171,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <button className="text-primary text-sm font-bold hover:underline">
-                        Track
+                        {t('logistics.track')}
                       </button>
                     </td>
                   </tr>
@@ -1187,8 +1189,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
       <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm border border-slate-100">
          <span className="material-symbols-outlined text-4xl text-slate-300">construction</span>
       </div>
-      <h3 className="text-xl font-bold text-slate-900">Feature Coming Soon</h3>
-      <p className="text-slate-500 max-w-md mt-2 leading-relaxed">We are currently building this module. Please check back later for updates on this feature.</p>
+      <h3 className="text-xl font-bold text-slate-900">{t('comingSoon.title')}</h3>
+      <p className="text-slate-500 max-w-md mt-2 leading-relaxed">{t('comingSoon.description')}</p>
     </div>
   );
 };
