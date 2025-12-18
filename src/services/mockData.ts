@@ -1,4 +1,4 @@
-import { Product, RFQ, Quote, User, UserRole } from '../types/types';
+import { Product, RFQ, Quote, User, UserRole, Order, OrderStatus, PaymentStatus } from '../types/types';
 
 export const USERS: User[] = [
   { id: 'u1', name: 'John Client', email: 'client@mwrd.com', role: UserRole.CLIENT, companyName: 'Tech Solutions Ltd', verified: true, publicId: 'Client-8492', status: 'ACTIVE', dateJoined: '2023-01-10' },
@@ -304,15 +304,55 @@ export const QUOTES: Quote[] = [
   { id: 'q2', rfqId: 'r3', supplierId: 'u2', supplierPrice: 5500, leadTime: '5 Days', marginPercent: 15, finalPrice: 6325, status: 'ACCEPTED' },
 ];
 
-export interface Order {
-  id: string;
-  amount: number;
-  status: 'In Transit' | 'Delivered' | 'Cancelled';
-  date: string;
-}
-
 export const ORDERS: Order[] = [
-  { id: 'ORD-9876', amount: 2450.00, status: 'In Transit', date: '2023-10-28' },
-  { id: 'ORD-9875', amount: 1120.50, status: 'Delivered', date: '2023-10-15' },
-  { id: 'ORD-9874', amount: 5800.00, status: 'Cancelled', date: '2023-10-01' },
+  { 
+    id: 'ORD-9876', 
+    clientId: 'u1', 
+    supplierId: 'u2', 
+    amount: 2450.00, 
+    status: OrderStatus.IN_TRANSIT, 
+    paymentStatus: PaymentStatus.CONFIRMED,
+    paymentReference: 'MWRD-9876-ABC123',
+    paymentConfirmedAt: '2023-10-26',
+    date: '2023-10-28' 
+  },
+  { 
+    id: 'ORD-9877', 
+    clientId: 'u1', 
+    supplierId: 'u2', 
+    amount: 3200.00, 
+    status: OrderStatus.AWAITING_CONFIRMATION, 
+    paymentStatus: PaymentStatus.AWAITING_CONFIRMATION,
+    paymentReference: 'MWRD-9877-DEF456',
+    paymentSubmittedAt: '2023-10-27',
+    date: '2023-10-27' 
+  },
+  { 
+    id: 'ORD-9878', 
+    clientId: 'u1', 
+    supplierId: 'u4', 
+    amount: 1850.00, 
+    status: OrderStatus.PENDING_PAYMENT, 
+    paymentStatus: PaymentStatus.PENDING,
+    date: '2023-10-29' 
+  },
+  { 
+    id: 'ORD-9875', 
+    clientId: 'u1', 
+    supplierId: 'u2', 
+    amount: 1120.50, 
+    status: OrderStatus.DELIVERED, 
+    paymentStatus: PaymentStatus.CONFIRMED,
+    paymentReference: 'MWRD-9875-GHI789',
+    paymentConfirmedAt: '2023-10-10',
+    date: '2023-10-15' 
+  },
+  { 
+    id: 'ORD-9874', 
+    clientId: 'u1', 
+    supplierId: 'u5', 
+    amount: 5800.00, 
+    status: OrderStatus.CANCELLED, 
+    date: '2023-10-01' 
+  },
 ];
