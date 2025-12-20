@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Product, RFQ, Quote, OrderStatus } from '../../types/types';
-import { PRODUCTS, RFQS, QUOTES, ORDERS, USERS } from '../../services/mockData';
+import { useStore } from '../../store/useStore';
+import { generateId } from '../../utils/helpers';
 
 interface ClientPortalProps {
   activeTab: string;
@@ -16,6 +17,41 @@ interface SelectedItem {
 
 export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigate }) => {
   const { t } = useTranslation();
+
+  // Get data and actions from the store
+  const {
+    currentUser,
+    products,
+    rfqs,
+    quotes,
+    orders,
+    users,
+    addRFQ,
+    acceptQuote,
+    rejectQuote,
+    loadProducts,
+    loadRFQs,
+    loadQuotes,
+    loadOrders
+  } = useStore();
+
+  // Load data on mount
+  useEffect(() => {
+    loadProducts();
+    loadRFQs();
+    loadQuotes();
+    loadOrders();
+  }, []);
+
+  // Filter data for current client
+  const clientRfqs = rfqs.filter(r => r.clientId === currentUser?.id);
+  const clientQuotes = quotes.filter(q => {
+    const rfq = rfqs.find(r => r.id === q.rfqId);
+    return rfq?.clientId === currentUser?.id && (q.status === 'SENT_TO_CLIENT' || q.status === 'ACCEPTED' || q.status === 'REJECTED');
+  });
+  const clientOrders = orders;
+  const approvedProducts = products.filter(p => p.status === 'APPROVED');
+
   const [rfqItems, setRfqItems] = useState<string[]>([]);
   const [selectedItemsMap, setSelectedItemsMap] = useState<Record<string, SelectedItem>>({});
   const [submitted, setSubmitted] = useState(false);
@@ -54,14 +90,50 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
   };
 
   const submitRfq = () => {
+    if (!currentUser) return;
+
     setSubmitted(true);
+
+    // Create RFQ items from selected items
+    const items = Object.values(selectedItemsMap).map(item => ({
+      productId: item.productId,
+      quantity: item.quantity,
+      notes: item.notes
+    }));
+
+    // If using browse mode (rfqItems array)
+    const browseItems = rfqItems.map(productId => ({
+      productId,
+      quantity: 1,
+      notes: ''
+    }));
+
+    const finalItems = items.length > 0 ? items : browseItems;
+
+    if (finalItems.length === 0) {
+      setSubmitted(false);
+      return;
+    }
+
+    // Create the RFQ object
+    const newRfq: RFQ = {
+      id: generateId('rfq'),
+      clientId: currentUser.id,
+      items: finalItems,
+      status: 'OPEN',
+      date: new Date().toISOString().split('T')[0]
+    };
+
+    // Add RFQ to store (this will persist it)
+    addRFQ(newRfq);
+
     setTimeout(() => {
       setSubmitted(false);
       setRfqItems([]);
       setSelectedItemsMap({});
-      onNavigate('dashboard');
+      onNavigate('rfqs');
       alert(t('client.rfq.rfqSubmitted'));
-    }, 1500);
+    }, 1000);
   };
 
   const handleViewQuotes = (rfqId: string) => {
@@ -77,7 +149,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-200 pb-8">
           <div className="flex min-w-72 flex-col gap-1">
             <p className="text-[#111827] text-3xl font-bold leading-tight tracking-tight">{t('client.dashboard.title')}</p>
-            <p className="text-[#6b7280] text-base font-normal leading-normal">{t('client.dashboard.welcomeBack')}, John Client</p>
+            <p className="text-[#6b7280] text-base font-normal leading-normal">{t('client.dashboard.welcomeBack')}, {currentUser?.name || 'Client'}</p>
           </div>
           <div className="flex items-center gap-4">
             <button 
@@ -106,7 +178,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 <button onClick={() => onNavigate('rfqs')} className="text-[#137fec] text-sm font-medium hover:underline">{t('common.viewAll')}</button>
               </div>
               <div className="flex flex-col mt-4">
-                {RFQS.slice(0, 3).map(rfq => (
+                {clientRfqs.slice(0, 3).map(rfq => (
                   <div key={rfq.id} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
                     <div>
                       <p className="font-medium text-[#111827]">RFQ-{rfq.id.toUpperCase()}</p>
@@ -121,6 +193,9 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                     </span>
                   </div>
                 ))}
+                {clientRfqs.length === 0 && (
+                  <p className="text-sm text-gray-400 py-4">{t('client.dashboard.noRfqs')}</p>
+                )}
               </div>
             </div>
           </div>
@@ -133,15 +208,15 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 <button onClick={() => onNavigate('rfqs')} className="text-[#137fec] text-sm font-medium hover:underline">{t('common.viewAll')}</button>
               </div>
               <div className="flex flex-col mt-4">
-                {QUOTES.slice(0, 5).map(quote => (
-                  <div 
-                    key={quote.id} 
+                {clientQuotes.slice(0, 5).map(quote => (
+                  <div
+                    key={quote.id}
                     className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0 cursor-pointer hover:bg-gray-50 transition-colors px-2 -mx-2 rounded"
                     onClick={() => handleViewQuotes(quote.rfqId)}
                   >
                     <div>
                       <p className="font-medium text-[#111827] group-hover:text-[#137fec]">{t('client.dashboard.forRfq')} RFQ-{quote.rfqId.toUpperCase()}</p>
-                      <p className="text-sm text-[#6b7280]">{t('client.dashboard.fromSupplier')} {USERS.find(u => u.id === quote.supplierId)?.publicId}</p>
+                      <p className="text-sm text-[#6b7280]">{t('client.dashboard.fromSupplier')} {users.find(u => u.id === quote.supplierId)?.publicId}</p>
                     </div>
                     <div className="text-right">
                         <p className="text-[#111827] font-medium">${quote.finalPrice.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
@@ -149,7 +224,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                     </div>
                   </div>
                 ))}
-                {QUOTES.length === 0 && (
+                {clientQuotes.length === 0 && (
                   <p className="text-sm text-gray-400 py-4">{t('client.dashboard.noQuotes')}</p>
                 )}
               </div>
@@ -164,24 +239,27 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
             <button onClick={() => onNavigate('orders')} className="text-[#137fec] text-sm font-medium hover:underline">{t('common.viewAll')}</button>
           </div>
           <div className="flex flex-col mt-4">
-            {ORDERS.map(order => (
+            {clientOrders.map(order => (
               <div key={order.id} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
                 <div>
                   <p className="font-medium text-[#111827]">{order.id}</p>
                   <p className="text-sm text-[#6b7280]">${order.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
                 </div>
                 <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${
-                  order.status === OrderStatus.IN_TRANSIT ? 'bg-blue-100 text-blue-800' :
-                  order.status === OrderStatus.DELIVERED ? 'bg-green-100 text-green-800' :
+                  order.status === OrderStatus.IN_TRANSIT || order.status === 'In Transit' ? 'bg-blue-100 text-blue-800' :
+                  order.status === OrderStatus.DELIVERED || order.status === 'Delivered' ? 'bg-green-100 text-green-800' :
                   order.status === OrderStatus.PENDING_PAYMENT ? 'bg-amber-100 text-amber-800' :
                   order.status === OrderStatus.AWAITING_CONFIRMATION ? 'bg-yellow-100 text-yellow-800' :
                   order.status === OrderStatus.PAYMENT_CONFIRMED ? 'bg-green-100 text-green-800' :
                   'bg-red-100 text-red-800'
                 }`}>
-                  {t(`status.${order.status.toLowerCase().replace(/_/g, '')}`)}
+                  {typeof order.status === 'string' ? order.status : t(`status.${order.status.toLowerCase().replace(/_/g, '')}`)}
                 </span>
               </div>
             ))}
+            {clientOrders.length === 0 && (
+              <p className="text-sm text-gray-400 py-4">{t('client.dashboard.noOrders')}</p>
+            )}
           </div>
         </div>
       </div>
@@ -190,11 +268,26 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
 
   // --- VIEW QUOTES DETAIL ---
   if (activeTab === 'view-quotes') {
-    const rfq = RFQS.find(r => r.id === selectedRfqId);
-    const quotes = QUOTES.filter(q => q.rfqId === selectedRfqId);
+    const rfq = rfqs.find(r => r.id === selectedRfqId);
+    const rfqQuotes = quotes.filter(q => q.rfqId === selectedRfqId && (q.status === 'SENT_TO_CLIENT' || q.status === 'ACCEPTED' || q.status === 'REJECTED'));
     // Helper to get first item name for title
-    const firstItem = rfq?.items[0] ? PRODUCTS.find(p => p.id === rfq.items[0].productId) : null;
+    const firstItem = rfq?.items[0] ? products.find(p => p.id === rfq.items[0].productId) : null;
     const itemTitle = firstItem ? firstItem.name : t('client.rfq.multipleItems');
+
+    const handleAcceptQuote = (quoteId: string) => {
+      if (confirm(t('client.rfq.confirmAcceptQuote'))) {
+        acceptQuote(quoteId);
+        alert(t('client.rfq.quoteAccepted'));
+        onNavigate('orders');
+      }
+    };
+
+    const handleRejectQuote = (quoteId: string) => {
+      if (confirm(t('client.rfq.confirmRejectQuote'))) {
+        rejectQuote(quoteId);
+        alert(t('client.rfq.quoteRejected'));
+      }
+    };
 
     if (!rfq) return <div className="p-12 text-center">{t('client.rfq.rfqNotFound')}</div>;
 
@@ -234,14 +327,14 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                     </div>
                     <div className="flex flex-col gap-1">
                         <p className="text-slate-500 text-sm font-normal">{t('client.dashboard.quotesReceived')}</p>
-                        <p className="text-slate-800 text-sm font-medium">{quotes.length}</p>
+                        <p className="text-slate-800 text-sm font-medium">{rfqQuotes.length}</p>
                     </div>
                 </div>
             </div>
 
             {/* Sort/Filter Controls */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <p className="text-slate-600 font-medium">{quotes.length} {t('client.rfq.quotesFound')}</p>
+                <p className="text-slate-600 font-medium">{rfqQuotes.length} {t('client.rfq.quotesFound')}</p>
                 <div className="flex gap-2 overflow-x-auto">
                     <button className="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white border border-slate-200 pl-3 pr-2 shadow-sm hover:bg-slate-50">
                         <p className="text-slate-700 text-sm font-medium">Price (Low to High)</p>
@@ -260,8 +353,8 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
 
             {/* Quote Display Area */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {quotes.map((quote, idx) => {
-                    const supplier = USERS.find(u => u.id === quote.supplierId);
+                {rfqQuotes.map((quote, idx) => {
+                    const supplier = users.find(u => u.id === quote.supplierId);
                     // For visual distinctness like the design, we highlight one as 'recommended' if it has best rating or price, 
                     // or just style them based on index for demo variety
                     const isHighlighted = idx === 1; 
@@ -291,16 +384,37 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                                     </div>
                                 </div>
                             </div>
-                            <div className="p-4 bg-slate-50 border-t border-slate-200">
-                                <button className="w-full flex items-center justify-center h-10 px-4 rounded-lg bg-[#137fec] text-white text-sm font-bold hover:bg-[#137fec]/90 focus:outline-none focus:ring-2 focus:ring-[#137fec] focus:ring-offset-2">
-                                    {t('client.rfq.acceptQuote')}
-                                </button>
+                            <div className="p-4 bg-slate-50 border-t border-slate-200 space-y-2">
+                                {quote.status === 'SENT_TO_CLIENT' ? (
+                                  <>
+                                    <button
+                                      onClick={() => handleAcceptQuote(quote.id)}
+                                      className="w-full flex items-center justify-center h-10 px-4 rounded-lg bg-[#137fec] text-white text-sm font-bold hover:bg-[#137fec]/90 focus:outline-none focus:ring-2 focus:ring-[#137fec] focus:ring-offset-2"
+                                    >
+                                      {t('client.rfq.acceptQuote')}
+                                    </button>
+                                    <button
+                                      onClick={() => handleRejectQuote(quote.id)}
+                                      className="w-full flex items-center justify-center h-10 px-4 rounded-lg bg-white text-red-600 text-sm font-medium border border-red-200 hover:bg-red-50"
+                                    >
+                                      {t('client.rfq.rejectQuote')}
+                                    </button>
+                                  </>
+                                ) : quote.status === 'ACCEPTED' ? (
+                                  <div className="text-center text-green-600 font-bold py-2">
+                                    ✓ {t('status.accepted')}
+                                  </div>
+                                ) : (
+                                  <div className="text-center text-red-600 font-medium py-2">
+                                    ✗ {t('status.rejected')}
+                                  </div>
+                                )}
                             </div>
                         </div>
                     );
                 })}
 
-                {quotes.length === 0 && (
+                {rfqQuotes.length === 0 && (
                      <div className="col-span-full flex flex-col items-center justify-center text-center bg-white border border-slate-200 rounded-xl shadow-sm p-12 mt-6">
                         <div className="p-4 bg-[#137fec]/10 rounded-full mb-4">
                             <span className="material-symbols-outlined text-4xl text-[#137fec]">hourglass_empty</span>
@@ -317,8 +431,8 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
 
   // --- CREATE RFQ VIEW ---
   if (activeTab === 'create-rfq') {
-    const createRfqProducts = PRODUCTS.filter(p => 
-      p.category === 'Industrial' || p.category === 'Safety Gear' || p.category === 'Electrical'
+    const createRfqProducts = approvedProducts.filter(p =>
+      p.category === 'Industrial' || p.category === 'Safety Gear' || p.category === 'Electrical' || p.category === 'Electronics' || p.category === 'Furniture'
     );
 
     const selectedKeys = Object.keys(selectedItemsMap);
@@ -412,7 +526,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                     ) : (
                       selectedKeys.map(key => {
                         const item = selectedItemsMap[key];
-                        const product = PRODUCTS.find(p => p.id === item.productId);
+                        const product = products.find(p => p.id === item.productId);
                         return (
                           <tr key={key} className="border-t border-[#DEE2E6]">
                             <td className="px-6 py-4 font-medium text-[#343A40]">{product?.name}</td>
@@ -495,7 +609,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 <div className="flex flex-col gap-4">
                   {selectedKeys.map(key => {
                     const item = selectedItemsMap[key];
-                    const product = PRODUCTS.find(p => p.id === item.productId);
+                    const product = products.find(p => p.id === item.productId);
                     return (
                       <div key={key} className="flex justify-between items-center text-sm">
                         <p className="text-[#343A40] line-clamp-1 mr-2">{product?.name}</p>
@@ -544,7 +658,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
 
   // --- BROWSE VIEW ---
   if (activeTab === 'browse') {
-    const filteredProducts = PRODUCTS.filter(p => p.status === 'APPROVED' && p.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    const filteredProducts = approvedProducts.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
     return (
       <div className="w-full max-w-screen-2xl mx-auto px-6 md:px-10 lg:px-20 py-8 font-display text-[#0d141b]">
@@ -750,9 +864,9 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                {RFQS.map(rfq => {
-                    const rfqQuotes = QUOTES.filter(q => q.rfqId === rfq.id);
-                    const quoteCount = rfqQuotes.length;
+                {clientRfqs.map(rfq => {
+                    const rfqQuotesForThis = quotes.filter(q => q.rfqId === rfq.id && (q.status === 'SENT_TO_CLIENT' || q.status === 'ACCEPTED' || q.status === 'REJECTED'));
+                    const quoteCount = rfqQuotesForThis.length;
                     
                     return (
                     <tr key={rfq.id} className="hover:bg-slate-50/50 transition-colors group">
@@ -848,7 +962,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {ORDERS.map(order => (
+                {clientOrders.map(order => (
                   <tr key={order.id} className="hover:bg-slate-50/50 transition-colors group">
                     <td className="px-8 py-6">
                       <div className="flex flex-col">
@@ -867,22 +981,22 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                     </td>
                     <td className="px-8 py-6">
                       <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${
-                        order.status === OrderStatus.IN_TRANSIT ? 'bg-blue-50 text-blue-700 border-blue-100' :
-                        order.status === OrderStatus.DELIVERED ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                        order.status === OrderStatus.IN_TRANSIT || order.status === 'In Transit' ? 'bg-blue-50 text-blue-700 border-blue-100' :
+                        order.status === OrderStatus.DELIVERED || order.status === 'Delivered' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
                         order.status === OrderStatus.PAYMENT_CONFIRMED ? 'bg-green-50 text-green-700 border-green-100' :
                         order.status === OrderStatus.PENDING_PAYMENT ? 'bg-amber-50 text-amber-700 border-amber-100' :
                         order.status === OrderStatus.AWAITING_CONFIRMATION ? 'bg-yellow-50 text-yellow-700 border-yellow-100' :
                         'bg-red-50 text-red-700 border-red-100'
                       }`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${
-                          order.status === OrderStatus.IN_TRANSIT ? 'bg-blue-500' :
-                          order.status === OrderStatus.DELIVERED ? 'bg-emerald-500' :
+                          order.status === OrderStatus.IN_TRANSIT || order.status === 'In Transit' ? 'bg-blue-500' :
+                          order.status === OrderStatus.DELIVERED || order.status === 'Delivered' ? 'bg-emerald-500' :
                           order.status === OrderStatus.PAYMENT_CONFIRMED ? 'bg-green-500' :
                           order.status === OrderStatus.PENDING_PAYMENT ? 'bg-amber-500' :
                           order.status === OrderStatus.AWAITING_CONFIRMATION ? 'bg-yellow-500' :
                           'bg-red-500'
                         }`}></span>
-                        {t(`status.${order.status.toLowerCase().replace(/_/g, '')}`)}
+                        {typeof order.status === 'string' ? order.status : t(`status.${order.status.toLowerCase().replace(/_/g, '')}`)}
                       </span>
                     </td>
                     <td className="px-8 py-6 text-right">
@@ -892,6 +1006,13 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({ activeTab, onNavigat
                     </td>
                   </tr>
                 ))}
+                {clientOrders.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="px-8 py-12 text-center text-slate-400">
+                      {t('client.dashboard.noOrders')}
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

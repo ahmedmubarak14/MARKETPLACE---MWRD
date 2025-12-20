@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PRODUCTS, RFQS, QUOTES } from '../../services/mockData';
-import { Product } from '../../types/types';
+import { useStore } from '../../store/useStore';
+import { Product, Quote } from '../../types/types';
+import { generateId } from '../../utils/helpers';
 
 interface SupplierPortalProps {
   activeTab: string;
@@ -10,7 +11,42 @@ interface SupplierPortalProps {
 
 export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNavigate }) => {
   const { t } = useTranslation();
-  const [products, setProducts] = useState(PRODUCTS.filter(p => p.supplierId === 'u2'));
+
+  // Get data and actions from the store
+  const {
+    currentUser,
+    products: allProducts,
+    rfqs,
+    quotes,
+    orders,
+    addProduct,
+    updateProduct,
+    deleteProduct,
+    addQuote,
+    loadProducts,
+    loadRFQs,
+    loadQuotes,
+    loadOrders
+  } = useStore();
+
+  // Load data on mount
+  useEffect(() => {
+    loadProducts();
+    loadRFQs();
+    loadQuotes();
+    loadOrders();
+  }, []);
+
+  // Filter products for current supplier
+  const supplierProducts = allProducts.filter(p => p.supplierId === currentUser?.id);
+  const supplierQuotes = quotes.filter(q => q.supplierId === currentUser?.id);
+  // Get RFQs that have items matching supplier's products
+  const supplierRfqs = rfqs.filter(rfq =>
+    rfq.items.some(item =>
+      allProducts.some(p => p.id === item.productId && p.supplierId === currentUser?.id)
+    )
+  );
+
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   // Reset editing state when changing tabs
@@ -34,7 +70,11 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
   // --- VIEWS ---
 
   const DashboardView = () => {
-    const pendingRFQs = RFQS.slice(0, 4);
+    const pendingRFQs = supplierRfqs.filter(r => r.status === 'OPEN').slice(0, 4);
+    const openRfqCount = supplierRfqs.filter(r => r.status === 'OPEN').length;
+    const quotesCount = supplierQuotes.length;
+    const productsCount = supplierProducts.length;
+
     const getStatusBadge = (status: string) => {
         if (status === 'OPEN') return <span className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800 ring-1 ring-inset ring-amber-600/20">{t('supplier.dashboard.awaitingQuote')}</span>;
         if (status === 'QUOTED') return <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">{t('supplier.dashboard.quoteSubmitted')}</span>;
@@ -58,7 +98,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                         <p className="text-neutral-700 text-base font-medium leading-normal">{t('supplier.dashboard.newRfqs')}</p>
                         <span className="material-symbols-outlined text-amber-500">new_releases</span>
                     </div>
-                    <p className="text-amber-500 tracking-tight text-4xl font-bold leading-tight">5</p>
+                    <p className="text-amber-500 tracking-tight text-4xl font-bold leading-tight">{openRfqCount}</p>
                     <button onClick={() => onNavigate('requests')} className="text-sm font-medium text-[#137fec] hover:underline mt-2 text-left">{t('supplier.dashboard.viewRfqs')}</button>
                 </div>
                 <div className="flex flex-col gap-2 rounded-xl p-6 border border-neutral-200 bg-white shadow-sm hover:shadow-md transition-shadow">
@@ -66,7 +106,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                         <p className="text-neutral-700 text-base font-medium leading-normal">{t('supplier.dashboard.quotesSubmitted')}</p>
                         <span className="material-symbols-outlined text-neutral-500">receipt_long</span>
                     </div>
-                    <p className="text-neutral-800 tracking-tight text-4xl font-bold leading-tight">12</p>
+                    <p className="text-neutral-800 tracking-tight text-4xl font-bold leading-tight">{quotesCount}</p>
                     <button onClick={() => onNavigate('orders')} className="text-sm font-medium text-[#137fec] hover:underline mt-2 text-left">{t('supplier.dashboard.viewQuotes')}</button>
                 </div>
                 <div className="flex flex-col gap-2 rounded-xl p-6 border border-neutral-200 bg-white shadow-sm hover:shadow-md transition-shadow">
@@ -74,7 +114,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                         <p className="text-neutral-700 text-base font-medium leading-normal">{t('supplier.dashboard.manageProducts')}</p>
                         <span className="material-symbols-outlined text-neutral-500">inventory_2</span>
                     </div>
-                    <p className="text-neutral-800 tracking-tight text-4xl font-bold leading-tight">154</p>
+                    <p className="text-neutral-800 tracking-tight text-4xl font-bold leading-tight">{productsCount}</p>
                     <button onClick={() => onNavigate('products')} className="text-sm font-medium text-[#137fec] hover:underline mt-2 text-left">{t('supplier.dashboard.viewCatalog')}</button>
                 </div>
             </div>
@@ -237,6 +277,22 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
   };
 
   const ProductsView = () => {
+      const handleAddProduct = () => {
+        if (!currentUser) return;
+        const newProduct: Product = {
+          id: generateId('prod'),
+          supplierId: currentUser.id,
+          name: 'New Product',
+          description: 'Product description',
+          category: 'Electronics',
+          costPrice: 0,
+          status: 'PENDING',
+          image: 'https://via.placeholder.com/300'
+        };
+        addProduct(newProduct);
+        setEditingProduct(newProduct);
+      };
+
       return (
         <div className="p-8 mx-auto max-w-7xl animate-in fade-in duration-300">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
@@ -244,14 +300,14 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                     <h1 className="text-2xl font-bold text-neutral-800">{t('supplier.products.title')}</h1>
                     <p className="text-neutral-500">{t('supplier.products.subtitle')}</p>
                 </div>
-                <button onClick={() => alert("Add Product Demo")} className="bg-[#137fec] text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-[#137fec]/90">
+                <button onClick={handleAddProduct} className="bg-[#137fec] text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-[#137fec]/90">
                     <span className="material-symbols-outlined">add</span>
                     {t('supplier.products.addNewProduct')}
                 </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {products.map(product => (
+                {supplierProducts.map(product => (
                     <div key={product.id} className="bg-white rounded-xl border border-neutral-200 overflow-hidden flex flex-col shadow-sm hover:shadow-md transition-all group">
                         <div className="aspect-[4/3] relative bg-neutral-100">
                             <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
@@ -297,7 +353,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-neutral-200">
-                        {RFQS.map(rfq => (
+                        {supplierRfqs.map(rfq => (
                             <tr key={rfq.id} className="hover:bg-neutral-50">
                                 <td className="px-6 py-4 font-medium text-neutral-800">#{rfq.id.toUpperCase()}</td>
                                 <td className="px-6 py-4 text-neutral-500">{rfq.date}</td>
@@ -310,6 +366,13 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                                 </td>
                             </tr>
                         ))}
+                        {supplierRfqs.length === 0 && (
+                          <tr>
+                            <td colSpan={5} className="px-6 py-12 text-center text-neutral-400">
+                              {t('supplier.rfqs.noRfqsFound')}
+                            </td>
+                          </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -319,8 +382,8 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
 
   const BrowseRFQsView = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const allRFQs = RFQS; // In production, this would fetch from API
-    const filteredRFQs = allRFQs.filter(rfq =>
+    const openRfqs = rfqs.filter(rfq => rfq.status === 'OPEN');
+    const filteredRFQs = openRfqs.filter(rfq =>
       rfq.id.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -361,7 +424,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
           {/* RFQ Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-4">
             {filteredRFQs.map(rfq => {
-              const firstItem = PRODUCTS.find(p => p.id === rfq.items[0]?.productId);
+              const firstItem = allProducts.find(p => p.id === rfq.items[0]?.productId);
               return (
                 <div key={rfq.id} className="group flex flex-col rounded-xl border border-[#e7edf3] bg-white overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                   <div className="p-6 flex flex-col gap-4 flex-grow">
@@ -393,7 +456,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                     <div className="border-t border-[#e7edf3] pt-4 mt-auto">
                       <p className="text-xs text-[#4c739a] line-clamp-2">
                         {rfq.items.map((item, idx) => {
-                          const prod = PRODUCTS.find(p => p.id === item.productId);
+                          const prod = allProducts.find(p => p.id === item.productId);
                           return prod ? `${prod.name} (${item.quantity}x)` : '';
                         }).filter(Boolean).join(', ')}
                       </p>
@@ -438,8 +501,8 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
       notes: ''
     });
 
-    const pendingRFQs = RFQS.filter(rfq => rfq.status === 'OPEN');
-    const rfq = selectedRFQ ? RFQS.find(r => r.id === selectedRFQ) : null;
+    const pendingRFQs = rfqs.filter(rfq => rfq.status === 'OPEN');
+    const rfq = selectedRFQ ? rfqs.find(r => r.id === selectedRFQ) : null;
 
     const calculateTotal = () => {
       if (!rfq) return 0;
@@ -451,6 +514,24 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
     };
 
     const handleSubmitQuote = () => {
+      if (!currentUser || !rfq) return;
+
+      const supplierPrice = calculateTotal();
+      const marginPercent = 15; // Default margin, admin will adjust later
+      const finalPrice = supplierPrice * (1 + marginPercent / 100);
+
+      const newQuote: Quote = {
+        id: generateId('quote'),
+        rfqId: rfq.id,
+        supplierId: currentUser.id,
+        supplierPrice,
+        leadTime: quoteDetails.leadTime,
+        marginPercent,
+        finalPrice,
+        status: 'PENDING_ADMIN'
+      };
+
+      addQuote(newQuote);
       alert(t('supplier.quotes.quoteSubmitted'));
       setSelectedRFQ(null);
       setQuoteDetails({
@@ -473,7 +554,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {pendingRFQs.map(rfq => {
-                const firstItem = PRODUCTS.find(p => p.id === rfq.items[0]?.productId);
+                const firstItem = allProducts.find(p => p.id === rfq.items[0]?.productId);
                 return (
                   <div key={rfq.id} className="bg-white rounded-xl border border-neutral-200 p-6 hover:shadow-md transition-all cursor-pointer" onClick={() => setSelectedRFQ(rfq.id)}>
                     <div className="flex items-start justify-between mb-4">
@@ -537,7 +618,7 @@ export const SupplierPortal: React.FC<SupplierPortalProps> = ({ activeTab, onNav
                   <h3 className="text-sm font-bold text-neutral-600 uppercase mb-3">{t('supplier.quotes.requestedItems')}</h3>
                   <div className="space-y-2">
                     {rfq?.items.map((item, idx) => {
-                      const product = PRODUCTS.find(p => p.id === item.productId);
+                      const product = allProducts.find(p => p.id === item.productId);
                       return (
                         <div key={idx} className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
                           <div className="flex items-center gap-3">

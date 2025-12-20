@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PRODUCTS, QUOTES, USERS, RFQS } from '../../services/mockData';
-import { Quote, UserRole } from '../../types/types';
+import { useStore } from '../../store/useStore';
+import { Quote, UserRole, Product } from '../../types/types';
 
 interface AdminPortalProps {
   activeTab: string;
@@ -15,6 +15,40 @@ declare global {
 
 export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
   const { t } = useTranslation();
+
+  // Get data and actions from the store
+  const {
+    products,
+    rfqs,
+    quotes,
+    orders,
+    users,
+    approveProduct,
+    rejectProduct,
+    approveQuote,
+    updateUser,
+    loadProducts,
+    loadRFQs,
+    loadQuotes,
+    loadOrders,
+    loadUsers
+  } = useStore();
+
+  // Load data on mount
+  useEffect(() => {
+    loadProducts();
+    loadRFQs();
+    loadQuotes();
+    loadOrders();
+    loadUsers();
+  }, []);
+
+  // Computed data
+  const pendingProducts = products.filter(p => p.status === 'PENDING');
+  const pendingQuotes = quotes.filter(q => q.status === 'PENDING_ADMIN');
+  const supplierUsers = users.filter(u => u.role === 'SUPPLIER');
+  const clientUsers = users.filter(u => u.role === 'CLIENT');
+
   // State for individual quote overrides (Manual)
   const [editingQuotes, setEditingQuotes] = useState<Record<string, number>>({});
   
@@ -42,9 +76,9 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
 
   // Helper: Get category for a quote based on the first item in its RFQ
   const getQuoteCategory = (quote: Quote): string => {
-    const rfq = RFQS.find(r => r.id === quote.rfqId);
+    const rfq = rfqs.find(r => r.id === quote.rfqId);
     if (!rfq || rfq.items.length === 0) return 'General';
-    const product = PRODUCTS.find(p => p.id === rfq.items[0].productId);
+    const product = products.find(p => p.id === rfq.items[0].productId);
     return product ? product.category : 'General';
   };
 
@@ -443,7 +477,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
   }
 
   if (activeTab === 'approvals') {
-    const pendingProducts = PRODUCTS.filter(p => p.status === 'PENDING');
+    const pendingProductsList = pendingProducts;
     
     return (
       <div className="flex flex-col min-h-screen bg-background-light dark:bg-background-dark font-display">
@@ -519,7 +553,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                      {pendingProducts.map(product => {
-                        const supplier = USERS.find(u => u.id === product.supplierId);
+                        const supplier = users.find(u => u.id === product.supplierId);
                         // Mock date based on index to show some variance like in design
                         const dates = ['2023-10-26', '2023-10-26', '2023-10-25', '2023-10-24'];
                         const displayDate = dates[pendingProducts.indexOf(product) % dates.length];
@@ -546,8 +580,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                               <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                               <div className="flex items-center justify-end gap-2">
                               <button className="flex h-8 items-center justify-center gap-1 rounded-md bg-yellow-100 px-3 text-xs font-semibold text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-500/20 dark:text-yellow-400 dark:hover:bg-yellow-500/30 transition-colors">{t('admin.approvals.info')}</button>
-                              <button className="flex h-8 items-center justify-center gap-1 rounded-md bg-red-100 px-3 text-xs font-semibold text-red-800 hover:bg-red-200 dark:bg-red-500/20 dark:text-red-400 dark:hover:bg-red-500/30 transition-colors">{t('admin.approvals.reject')}</button>
-                              <button className="flex h-8 items-center justify-center gap-1 rounded-md bg-green-100 px-3 text-xs font-semibold text-green-800 hover:bg-green-200 dark:bg-green-500/20 dark:text-green-400 dark:hover:bg-green-500/30 transition-colors">{t('admin.approvals.approve')}</button>
+                              <button onClick={() => { rejectProduct(product.id); alert(t('admin.approvals.productRejected')); }} className="flex h-8 items-center justify-center gap-1 rounded-md bg-red-100 px-3 text-xs font-semibold text-red-800 hover:bg-red-200 dark:bg-red-500/20 dark:text-red-400 dark:hover:bg-red-500/30 transition-colors">{t('admin.approvals.reject')}</button>
+                              <button onClick={() => { approveProduct(product.id); alert(t('admin.approvals.productApproved')); }} className="flex h-8 items-center justify-center gap-1 rounded-md bg-green-100 px-3 text-xs font-semibold text-green-800 hover:bg-green-200 dark:bg-green-500/20 dark:text-green-400 dark:hover:bg-green-500/30 transition-colors">{t('admin.approvals.approve')}</button>
                               </div>
                               </td>
                            </tr>
@@ -638,7 +672,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
         </div>
         
         <div className="space-y-6">
-          {QUOTES.map(quote => {
+          {quotes.map(quote => {
              const { value: currentMargin, source, type } = getEffectiveMarginData(quote);
              const calculatedPrice = quote.supplierPrice * (1 + currentMargin / 100);
              const profit = calculatedPrice - quote.supplierPrice;
@@ -743,7 +777,14 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
                           <p className="text-xs font-bold text-emerald-600 mt-2">+ ${profit.toLocaleString(undefined, {maximumFractionDigits: 0})} {t('admin.margins.profit')}</p>
                       </div>
                       
-                      <button className="w-12 h-12 bg-slate-900 text-white rounded-full shadow-xl flex items-center justify-center hover:scale-105 transition-transform">
+                      <button
+                        onClick={() => {
+                          approveQuote(quote.id);
+                          alert(t('admin.margins.quoteSentToClient'));
+                        }}
+                        title={t('admin.margins.sendToClient')}
+                        className="w-12 h-12 bg-slate-900 text-white rounded-full shadow-xl flex items-center justify-center hover:scale-105 transition-transform"
+                      >
                           <span className="material-symbols-outlined">send</span>
                       </button>
                   </div>
@@ -758,7 +799,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
   // Unified Users Management View (Supports Suppliers and Clients)
   if (activeTab === 'users') {
     // -- SUPPLIER LOGIC --
-    const supplierUsers = USERS.filter(u => u.role === UserRole.SUPPLIER && u.status);
+    const supplierUsersList = supplierUsers;
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'APPROVED':
@@ -789,7 +830,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ activeTab }) => {
     };
 
     // -- CLIENT LOGIC --
-    const clientUsers = USERS.filter(u => u.role === UserRole.CLIENT && u.status);
+    const clientUsersList = clientUsers;
     const getClientStatusBadge = (status: string) => {
        switch (status) {
           case 'ACTIVE':
